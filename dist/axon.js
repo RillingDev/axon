@@ -167,9 +167,10 @@ var Axon = function () {
 
     var Axon = function Axon(id) {
         var _this = this;
+        id = id || "xn";
 
-        _this.id = id || "xn";
-        _this.chev = new Container(id);
+        _this.id = id;
+        _this.chev = new Container(id + "Chev");
     };
 
     Axon.prototype = {};
