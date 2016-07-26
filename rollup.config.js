@@ -9,8 +9,8 @@ let pkg = require("./package.json");
 let external = Object.keys(pkg.dependencies);
 
 export default {
-    moduleName: "Chevron",
-    moduleId: "chevron",
+    moduleName: "Axon",
+    moduleId: "axon",
     entry: "src/main.js",
     external: external,
     plugins: [
@@ -21,19 +21,19 @@ export default {
         commonjs({})
     ],
     targets: [{
-        dest: "dist/chevron.amd.js",
+        dest: "dist/axon.amd.js",
         format: "amd"
     }, {
-        dest: "dist/chevron.common.js",
+        dest: "dist/axon.common.js",
         format: "cjs"
     }, {
-        dest: "dist/chevron.umd.js",
+        dest: "dist/axon.umd.js",
         format: "umd"
     }, {
-        dest: "dist/chevron.es.js",
+        dest: "dist/axon.es.js",
         format: "es"
     }, {
-        dest: "dist/chevron.js",
+        dest: "dist/axon.js",
         format: "iife"
     }]
 };

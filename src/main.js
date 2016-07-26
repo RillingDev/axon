@@ -1,26 +1,14 @@
 "use strict";
 
-import provider from "./provider/provider";
-import service from "./provider/service";
-import factory from "./provider/factory";
-import access from "./access/access";
+import Chevron from "../node_modules/chevronjs/src/main.js";
 
-let Container = function (id) {
+let Axon = function (id) {
     let _this = this;
 
-    _this.id = id || "cv";
-    _this.chev = {};
+    _this.id = id || "xn";
+    _this.chev = new Chevron(id);
 };
 
-Container.prototype = {
-    //Core service/factory method
-    provider,
-    //create new service
-    service,
-    //create new factory
-    factory,
-    //prepare/iialize services/factory with deps injected
-    access
-};
+Axon.prototype = {};
 
-export default Container;
+export default Axon;

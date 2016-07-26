@@ -1,32 +1,28 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define('chevron', factory) :
-    (global.Chevron = factory());
-}(this, function () { 'use strict';
+define('axon', function () { 'use strict';
 
     //add new service/fn
-    function add (name, deps, type, fn, args) {
-        this.chev[name] = {
-            name,
-            type,
-            deps,
-            args: args || [],
-            fn,
-            init: false
+    function add (_name, _deps, _type, _fn, _args) {
+        //External applications should not try to access container props as the keys change between min/normal version; stick to cv.access()
+        this.chev[_name] = {
+            _name,
+            _type,
+            _deps,
+            _args: _args || [],
+            _fn,
+            _init: false
         };
     }
 
-    const _error = ": error in ";
-    const _factory = "factory";
-    const _service = "service";
-    const _isUndefined=" is undefined";
+    var _error = ": error in ";
+
+    var _service = "service";
 
     //Pushes new service/factory
-    function provider(name, deps, type, fn, args) {
+    function provider (_name, _deps, _type, _fn, _args) {
         let _this = this;
 
-        if (_this.chev[name]) {
-            throw `${_this.id}${_error}${type}: ${_service} '${name}' is already defined`;
+        if (_this.chev[_name]) {
+            throw `${_this.n}${_error}${_type}: ${_service} '${_name}' is already defined`;
         } else {
             add.apply(_this, arguments);
 
@@ -35,23 +31,25 @@
     }
 
     //Create new service
-    function service (name, deps, fn) {
+    function service (_name, _deps, _fn) {
         return this.provider(
-            name,
-            deps,
+            _name,
+            _deps,
             _service,
-            fn
+            _fn
         );
     }
 
+    var _factory = "factory";
+
     //Create new factory
-    function factory (name, deps, Constructor, args) {
+    function factory (_name, _deps, _Constructor, _args) {
         return this.provider(
-            name,
-            deps,
+            _name,
+            _deps,
             _factory,
-            Constructor,
-            args
+            _Constructor,
+            _args
         );
     }
 
@@ -73,11 +71,11 @@
 
     //Initialized service and sets init to true
     function initialize (service, bundle) {
-        if (service.type === _service) {
+        if (service._type === _service) {
             //Construct service
-            let serviceFn = service.fn;
+            let serviceFn = service._fn;
 
-            service.fn = function () {
+            service._fn = function () {
                 //Chevron service function wrapper
                 return serviceFn.apply(null,
                     Array.from(bundle.concat(Array.from(arguments)))
@@ -85,13 +83,13 @@
             };
         } else {
             //Construct factory
-            bundle = bundle.concat(service.args);
+            bundle = bundle.concat(service._args);
             bundle.unshift(null);
             //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-            service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
+            service._fn = new(Function.prototype.bind.apply(service._fn, bundle));
         }
 
-        service.init = true;
+        service._init = true;
         return service;
     }
 
@@ -100,12 +98,12 @@
         let bundle = [];
 
         util._eachObject(list, (item, key) => {
-            if (service.deps.includes(key)) {
+            if (service._deps.includes(key)) {
                 bundle.push(item);
             }
         });
 
-        if (!service.init) {
+        if (!service._init) {
             return initialize(service, Array.from(bundle));
         } else {
             return service;
@@ -118,9 +116,9 @@
             let service = container[name];
             if (service) {
 
-                if (service.deps.length > 0) {
+                if (service._deps.length > 0) {
                     //recurse
-                    r(container, service.deps, fn, error);
+                    r(container, service._deps, fn, error);
                 }
                 fn(service);
             } else {
@@ -136,12 +134,12 @@
 
         r(
             _this.chev,
-            service.deps,
+            service._deps,
             dependency => {
-                list[dependency.name] = bundle(dependency, list).fn;
+                list[dependency._name] = bundle(dependency, list)._fn;
             },
             name => {
-                throw `${_this.id}${_error}${service.name}: dependency '${name}'${_isUndefined}`;
+                throw `${_this.n}${_error}${service._name}: dependency '${name}' missing`;
             }
         );
 
@@ -149,22 +147,22 @@
     }
 
     //Returns prepared service
-    function access(name) {
+    function access (name) {
         let _this = this,
             accessedService = _this.chev[name];
 
         //Check if accessed service is registered
         if (accessedService) {
-            return prepare.call(_this, accessedService).fn;
+            return prepare.call(_this, accessedService)._fn;
         } else {
-            throw `${_this.id}${_error}${name}: '${name}'${_isUndefined}`;
+            throw `${_this.n}${_error}${name}: '${name}' is undefined`;
         }
     }
 
-    let Container = function (id) {
+    let Container = function (name) {
         let _this = this;
 
-        _this.id = id || "cv";
+        _this.n = name || "cv";
         _this.chev = {};
     };
 
@@ -179,6 +177,15 @@
         access
     };
 
-    return Container;
+    let Axon = function (id) {
+        let _this = this;
 
-}));
+        _this.id = id || "xn";
+        _this.chev = new Container(id);
+    };
+
+    Axon.prototype = {};
+
+    return Axon;
+
+});

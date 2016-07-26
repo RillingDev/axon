@@ -31,8 +31,8 @@ module.exports = function (grunt) {
         uglify: {
             main: {
                 files: {
-                    "dist/chevron.min.js": "dist/chevron.min.js",
-                    //"dist/chevron-lite-es5.min.js": ".tmp/chevron-lite-es5.js"
+                    "dist/axon.min.js": "dist/axon.min.js",
+                    //"dist/axon-lite-es5.min.js": ".tmp/axon-lite-es5.js"
                 },
                 options: {
                     compress: {
@@ -51,8 +51,8 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    "dist/chevron.js": "dist/chevron.js",
-                    //".tmp/chevron-lite-es5.js": ".tmp/chevron-lite.js"
+                    "dist/axon.js": "dist/axon.js",
+                    //".tmp/axon-lite-es5.js": ".tmp/axon-lite.js"
                 }
             }
         },
@@ -98,7 +98,7 @@ module.exports = function (grunt) {
                     ]
                 },
                 files: {
-                    "dist/chevron.min.js": "dist/chevron.js"
+                    "dist/axon.min.js": "dist/axon.js"
                 },
 
             }
