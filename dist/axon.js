@@ -1,18 +1,15 @@
-"use strict";
-
-var Axon = function () {
+var Axon = (function () {
     'use strict';
 
     //add new service/fn
-
-    function add(_name, _deps, _type, _fn, _args) {
+    function add (_name, _deps, _type, _fn, _args) {
         //External applications should not try to access container props as the keys change between min/normal version; stick to cv.access()
         this.chev[_name] = {
-            _name: _name,
-            _type: _type,
-            _deps: _deps,
+            _name,
+            _type,
+            _deps,
             _args: _args || [],
-            _fn: _fn,
+            _fn,
             _init: false
         };
     }
@@ -22,11 +19,11 @@ var Axon = function () {
     var _service = "service";
 
     //Pushes new service/factory
-    function provider(_name, _deps, _type, _fn, _args) {
-        var _this = this;
+    function provider (_name, _deps, _type, _fn, _args) {
+        let _this = this;
 
         if (_this.chev[_name]) {
-            throw "" + _this.n + _error + _type + ": " + _service + " '" + _name + "' is already defined";
+            throw `${_this.n}${_error}${_type}: ${_service} '${_name}' is already defined`;
         } else {
             add.apply(_this, arguments);
 
@@ -35,51 +32,62 @@ var Axon = function () {
     }
 
     //Create new service
-    function service(_name, _deps, _fn) {
-        return this.provider(_name, _deps, _service, _fn);
+    function service (_name, _deps, _fn) {
+        return this.provider(
+            _name,
+            _deps,
+            _service,
+            _fn
+        );
     }
 
     var _factory = "factory";
 
     //Create new factory
-    function factory(_name, _deps, _Constructor, _args) {
-        return this.provider(_name, _deps, _factory, _Constructor, _args);
+    function factory (_name, _deps, _Constructor, _args) {
+        return this.provider(
+            _name,
+            _deps,
+            _factory,
+            _Constructor,
+            _args
+        );
     }
 
     //Utility functions
     var util = {
-        _each: function _each(arr, fn) {
-            for (var i = 0, l = arr.length; i < l; i++) {
+        _each: function (arr, fn) {
+            for (let i = 0, l = arr.length; i < l; i++) {
                 fn(arr[i], i);
             }
         },
-        _eachObject: function _eachObject(object, fn) {
-            var keys = Object.keys(object);
+        _eachObject: function (object, fn) {
+            let keys = Object.keys(object);
 
-            this._each(keys, function (key, i) {
+            this._each(keys, (key, i) => {
                 fn(object[key], key, i);
             });
         }
     };
 
     //Initialized service and sets init to true
-    function initialize(service, bundle) {
+    function initialize (service, bundle) {
         if (service._type === _service) {
-            (function () {
-                //Construct service
-                var serviceFn = service._fn;
+            //Construct service
+            let serviceFn = service._fn;
 
-                service._fn = function () {
-                    //Chevron service function wrapper
-                    return serviceFn.apply(null, Array.from(bundle.concat(Array.from(arguments))));
-                };
-            })();
+            service._fn = function () {
+                //Chevron service function wrapper
+                return serviceFn.apply(null,
+                    Array.from(bundle.concat(Array.from(arguments)))
+                );
+            };
         } else {
             //Construct factory
             bundle = bundle.concat(service._args);
             bundle.unshift(null);
             //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-            service._fn = new (Function.prototype.bind.apply(service._fn, bundle))();
+            service._fn = new(Function.prototype.bind.apply(service._fn, bundle));
         }
 
         service._init = true;
@@ -87,11 +95,11 @@ var Axon = function () {
     }
 
     //collect dependencies from string, and initialize them if needed
-    function bundle(service, list) {
-        var bundle = [];
+    function bundle (service, list) {
+        let bundle = [];
 
-        util._eachObject(list, function (item, key) {
-            if (service._deps.indexOf(key) !== -1) {
+        util._eachObject(list, (item, key) => {
+            if (service._deps.includes(key)) {
                 bundle.push(item);
             }
         });
@@ -105,8 +113,8 @@ var Axon = function () {
 
     //Loops trough dependencies, recurse if new dependencies has dependencies itself; then execute fn.
     function r(container, dependencyList, fn, error) {
-        util._each(dependencyList, function (name) {
-            var service = container[name];
+        util._each(dependencyList, name => {
+            let service = container[name];
             if (service) {
 
                 if (service._deps.length > 0) {
@@ -121,34 +129,39 @@ var Axon = function () {
     }
 
     //Main access function; makes sure that every service need is available
-    function prepare(service) {
-        var _this = this,
+    function prepare (service) {
+        let _this = this,
             list = {};
 
-        r(_this.chev, service._deps, function (dependency) {
-            list[dependency._name] = bundle(dependency, list)._fn;
-        }, function (name) {
-            throw "" + _this.n + _error + service._name + ": dependency '" + name + "' missing";
-        });
+        r(
+            _this.chev,
+            service._deps,
+            dependency => {
+                list[dependency._name] = bundle(dependency, list)._fn;
+            },
+            name => {
+                throw `${_this.n}${_error}${service._name}: dependency '${name}' missing`;
+            }
+        );
 
         return bundle(service, list);
     }
 
     //Returns prepared service
-    function access(name) {
-        var _this = this,
+    function access (name) {
+        let _this = this,
             accessedService = _this.chev[name];
 
         //Check if accessed service is registered
         if (accessedService) {
             return prepare.call(_this, accessedService)._fn;
         } else {
-            throw "" + _this.n + _error + name + ": '" + name + "' is undefined";
+            throw `${_this.n}${_error}${name}: '${name}' is undefined`;
         }
     }
 
-    var Container = function Container(name) {
-        var _this = this;
+    let Container = function (name) {
+        let _this = this;
 
         _this.n = name || "cv";
         _this.chev = {};
@@ -156,25 +169,19 @@ var Axon = function () {
 
     Container.prototype = {
         //Core service/factory method
-        provider: provider,
+        provider,
         //create new service
-        service: service,
+        service,
         //create new factory
-        factory: factory,
+        factory,
         //prepare/iialize services/factory with deps injected
-        access: access
+        access
     };
 
-    var Axon = function Axon(id) {
-        var _this = this;
-        id = id || "xn";
-
-        _this.id = id;
-        _this.chev = new Container(id + "Chev");
-    };
+    let Axon = Object.assign(Container);
 
     Axon.prototype = {};
 
     return Axon;
-}();
-//# sourceMappingURL=axon.js.map
+
+}());
