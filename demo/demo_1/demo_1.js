@@ -1,10 +1,8 @@
 "use strict";
 
-let app = new Axon("app");
+let axon = new Axon("app"),
+    app;
 
-/*app.factory("mainCtr", [], function () {
-    this.foo = "foo";
-    this.bar = function () {
-        return "bar";
-    };
-});*/
+axon.module("myApp", [], function () {});
+
+app = axon.access("myApp");
