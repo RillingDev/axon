@@ -11,11 +11,17 @@
  * @return {Array} Returns Array of events
  */
 export default function(domList, type, fn) {
-    const result = [];
+    //const result = {};
+    let i = 0;
 
     [].forEach.call(domList, dom => {
-        result.push(dom.addEventListener(type, fn, false));
+        /*result[i] = */
+        dom.addEventListener(type, ev => {
+            return fn(ev, dom);
+        }, false);
+
+        i++;
     });
 
-    return result;
+    return i;
 }

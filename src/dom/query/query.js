@@ -11,8 +11,9 @@ import constructQuery from "./constructQuery";
  * @private
  * @param {String} data The data id
  * @param {String} val The data value
+ * @param {Node} context optional, query context
  * @return {NodeList} Returns NodeList
  */
-export default function(data, val) {
-    return _document.querySelectorAll(constructQuery(data, val));
+export default function(data, val, context) {
+    return (context ? context : _document).querySelectorAll(constructQuery(data, val));
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-import bindModel from "./directives""
+import bindModel from "./directives/model";
 
 /**
  * Binds expressions to controller
@@ -10,7 +10,9 @@ import bindModel from "./directives""
  * @return {Object} Returns bound Object
  */
 export default function(ctrl) {
+    const context = ctrl.context;
+
     return {
-      model:bindModel(ctrl)
+        model: bindModel(ctrl, context)
     };
 }

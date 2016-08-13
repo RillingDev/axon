@@ -245,8 +245,11 @@ var Axon = (function () {
          * @return {String} Returns Query
          */
     function constructQuery(data, val) {
-            val = val || "*";
-            return `[${_domNameSpace}-${data}='${val}']`;
+            if (!val || val === "*") {
+                return `[${_domNameSpace}-${data}]`;
+            } else {
+                return `[${_domNameSpace}-${data}='${val}']`;
+            }
         }
 
     /**
@@ -255,10 +258,80 @@ var Axon = (function () {
          * @private
          * @param {String} data The data id
          * @param {String} val The data value
+         * @param {Node} context optional, query context
          * @return {Node} Returns Node
          */
-    function querySingle(data, val) {
-            return _document.querySelector(constructQuery(data, val));
+    function querySingle(data, val, context) {
+            return (context ? context : _document).querySelector(constructQuery(data, val));
+        }
+
+    /**
+         * Query multiple from DOM
+         *
+         * @private
+         * @param {String} data The data id
+         * @param {String} val The data value
+         * @param {Node} context optional, query context
+         * @return {NodeList} Returns NodeList
+         */
+    function query(data, val, context) {
+            return (context ? context : _document).querySelectorAll(constructQuery(data, val));
+        }
+
+    /**
+         * Read Data from element
+         *
+         * @private
+         * @param {Node} element The Element to read
+         * @param {String} data The data attr to read
+         * @return {String} Returns value
+         */
+    function read(element, data) {
+            return element.attributes[`${_domNameSpace}-${data}`].value;
+        }
+
+    /**
+         * Binds event to dom
+         *
+         * @private
+         * @param {NodeList} domList The Elements to bind
+         * @param {String} type The Event type
+         * @param {Function} fn The Even function
+         * @return {Array} Returns Array of events
+         */
+    function bind(domList, type, fn) {
+            //const result = {};
+            let i = 0;
+
+            [].forEach.call(domList, dom => {
+                /*result[i] = */
+                dom.addEventListener(type, ev => {
+                    return fn(ev, dom);
+                }, false);
+
+                i++;
+            });
+
+            return i;
+        }
+
+    /**
+         * Binds xn-model
+         *
+         * @private
+         * @param {Object} ctrl The Controller
+         * @return {Node} context The Controller context
+         */
+    function bindModel(ctrl, context) {
+            const elements = query("model", "*", context);
+
+            return bind(elements, "change", (ev, dom) => {
+                const content = dom.value;
+                const modelFor = read(dom, "model");
+
+                console.log("MODEL:", modelFor, content);
+                ctrl[modelFor] = content;
+            });
         }
 
     /**
@@ -269,7 +342,11 @@ var Axon = (function () {
          * @return {Object} Returns bound Object
          */
     function bindDirectives(ctrl) {
-            return {};
+            const context = ctrl.context;
+
+            return {
+                model: bindModel(ctrl, context)
+            };
         }
 
     /**

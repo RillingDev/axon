@@ -2,8 +2,8 @@
 
 import querySingle from "../dom/query/querySingle";
 
-import bindDirectives from "../dom/bind/bindDirectives";
-import bindExpressions from "../dom/bind/bindExpressions";
+import bindDirectives from "../dom/bind/directives";
+import bindExpressions from "../dom/bind/expressions";
 /**
  * Creates typeList entry for Controller
  *

@@ -1,21 +1,24 @@
 "use strict";
 
+import query from "../../query/query";
+import read from "../../query/read";
+import bind from "../bind";
 
 /**
  * Binds xn-model
  *
  * @private
- * @param {NodeList} domList The Elements to bind
- * @param {String} type The Event type
- * @param {Function} fn The Even function
- * @return {Array} Returns Array of events
+ * @param {Object} ctrl The Controller
+ * @return {Node} context The Controller context
  */
-export default function(ctrl, type, fn) {
-    const result = [];
+export default function(ctrl, context) {
+    const elements = query("model", "*", context);
 
-    [].forEach.call(domList, dom => {
-        result.push(dom.addEventListener(type, fn, false));
+    return bind(elements, "change", (ev, dom) => {
+        const content = dom.value;
+        const modelFor = read(dom, "model");
+
+        console.log("MODEL:", modelFor, content);
+        ctrl[modelFor] = content;
     });
-
-    return result;
 }
