@@ -262,6 +262,28 @@ var Axon = (function () {
         }
 
     /**
+         * Binds expressions to controller
+         *
+         * @private
+         * @param {Object} ctrl The Controller
+         * @return {Object} Returns bound Object
+         */
+    function bindDirectives(ctrl) {
+            return {};
+        }
+
+    /**
+         * Binds expressions to controller
+         *
+         * @private
+         * @param {Object} ctrl The Controller
+         * @return {Object} Returns bound Object
+         */
+    function bindExpressions(ctrl) {
+            return {};
+        }
+
+    /**
          * Creates typeList entry for Controller
          *
          * @private
@@ -276,9 +298,9 @@ var Axon = (function () {
             //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
             const ctrl = service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
             //Bind Context
-            ctrl.context = querySingle("controller", service.name);
-
-
+            ctrl.$context = querySingle("controller", service.name);
+            ctrl.$directives = bindDirectives(ctrl);
+            ctrl.$expressions = bindExpressions(ctrl);
 
             return service;
         }
