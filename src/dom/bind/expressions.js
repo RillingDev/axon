@@ -1,6 +1,6 @@
 "use strict";
 
-import bindExpressions from "../expressions/parse";
+import queryExpressions from "../query/expressions/query";
 
 /**
  * Binds directives to controller
@@ -13,6 +13,6 @@ export default function(ctrl) {
     const context = ctrl.context;
 
     return {
-        expressions: elements = queryExpressions(context)
+        expressions: queryExpressions(context)
     };
 }

@@ -2,7 +2,7 @@
 
 import {
     _domNameSpace
-} from "../../constants";
+} from "../../../constants";
 
 /**
  * Read Data from element

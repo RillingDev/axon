@@ -1,5 +1,8 @@
 define('axon', function () { 'use strict';
 
+    /**
+     * Store strings to avoid duplicate strings
+     */
     const _more = ": ";
     const _error = "error in ";
     const _factory = "factory";
@@ -252,19 +255,6 @@ define('axon', function () { 'use strict';
     }
 
     /**
-     * Query single from DOM
-     *
-     * @private
-     * @param {String} data The data id
-     * @param {String} val The data value
-     * @param {Node} context optional, query context
-     * @return {Node} Returns Node
-     */
-    function querySingle(data, val, context) {
-        return (context ? context : _document).querySelector(constructQuery(data, val));
-    }
-
-    /**
      * Query multiple from DOM
      *
      * @private
@@ -287,6 +277,17 @@ define('axon', function () { 'use strict';
      */
     function read(element, data) {
         return element.attributes[`${_domNameSpace}-${data}`].value;
+    }
+
+    /**
+     * Digest & renders dom
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @return {Node} context The Controller context
+     */
+    function digest() {
+
     }
 
     /**
@@ -335,6 +336,8 @@ define('axon', function () { 'use strict';
 
             console.log("MODEL:", modelFor, content);
             ctrl[modelFor] = content;
+
+            digest();
         }
     }
 
@@ -354,14 +357,30 @@ define('axon', function () { 'use strict';
     }
 
     /**
-     * Binds expressions to controller
+     * Read Data from element
+     *
+     * @private
+     * @param {Node} element The Element to read
+     * @param {String} data The data attr to read
+     * @return {String} Returns value
+     */
+    function queryExpressions() {
+
+    }
+
+    /**
+     * Binds directives to controller
      *
      * @private
      * @param {Object} ctrl The Controller
      * @return {Object} Returns bound Object
      */
     function bindExpressions(ctrl) {
-        return {};
+        const context = ctrl.context;
+
+        return {
+            expressions: queryExpressions(context)
+        };
     }
 
     /**
@@ -379,7 +398,7 @@ define('axon', function () { 'use strict';
         //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
         const ctrl = service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
         //Bind Context
-        ctrl.$context = querySingle("controller", service.name);
+        ctrl.$context = query("controller", service.name)[0];
         ctrl.$directives = bindDirectives(ctrl);
         ctrl.$expressions = bindExpressions(ctrl);
 
@@ -401,7 +420,7 @@ define('axon', function () { 'use strict';
         //Instance container
         _this.cv = new Chevron(id + "Container");
         //context
-        _this.context = querySingle("app", id);
+        _this.context = query("app", id)[0];
 
         //Init Axon types
         _this.cv.extend("controller", controllerFn);

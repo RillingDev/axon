@@ -1,12 +1,15 @@
 'use strict';
 
-const _more = ": ";
+/**
+     * Store strings to avoid duplicate strings
+     */
+    const _more = ": ";
     const _error = "error in ";
     const _factory = "factory";
     const _service = "service";
     const _isUndefined = " is undefined";
 
-    /**
+/**
      * Checks if service exist, else add it
      *
      * @param {String} type The type of the service (service/factory)
@@ -16,7 +19,7 @@ const _more = ": ";
      * @param {Function} fn Content of the service
      * @returns {Object} Returns `this`
      */
-    function provider (type, cf, name, deps, fn) {
+function provider (type, cf, name, deps, fn) {
         const _this = this;
 
         if (_this.chev[name]) {
@@ -37,14 +40,14 @@ const _more = ": ";
         }
     }
 
-    /**
+/**
      * Adds a new service type
      *
      * @param {String} type The name of the type
      * @param {Function} cf Constructor function to init the service with
      * @returns {Object} Returns `this`
      */
-    function extend (type, cf) {
+function extend (type, cf) {
         const _this = this;
 
         //Add customType method to container
@@ -55,7 +58,7 @@ const _more = ": ";
         return _this;
     }
 
-    /**
+/**
      * Collects dependencies and initializes service
      *
      * @private
@@ -64,7 +67,7 @@ const _more = ": ";
      * @param {Object} list The list of dependencies
      * @returns {Object} Returns `service`
      */
-    function initialize (_this, service, list) {
+function initialize (_this, service, list) {
         if (!service.init) {
             const bundle = [];
 
@@ -86,7 +89,7 @@ const _more = ": ";
         return service;
     }
 
-    /**
+/**
      * Loops trough dependencies, recurse if new dependencies has dependencies itself; then execute fn.
      *
      * @private
@@ -112,7 +115,7 @@ const _more = ": ";
         });
     }
 
-    /**
+/**
      * Check if every dependency is available
      *
      * @private
@@ -120,7 +123,7 @@ const _more = ": ";
      * @param {Object} service The service to prepare
      * @returns {Object} Initialized service
      */
-    function prepare(_this, service) {
+function prepare(_this, service) {
         const list = {};
 
         //Recurse trough service deps
@@ -137,13 +140,13 @@ const _more = ": ";
         return initialize(_this, service, list);
     }
 
-    /**
+/**
      * Access service with dependencies bound
      *
      * @param {String} name The Name of the service
      * @returns {*} Returns Content of the service
      */
-    function access(name) {
+function access(name) {
         const _this = this,
             accessedService = _this.chev[name];
 
@@ -154,14 +157,14 @@ const _more = ": ";
         }
     }
 
-    /**
+/**
      * Creates method entry for service
      *
      * @private
      * @param {Object} _this The context
      * @returns Returns void
      */
-    function initService(_this) {
+function initService(_this) {
         _this.extend(_service, function(service, bundle) {
             //Construct service
             const serviceFn = service.fn;
@@ -175,14 +178,14 @@ const _more = ": ";
         });
     }
 
-    /**
+/**
      * Creates method entry for factory
      *
      * @private
      * @param {Object} _this The context
      * @returns Returns void
      */
-    function initFactory(_this) {
+function initFactory(_this) {
         _this.extend(_factory, function(service, bundle) {
             //Construct factory
 
@@ -196,7 +199,7 @@ const _more = ": ";
         });
     }
 
-    /**
+/**
      * Basic Chevron Constructor
      *
      * @constructor
@@ -252,19 +255,6 @@ function constructQuery(data, val) {
     }
 
 /**
-     * Query single from DOM
-     *
-     * @private
-     * @param {String} data The data id
-     * @param {String} val The data value
-     * @param {Node} context optional, query context
-     * @return {Node} Returns Node
-     */
-function querySingle(data, val, context) {
-        return (context ? context : _document).querySelector(constructQuery(data, val));
-    }
-
-/**
      * Query multiple from DOM
      *
      * @private
@@ -287,6 +277,17 @@ function query(data, val, context) {
      */
 function read(element, data) {
         return element.attributes[`${_domNameSpace}-${data}`].value;
+    }
+
+/**
+     * Digest & renders dom
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @return {Node} context The Controller context
+     */
+function digest() {
+
     }
 
 /**
@@ -335,6 +336,8 @@ function bindModel(ctrl, context) {
 
             console.log("MODEL:", modelFor, content);
             ctrl[modelFor] = content;
+
+            digest();
         }
     }
 
@@ -354,14 +357,30 @@ function bindDirectives(ctrl) {
     }
 
 /**
-     * Binds expressions to controller
+     * Read Data from element
+     *
+     * @private
+     * @param {Node} element The Element to read
+     * @param {String} data The data attr to read
+     * @return {String} Returns value
+     */
+function queryExpressions() {
+
+    }
+
+/**
+     * Binds directives to controller
      *
      * @private
      * @param {Object} ctrl The Controller
      * @return {Object} Returns bound Object
      */
 function bindExpressions(ctrl) {
-        return {};
+        const context = ctrl.context;
+
+        return {
+            expressions: queryExpressions(context)
+        };
     }
 
 /**
@@ -379,7 +398,7 @@ function controllerFn(service, bundle) {
         //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
         const ctrl = service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
         //Bind Context
-        ctrl.$context = querySingle("controller", service.name);
+        ctrl.$context = query("controller", service.name)[0];
         ctrl.$directives = bindDirectives(ctrl);
         ctrl.$expressions = bindExpressions(ctrl);
 
@@ -401,7 +420,7 @@ function controllerFn(service, bundle) {
         //Instance container
         _this.cv = new Chevron(id + "Container");
         //context
-        _this.context = querySingle("app", id);
+        _this.context = query("app", id)[0];
 
         //Init Axon types
         _this.cv.extend("controller", controllerFn);
