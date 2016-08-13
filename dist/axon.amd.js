@@ -248,6 +248,38 @@ define('axon', function () {
     }
 
     /**
+     * Store contsants
+     */
+    var _window = window;
+    var _document = _window.document;
+    var _domNameSpace = "xn";
+
+    /**
+     * Creates querySelector string
+     *
+     * @private
+     * @param {String} data The data id
+     * @param {String} val The data value
+     * @return {String} Returns Query
+     */
+    function constructQuery(data, val) {
+        val = val || "*";
+        return '[' + _domNameSpace + '-' + data + '=\'' + val + '\']';
+    }
+
+    /**
+     * Query single from DOM
+     *
+     * @private
+     * @param {String} data The data id
+     * @param {String} val The data value
+     * @return {Node} Returns Node
+     */
+    function querySingle(data, val) {
+        return _document.querySelector(constructQuery(data, val));
+    }
+
+    /**
      * Basic Axon Constructor
      *
      * @constructor
@@ -262,16 +294,13 @@ define('axon', function () {
         //Instance container
         _this.cv = new Chevron(id + "Container");
         //context
-        //_this.context = domQuery("app", id);
+        _this.context = querySingle("app", id);
 
         //Init Axon types
         _this.cv.extend("controller", controllerFn);
-
-        /**
-         * Expose Axon methods
-         */
     };
 
+    //Bind Chevron methods directly to parent
     var methods = ["access", "extend", "provider", "service", "factory", "controller"];
 
     methods.forEach(function (method) {

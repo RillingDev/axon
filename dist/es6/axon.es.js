@@ -244,6 +244,38 @@ function controllerFn(service, bundle) {
     }
 
 /**
+     * Store contsants
+     */
+    const _window = window;
+    const _document = _window.document;
+    const _domNameSpace = "xn";
+
+/**
+     * Creates querySelector string
+     *
+     * @private
+     * @param {String} data The data id
+     * @param {String} val The data value
+     * @return {String} Returns Query
+     */
+function constructQuery(data, val) {
+        val = val || "*";
+        return `[${_domNameSpace}-${data}='${val}']`;
+    }
+
+/**
+     * Query single from DOM
+     *
+     * @private
+     * @param {String} data The data id
+     * @param {String} val The data value
+     * @return {Node} Returns Node
+     */
+function querySingle(data, val) {
+        return _document.querySelector(constructQuery(data, val));
+    }
+
+/**
      * Basic Axon Constructor
      *
      * @constructor
@@ -258,18 +290,14 @@ function controllerFn(service, bundle) {
         //Instance container
         _this.cv = new Chevron(id + "Container");
         //context
-        //_this.context = domQuery("app", id);
+        _this.context = querySingle("app", id);
 
         //Init Axon types
         _this.cv.extend("controller", controllerFn);
-
-
-        /**
-         * Expose Axon methods
-         */
     };
 
-    const methods = ["access","extend", "provider","service","factory","controller"];
+    //Bind Chevron methods directly to parent
+    const methods = ["access", "extend", "provider", "service", "factory", "controller"];
 
     methods.forEach(method => {
         Axon.prototype[method] = function() {

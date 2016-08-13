@@ -6,13 +6,13 @@ import {
 import constructQuery from "./constructQuery";
 
 /**
- * Query multiple from DOM
+ * Query single from DOM
  *
  * @private
  * @param {String} data The data id
  * @param {String} val The data value
- * @return {NodeList} Returns NodeList
+ * @return {Node} Returns Node
  */
 export default function(data, val) {
-    return _document.querySelectorAll(constructQuery(data, val));
+    return _document.querySelector(constructQuery(data, val));
 }
