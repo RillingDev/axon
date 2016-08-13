@@ -1,14 +1,10 @@
 "use strict";
 
-import provider from "chevronjs/src/api/provider";
-import extend from "chevronjs/src/api/extend";
-import access from "chevronjs/src/access/access";
+import Chevron from "chevronjs/dist/es6/chevron.es.js";
 
-import initService from "chevronjs/src/types/service";
-import initFactory from "chevronjs/src/types/factory";
+import controllerFn from "./types/controller";
 
-import initModule from "./types/module";
-import initController from "./types/controller";
+import domQuery from "./dom/query";
 /**
  * Basic Axon Constructor
  *
@@ -16,34 +12,41 @@ import initController from "./types/controller";
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-let Axon = function (id) {
+let Axon = function(id) {
     const _this = this;
 
     //Instance Id
-    _this.id = id || "cv";
-    //Instance transformerList
-    _this.tl = {};
+    _this.id = id;
     //Instance container
-    _this.chev = {};
+    _this.cv = new Chevron(id + "Container");
+    //context
+    //_this.context = domQuery("app", id);
 
-    //Init default types
-    initService(_this);
-    initFactory(_this);
     //Init Axon types
-    initModule(_this);
-    initController(_this);
+    _this.cv.extend("controller", controllerFn);
+
+
+    /**
+     * Expose Axon methods
+     */
 };
 
-/**
- * Expose Axon methods
- */
-Axon.prototype = {
-    //Core service/factory method
-    provider,
-    //Prepare/init services/factory with deps injected
-    access,
-    //Add new service type
-    extend
-};
+const methods = ["access","extend", "provider","service","factory","controller"];
+
+methods.forEach(method => {
+    Axon.prototype[method] = function() {
+        return this.cv[method].apply(this, Array.from(arguments));
+    };
+});
+/*Axon.prototype = {
+    access: _this.cv.access,
+    extend: _this.cv.extend,
+    provider: _this.cv.provider,
+
+    service: _this.cv.service,
+    factory: _this.cv.factory,
+    controller: _this.cv.controller,
+};*/
+
 
 export default Axon;

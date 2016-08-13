@@ -32,8 +32,6 @@
     "grunt-exec": "^1.0.0",
     "grunt-replace": "^1.0.1",
     "jit-grunt": "^0.10.0",
-    "lodash": "^4.14.0",
-    "lodash-es": "^4.14.0",
     "rollup": "^0.34.1",
     "rollup-plugin-commonjs": "^3.3.1",
     "rollup-plugin-node-resolve": "^1.7.1",
@@ -41,6 +39,6 @@
     "uglify-js": "^2.7.0"
   },
   "dependencies": {
-    "chevronjs": "^3.3.0"
+    "chevronjs": "^4.0.0"
   }
 }

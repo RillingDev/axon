@@ -1,8 +1,5 @@
 "use strict";
 
-let axon = new Axon("app"),
-    app;
+let app = new Axon("app");
 
-axon.module("myApp", [], function () {});
-
-app = axon.access("myApp");
+app.controller("myApp", [], function() {});

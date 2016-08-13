@@ -1,22 +1,26 @@
-define('axon', function () { 'use strict';
+'use strict';
 
-    const _more = ": ";
-    const _error = "error in ";
-    const _factory = "factory";
-    const _service = "service";
-    const _isUndefined = " is undefined";
+define('axon', function () {
+    'use strict';
+
+    var _more = ": ";
+    var _error = "error in ";
+    var _factory = "factory";
+    var _service = "service";
+    var _isUndefined = " is undefined";
 
     /**
      * Checks if service exist, else add it
      *
      * @param {String} type The type of the service (service/factory)
+     * @param {Function} cf The Constructor function of the service
      * @param {String} name The name to register/id the service
      * @param {Array} deps List of dependencies
      * @param {Function} fn Content of the service
-     * @return {Object} `this`
+     * @returns {Object} Returns `this`
      */
-    function provider (type, name, deps, fn) {
-        const _this = this;
+    function provider(type, cf, name, deps, fn) {
+        var _this = this;
 
         if (_this.chev[name]) {
             //throw error if a service with this name already exists
@@ -24,10 +28,11 @@ define('axon', function () { 'use strict';
         } else {
             //Add the service to container
             _this.chev[name] = {
-                type,
-                name,
-                deps,
-                fn,
+                type: type,
+                cf: cf,
+                name: name,
+                deps: deps,
+                fn: fn,
                 init: false
             };
 
@@ -39,18 +44,15 @@ define('axon', function () { 'use strict';
      * Adds a new service type
      *
      * @param {String} type The name of the type
-     * @param {Function} transformer Call this when the service is constructed
-     * @return {Object} `this`
+     * @param {Function} cf Constructor function to init the service with
+     * @returns {Object} Returns `this`
      */
-    function extend (type, transformer) {
-        const _this = this;
-
-        //Add transformer to typeList
-        _this.tl[type] = transformer;
+    function extend(type, cf) {
+        var _this = this;
 
         //Add customType method to container
         _this[type] = function (name, deps, fn) {
-            return _this.provider(type, name, deps, fn);
+            return _this.provider(type, cf, name, deps, fn);
         };
 
         return _this;
@@ -63,23 +65,27 @@ define('axon', function () { 'use strict';
      * @param {Object} _this The context
      * @param {Object} service The service to check
      * @param {Object} list The list of dependencies
-     * @return {Object} `service`
+     * @returns {Object} Returns `service`
      */
-    function initialize (_this, service, list) {
+    function initialize(_this, service, list) {
         if (!service.init) {
-            let bundle = [];
+            (function () {
+                var bundle = [];
 
-            service.deps.forEach(item => {
-                const dependency = list[item];
+                //Collect an ordered Array of dependencies
+                service.deps.forEach(function (item) {
+                    var dependency = list[item];
 
-                if (dependency) {
-                    bundle.push(dependency.fn);
-                }
-            });
+                    if (dependency) {
+                        bundle.push(dependency.fn);
+                    }
+                });
 
-            //Init service
-            service = _this.tl[service.type](service, bundle);
-            service.init = true;
+                //Init service
+                //Call Constructor fn with service/deps
+                service = service.cf(service, bundle);
+                service.init = true;
+            })();
         }
 
         return service;
@@ -92,12 +98,12 @@ define('axon', function () { 'use strict';
      * @param {Object} _this The context
      * @param {Array} service The dependencyList to iterate
      * @param {Function} fn The function run over each dependency
-     * @return void
+     * @returns void
      */
     function recurseDependencies(_this, service, fn) {
         //loop trough deps
-        service.deps.forEach(name => {
-            const dependency = _this.chev[name];
+        service.deps.forEach(function (name) {
+            var dependency = _this.chev[name];
 
             if (dependency) {
                 //recurse over sub-deps
@@ -117,21 +123,18 @@ define('axon', function () { 'use strict';
      * @private
      * @param {Object} _this The context
      * @param {Object} service The service to prepare
-     * @return {Object} Initialized service
+     * @returns {Object} Initialized service
      */
-    function prepare (_this, service) {
-        const list = {};
+    function prepare(_this, service) {
+        var list = {};
 
         //Recurse trough service deps
-        recurseDependencies(
-            _this,
-            service,
-            //run this over every dependency to add it to the dependencyList
-            dependency => {
-                //make sure if dependency is initialized, then add
-                list[dependency.name] = initialize(_this, dependency, list);
-            }
-        );
+        recurseDependencies(_this, service,
+        //run this over every dependency to add it to the dependencyList
+        function (dependency) {
+            //make sure if dependency is initialized, then add
+            list[dependency.name] = initialize(_this, dependency, list);
+        });
 
         return initialize(_this, service, list);
     }
@@ -140,33 +143,30 @@ define('axon', function () { 'use strict';
      * Access service with dependencies bound
      *
      * @param {String} name The Name of the service
-     * @return {*} Content of the service
+     * @returns {*} Returns Content of the service
      */
-    function access (name) {
-        const _this = this,
+    function access(name) {
+        var _this = this,
             accessedService = _this.chev[name];
 
         //Check if accessed service is registered
         if (accessedService) {
             //Call prepare with bound context
             return prepare(_this, accessedService).fn;
-        } else {
-            //throw error if service does not exist
-            throw false;
         }
     }
 
     /**
-     * Creates typeList entry for service
+     * Creates method entry for service
      *
      * @private
      * @param {Object} _this The context
-     * @return void
+     * @returns Returns void
      */
-    function initService (_this) {
+    function initService(_this) {
         _this.extend(_service, function (service, bundle) {
             //Construct service
-            const serviceFn = service.fn;
+            var serviceFn = service.fn;
 
             service.fn = function () {
                 //Chevron service function wrapper
@@ -178,13 +178,13 @@ define('axon', function () { 'use strict';
     }
 
     /**
-     * Creates typeList entry for factory
+     * Creates method entry for factory
      *
      * @private
      * @param {Object} _this The context
-     * @return void
+     * @returns Returns void
      */
-    function initFactory (_this) {
+    function initFactory(_this) {
         _this.extend(_factory, function (service, bundle) {
             //Construct factory
 
@@ -192,11 +192,43 @@ define('axon', function () { 'use strict';
             bundle.unshift(null);
 
             //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-            service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
+            service.fn = new (Function.prototype.bind.apply(service.fn, bundle))();
 
             return service;
         });
     }
+
+    /**
+     * Basic Chevron Constructor
+     *
+     * @constructor
+     * @param {String} id To identify the instance
+     * @returns {Object} Returns Chevron instance
+     */
+    var Chevron = function Chevron(id) {
+        var _this = this;
+
+        //Instance Id
+        _this.id = id || "cv";
+        //Instance container
+        _this.chev = {};
+
+        //Init default types
+        initService(_this);
+        initFactory(_this);
+    };
+
+    /**
+     * Expose Chevron methods
+     */
+    Chevron.prototype = {
+        //Core service/factory method
+        provider: provider,
+        //Prepare/init services/factory with deps injected
+        access: access,
+        //Add new service type
+        extend: extend
+    };
 
     /**
      * Creates typeList entry for module
@@ -205,51 +237,14 @@ define('axon', function () { 'use strict';
      * @param {Object} _this The context
      * @return void
      */
-    function getDomByData (data, val) {
-        console.log(`[xn-${data}='${val}']`, document.querySelectorAll(`[xn-${data}='${val}']`));
-        return document.querySelectorAll(`[xn-${data}='${val}']`);
-    }
+    function controllerFn(service, bundle) {
+        //Construct factory
+        //First value gets ignored by calling new like this, so we need to fill it
+        bundle.unshift(null);
+        //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
+        service.fn = new (Function.prototype.bind.apply(service.fn, bundle))();
 
-    /**
-     * Creates typeList entry for module
-     *
-     * @private
-     * @param {Object} _this The context
-     * @return void
-     */
-    function initModule (_this) {
-        _this.extend("module", function (service, bundle) {
-            //Construct factory
-            //First value gets ignored by calling new like this, so we need to fill it
-            bundle.unshift(null);
-            //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-            service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
-
-
-
-            service.fn.context = getDomByData("app", service.name)[0];
-
-            return service;
-        });
-    }
-
-    /**
-     * Creates typeList entry for module
-     *
-     * @private
-     * @param {Object} _this The context
-     * @return void
-     */
-    function initController (_this) {
-        _this.extend("controller", function (service, bundle) {
-            //Construct factory
-            //First value gets ignored by calling new like this, so we need to fill it
-            bundle.unshift(null);
-            //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-            service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
-
-            return service;
-        });
+        return service;
     }
 
     /**
@@ -259,36 +254,32 @@ define('axon', function () { 'use strict';
      * @param {String} id To identify the instance
      * @returns {Object} Returns Axon instance
      */
-    let Axon = function (id) {
-        const _this = this;
+    var Axon = function Axon(id) {
+        var _this = this;
 
         //Instance Id
-        _this.id = id || "cv";
-        //Instance transformerList
-        _this.tl = {};
+        _this.id = id;
         //Instance container
-        _this.chev = {};
+        _this.cv = new Chevron(id + "Container");
+        //context
+        //_this.context = domQuery("app", id);
 
-        //Init default types
-        initService(_this);
-        initFactory(_this);
         //Init Axon types
-        initModule(_this);
-        initController(_this);
+        _this.cv.extend("controller", controllerFn);
+
+        /**
+         * Expose Axon methods
+         */
     };
 
-    /**
-     * Expose Axon methods
-     */
-    Axon.prototype = {
-        //Core service/factory method
-        provider,
-        //Prepare/init services/factory with deps injected
-        access,
-        //Add new service type
-        extend
-    };
+    var methods = ["access", "extend", "provider", "service", "factory", "controller"];
+
+    methods.forEach(function (method) {
+        Axon.prototype[method] = function () {
+            return this.cv[method].apply(this, Array.from(arguments));
+        };
+    });
 
     return Axon;
-
 });
+//# sourceMappingURL=axon.amd.js.map

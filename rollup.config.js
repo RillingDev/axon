@@ -5,14 +5,10 @@ import {
 import commonjs from "rollup-plugin-commonjs";
 import nodeResolve from "rollup-plugin-node-resolve";
 
-let pkg = require("./package.json");
-let external = Object.keys(pkg.dependencies);
-
 export default {
     moduleName: "Axon",
     moduleId: "axon",
     entry: "src/main.js",
-    external: external,
     plugins: [
         nodeResolve({
             jsnext: false,
@@ -21,19 +17,16 @@ export default {
         commonjs({})
     ],
     targets: [{
-        dest: "dist/axon.amd.js",
+        dest: "dist/es6/axon.amd.js",
         format: "amd"
     }, {
-        dest: "dist/axon.common.js",
+        dest: "dist/es6/axon.common.js",
         format: "cjs"
     }, {
-        dest: "dist/axon.umd.js",
-        format: "umd"
-    }, {
-        dest: "dist/axon.es.js",
+        dest: "dist/es6/axon.es.js",
         format: "es"
     }, {
-        dest: "dist/axon.js",
+        dest: "dist/es6/axon.js",
         format: "iife"
     }]
 };

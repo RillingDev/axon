@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     require("time-grunt")(grunt);
     require("jit-grunt")(grunt, {});
 
@@ -31,8 +31,7 @@ module.exports = function (grunt) {
         uglify: {
             main: {
                 files: {
-                    "dist/axon.min.js": "dist/axon.min.js",
-                    //"dist/axon-lite-es5.min.js": ".tmp/axon-lite-es5.js"
+                    "dist/axon.min.js": "dist/axon.js",
                 },
                 options: {
                     compress: {
@@ -51,8 +50,10 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    "dist/axon.js": "dist/axon.js",
-                    //".tmp/axon-lite-es5.js": ".tmp/axon-lite.js"
+                    "dist/axon.amd.js": "dist/es6/axon.amd.js",
+                    "dist/axon.common.js": "dist/es6/axon.common.js",
+                    "dist/axon.es.js": "dist/es6/axon.es.js",
+                    "dist/axon.js": "dist/es6/axon.js"
                 }
             }
         },
@@ -60,47 +61,6 @@ module.exports = function (grunt) {
         exec: {
             rollup: {
                 cmd: "rollup -c"
-            }
-        },
-        replace: {
-            dist: {
-                options: {
-                    patterns: [
-                        //Container strings
-                        /*{
-                            match: /_name/g,
-                            replacement: "n"
-                        }, {
-                            match: /_type/g,
-                            replacement: "t"
-                        }, {
-                            match: /_deps/g,
-                            replacement: "d"
-                        }, {
-                            match: /_fn/g,
-                            replacement: "f"
-                        }, {
-                            match: /_init/g,
-                            replacement: "i"
-                        }, {
-                            match: /_args/g,
-                            replacement: "a"
-                        },*/
-                        //Util
-                        {
-                            match: /_each/g,
-                            replacement: "e"
-                        }, {
-                            match: /_eachObject/g,
-                            replacement: "o"
-                        },
-
-                    ]
-                },
-                files: {
-                    "dist/axon.min.js": "dist/axon.js"
-                },
-
             }
         }
 
@@ -114,7 +74,6 @@ module.exports = function (grunt) {
     grunt.registerTask("dist", [
         "build",
         "babel",
-        "replace",
         "uglify",
     ]);
 
