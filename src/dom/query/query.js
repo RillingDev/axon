@@ -2,7 +2,7 @@
 
 import {
     _document
-} from "../constants";
+} from "../../constants";
 import constructQuery from "./constructQuery";
 
 /**

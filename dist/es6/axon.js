@@ -230,23 +230,6 @@ var Axon = (function () {
         };
 
     /**
-         * Creates typeList entry for module
-         *
-         * @private
-         * @param {Object} _this The context
-         * @return void
-         */
-    function controllerFn(service, bundle) {
-            //Construct factory
-            //First value gets ignored by calling new like this, so we need to fill it
-            bundle.unshift(null);
-            //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-            service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
-
-            return service;
-        }
-
-    /**
          * Store contsants
          */
         const _window = window;
@@ -279,6 +262,28 @@ var Axon = (function () {
         }
 
     /**
+         * Creates typeList entry for Controller
+         *
+         * @private
+         * @param {Object} _this The context
+         * @return void
+         */
+    function controllerFn(service, bundle) {
+            //Construct Controller
+            //
+            //First value gets ignored by calling new like this, so we need to fill it
+            bundle.unshift(null);
+            //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
+            const ctrl = service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
+            //Bind Context
+            ctrl.context = querySingle("controller", service.name);
+
+
+
+            return service;
+        }
+
+    /**
          * Basic Axon Constructor
          *
          * @constructor
@@ -304,7 +309,7 @@ var Axon = (function () {
 
         methods.forEach(method => {
             Axon.prototype[method] = function() {
-                return this.cv[method].apply(this, Array.from(arguments));
+                return this.cv[method].apply(this.cv, Array.from(arguments));
             };
         });
 

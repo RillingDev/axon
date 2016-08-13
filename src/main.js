@@ -4,7 +4,7 @@ import Chevron from "chevronjs/dist/es6/chevron.es.js";
 
 import controllerFn from "./types/controller";
 
-import querySingle from "./dom/querySingle";
+import querySingle from "./dom/query/querySingle";
 /**
  * Basic Axon Constructor
  *
@@ -31,7 +31,7 @@ const methods = ["access", "extend", "provider", "service", "factory", "controll
 
 methods.forEach(method => {
     Axon.prototype[method] = function() {
-        return this.cv[method].apply(this, Array.from(arguments));
+        return this.cv[method].apply(this.cv, Array.from(arguments));
     };
 });
 
