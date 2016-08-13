@@ -325,13 +325,18 @@ var Axon = (function () {
     function bindModel(ctrl, context) {
             const elements = query("model", "*", context);
 
-            return bind(elements, "change", (ev, dom) => {
+            bind(elements, "change", modelEvent);
+            bind(elements, "keydown", modelEvent);
+
+            return elements;
+
+            function modelEvent(ev, dom) {
                 const content = dom.value;
                 const modelFor = read(dom, "model");
 
                 console.log("MODEL:", modelFor, content);
                 ctrl[modelFor] = content;
-            });
+            }
         }
 
     /**

@@ -4,7 +4,7 @@ import Chevron from "chevronjs/dist/es6/chevron.es.js";
 
 import controllerFn from "./types/controller";
 
-import querySingle from "./dom/query/querySingle";
+import queryDirective from "./dom/query/directives/query";
 /**
  * Basic Axon Constructor
  *
@@ -20,7 +20,7 @@ let Axon = function(id) {
     //Instance container
     _this.cv = new Chevron(id + "Container");
     //context
-    _this.context = querySingle("app", id);
+    _this.context = queryDirective("app", id)[0];
 
     //Init Axon types
     _this.cv.extend("controller", controllerFn);

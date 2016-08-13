@@ -14,10 +14,21 @@
         <!--[if lt IE 8]> <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p> <![endif]-->
 
         <!-- Add your site or application content here -->
-        <p>Demo 1:
-            {{xyz+xyz}}
-        </p>
-        <input type="text" xn-model="xyz">
+        <p>Demo 1</p>
+        <div>
+            <label>Foo:</label>
+            <input type="text" xn-model="foo">
+        </div>
+        <div>
+            <label>Bar:</label>
+            <input type="text" xn-model="bar">
+        </div>
+        <div>
+            <p>
+                Output:
+                {{foo + bar}}
+            </p>
+        </div>
 
         <script src="../../dist/es6/axon.js"></script>
         <script src="demo_1.js"></script>

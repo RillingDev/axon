@@ -1,9 +1,11 @@
 "use strict";
 
-import query from "../../query/query";
-import read from "../../query/read";
-import bind from "../bind";
+import query from "../../query/directives/query";
+import read from "../../query/directives/read";
 
+import digest from "../../render/digest";
+
+import bind from "../bind";
 /**
  * Binds xn-model
  *
@@ -14,11 +16,18 @@ import bind from "../bind";
 export default function(ctrl, context) {
     const elements = query("model", "*", context);
 
-    return bind(elements, "change", (ev, dom) => {
+    bind(elements, "change", modelEvent);
+    bind(elements, "keydown", modelEvent);
+
+    return elements;
+
+    function modelEvent(ev, dom) {
         const content = dom.value;
         const modelFor = read(dom, "model");
 
         console.log("MODEL:", modelFor, content);
         ctrl[modelFor] = content;
-    });
+
+        digest();
+    }
 }
