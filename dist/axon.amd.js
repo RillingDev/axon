@@ -365,7 +365,7 @@ define('axon', function () {
      * @param {String} data The data attr to read
      * @return {String} Returns value
      */
-    function queryExpressions() {}
+    function queryExpressions(context) {}
 
     /**
      * Binds directives to controller

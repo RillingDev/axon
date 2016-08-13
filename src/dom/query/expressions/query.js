@@ -9,6 +9,6 @@
  * @param {String} data The data attr to read
  * @return {String} Returns value
  */
-export default function() {
+export default function(context) {
 
 }
