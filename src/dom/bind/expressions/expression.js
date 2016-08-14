@@ -9,10 +9,7 @@ import queryExpressions from "../../query/expressions/query";
  * @return {Node} context The Controller context
  */
 export default function(context) {
-  console.log(context);
     const elements = queryExpressions(context);
-
-    console.log(elements);
 
     return elements;
 }

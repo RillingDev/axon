@@ -3,7 +3,7 @@
 import {
     _document
 } from "../../../constants";
-import constructQuery from "./constructQuery";
+import constructQuery from "../constructQuery";
 
 /**
  * Query multiple from DOM

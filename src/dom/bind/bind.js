@@ -1,6 +1,8 @@
 "use strict";
 
-import {eachNode} from "../../util";
+import {
+    eachNode
+} from "../../util";
 
 /**
  * Binds event to dom
@@ -9,20 +11,14 @@ import {eachNode} from "../../util";
  * @param {NodeList} domList The Elements to bind
  * @param {String} type The Event type
  * @param {Function} fn The Even function
- * @return {Array} Returns Array of events
+ * @return void
  */
 export default function(domList, type, fn) {
-    //const result = {};
-    let i = 0;
-
     eachNode(domList, dom => {
-        /*result[i] = */
-        dom.addEventListener(type, ev => {
+        dom.addEventListener(type, eventFn, false);
+
+        function eventFn(ev) {
             return fn(ev, dom);
-        }, false);
-
-        i++;
+        }
     });
-
-    return i;
 }

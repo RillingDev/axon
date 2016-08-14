@@ -1,7 +1,7 @@
 "use strict";
 
 import queryDirective from "../../query/directives/query";
-import read from "../../query/directives/read";
+import readDirective from "../../query/directives/read";
 
 import digest from "../../render/digest";
 
@@ -24,12 +24,12 @@ export default function(ctrl, context) {
     bind(elements, "change", modelEvent);
     bind(elements, "keydown", modelEvent);
 
-    eachNode(elements, (element, i) => {
+    eachNode(elements, (element, index) => {
         result.push({
-            i,
+            index,
             element,
             type: "model",
-            value: read(element, "model")
+            value: readDirective(element, "model")
         });
     });
 
@@ -37,11 +37,11 @@ export default function(ctrl, context) {
 
     function modelEvent(ev, dom) {
         const content = dom.value;
-        const modelFor = read(dom, "model");
+        const modelFor = readDirective(dom, "model");
 
         console.log("MODEL:", modelFor, content);
         ctrl[modelFor] = content;
 
-        digest();
+        digest(ctrl);
     }
 }
