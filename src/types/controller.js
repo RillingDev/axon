@@ -22,13 +22,13 @@ export default function(service, bundle) {
     //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
     const ctrl = service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
 
-    
+
     //Bind Context
     ctrl.$context = queryDirective("controller", service.name)[0];
     ctrl.$expressions = bindExpressions(ctrl);
     ctrl.$directives = bindDirectives(ctrl);
     //run first digest
-    digest();
+    digest(ctrl);
 
     console.log(service);
 

@@ -4,8 +4,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 /**
-   * Store strings to avoid duplicate strings
-   */
+     * Store strings to avoid duplicate strings
+     */
 var _more = ": ";
 var _error = "error in ";
 var _factory = "factory";
@@ -13,15 +13,15 @@ var _service = "service";
 var _isUndefined = " is undefined";
 
 /**
-   * Checks if service exist, else add it
-   *
-   * @param {String} type The type of the service (service/factory)
-   * @param {Function} cf The Constructor function of the service
-   * @param {String} name The name to register/id the service
-   * @param {Array} deps List of dependencies
-   * @param {Function} fn Content of the service
-   * @returns {Object} Returns `this`
-   */
+     * Checks if service exist, else add it
+     *
+     * @param {String} type The type of the service (service/factory)
+     * @param {Function} cf The Constructor function of the service
+     * @param {String} name The name to register/id the service
+     * @param {Array} deps List of dependencies
+     * @param {Function} fn Content of the service
+     * @returns {Object} Returns `this`
+     */
 function provider(type, cf, name, deps, fn) {
     var _this = this;
 
@@ -44,12 +44,12 @@ function provider(type, cf, name, deps, fn) {
 }
 
 /**
-   * Adds a new service type
-   *
-   * @param {String} type The name of the type
-   * @param {Function} cf Constructor function to init the service with
-   * @returns {Object} Returns `this`
-   */
+     * Adds a new service type
+     *
+     * @param {String} type The name of the type
+     * @param {Function} cf Constructor function to init the service with
+     * @returns {Object} Returns `this`
+     */
 function extend(type, cf) {
     var _this = this;
 
@@ -62,14 +62,14 @@ function extend(type, cf) {
 }
 
 /**
-   * Collects dependencies and initializes service
-   *
-   * @private
-   * @param {Object} _this The context
-   * @param {Object} service The service to check
-   * @param {Object} list The list of dependencies
-   * @returns {Object} Returns `service`
-   */
+     * Collects dependencies and initializes service
+     *
+     * @private
+     * @param {Object} _this The context
+     * @param {Object} service The service to check
+     * @param {Object} list The list of dependencies
+     * @returns {Object} Returns `service`
+     */
 function initialize(_this, service, list) {
     if (!service.init) {
         (function () {
@@ -95,14 +95,14 @@ function initialize(_this, service, list) {
 }
 
 /**
-   * Loops trough dependencies, recurse if new dependencies has dependencies itself; then execute fn.
-   *
-   * @private
-   * @param {Object} _this The context
-   * @param {Array} service The dependencyList to iterate
-   * @param {Function} fn The function run over each dependency
-   * @returns void
-   */
+     * Loops trough dependencies, recurse if new dependencies has dependencies itself; then execute fn.
+     *
+     * @private
+     * @param {Object} _this The context
+     * @param {Array} service The dependencyList to iterate
+     * @param {Function} fn The function run over each dependency
+     * @returns void
+     */
 function recurseDependencies(_this, service, fn) {
     //loop trough deps
     service.deps.forEach(function (name) {
@@ -121,13 +121,13 @@ function recurseDependencies(_this, service, fn) {
 }
 
 /**
-   * Check if every dependency is available
-   *
-   * @private
-   * @param {Object} _this The context
-   * @param {Object} service The service to prepare
-   * @returns {Object} Initialized service
-   */
+     * Check if every dependency is available
+     *
+     * @private
+     * @param {Object} _this The context
+     * @param {Object} service The service to prepare
+     * @returns {Object} Initialized service
+     */
 function prepare(_this, service) {
     var list = {};
 
@@ -143,11 +143,11 @@ function prepare(_this, service) {
 }
 
 /**
-   * Access service with dependencies bound
-   *
-   * @param {String} name The Name of the service
-   * @returns {*} Returns Content of the service
-   */
+     * Access service with dependencies bound
+     *
+     * @param {String} name The Name of the service
+     * @returns {*} Returns Content of the service
+     */
 function access(name) {
     var _this = this,
         accessedService = _this.chev[name];
@@ -160,12 +160,12 @@ function access(name) {
 }
 
 /**
-   * Creates method entry for service
-   *
-   * @private
-   * @param {Object} _this The context
-   * @returns Returns void
-   */
+     * Creates method entry for service
+     *
+     * @private
+     * @param {Object} _this The context
+     * @returns Returns void
+     */
 function initService(_this) {
     _this.extend(_service, function (service, bundle) {
         //Construct service
@@ -181,12 +181,12 @@ function initService(_this) {
 }
 
 /**
-   * Creates method entry for factory
-   *
-   * @private
-   * @param {Object} _this The context
-   * @returns Returns void
-   */
+     * Creates method entry for factory
+     *
+     * @private
+     * @param {Object} _this The context
+     * @returns Returns void
+     */
 function initFactory(_this) {
     _this.extend(_factory, function (service, bundle) {
         //Construct factory
@@ -202,12 +202,12 @@ function initFactory(_this) {
 }
 
 /**
-   * Basic Chevron Constructor
-   *
-   * @constructor
-   * @param {String} id To identify the instance
-   * @returns {Object} Returns Chevron instance
-   */
+     * Basic Chevron Constructor
+     *
+     * @constructor
+     * @param {String} id To identify the instance
+     * @returns {Object} Returns Chevron instance
+     */
 var Chevron = function Chevron(id) {
     var _this = this;
 
@@ -234,21 +234,21 @@ Chevron.prototype = {
 };
 
 /**
-   * Store constants
-   */
+     * Store constants
+     */
 var _window = window;
 var _document = _window.document;
 var _domNameSpace = "xn";
 var _expressionRegex = /{{(.+)}}/g;
 
 /**
-   * Creates querySelector string
-   *
-   * @private
-   * @param {String} data The data id
-   * @param {String} val The data value
-   * @return {String} Returns Query
-   */
+     * Creates querySelector string
+     *
+     * @private
+     * @param {String} data The data id
+     * @param {String} val The data value
+     * @return {String} Returns Query
+     */
 function constructQuery(data, val) {
     if (!val || val === "*") {
         return "[" + _domNameSpace + "-" + data + "]";
@@ -258,42 +258,68 @@ function constructQuery(data, val) {
 }
 
 /**
-   * Query multiple from DOM
-   *
-   * @private
-   * @param {String} data The data id
-   * @param {String} val The data value
-   * @param {Node} context optional, query context
-   * @return {NodeList} Returns NodeList
-   */
+     * Query multiple from DOM
+     *
+     * @private
+     * @param {String} data The data id
+     * @param {String} val The data value
+     * @param {Node} context optional, query context
+     * @return {NodeList} Returns NodeList
+     */
 function queryDirective(data, val, context) {
     return (context ? context : _document).querySelectorAll(constructQuery(data, val));
 }
 
 /**
-   * Read Data from element
-   *
-   * @private
-   * @param {Node} element The Element to read
-   * @param {String} data The data attr to read
-   * @return {String} Returns value
-   */
-function read(element, data) {
+     * Read Data from element
+     *
+     * @private
+     * @param {Node} element The Element to read
+     * @param {String} data The data attr to read
+     * @return {String} Returns value
+     */
+function readDirective(element, data) {
     return element.attributes[_domNameSpace + "-" + data].value;
 }
 
 /**
-   * Digest & renders dom
-   *
-   * @private
-   * @param {Object} ctrl The Controller
-   * @return {Node} context The Controller context
-   */
-function digest() {}
+     * calculates Expression
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @param {Object} expression The Expression
+     * @return void
+     */
+function evaluate(ctrl, expression) {
+    var result = ctrl[expression.data];
+
+    console.log(expression.val, result);
+    expression.parent.textContent = expression.parent.textContent.replace(expression.val, result);
+    expression.val = result;
+
+    return result;
+}
 
 /**
-   * Misc Utility functions
-   */
+     * Digest & render dom
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @return {Node} context The Controller context
+     */
+function digest(ctrl) {
+    //@TODO implement debounce
+
+    console.log("digest");
+    //Calc expressions
+    ctrl.$expressions.forEach(function (expression) {
+        evaluate(ctrl, expression);
+    });
+}
+
+/**
+     * Misc Utility functions
+     */
 
 /**
  * iterate over NoddeList
@@ -314,37 +340,31 @@ function eachNode(NodeList, fn) {
 }
 
 /**
-   * Binds event to dom
-   *
-   * @private
-   * @param {NodeList} domList The Elements to bind
-   * @param {String} type The Event type
-   * @param {Function} fn The Even function
-   * @return {Array} Returns Array of events
-   */
+     * Binds event to dom
+     *
+     * @private
+     * @param {NodeList} domList The Elements to bind
+     * @param {String} type The Event type
+     * @param {Function} fn The Even function
+     * @return void
+     */
 function bind(domList, type, fn) {
-    //const result = {};
-    var i = 0;
-
     eachNode(domList, function (dom) {
-        /*result[i] = */
-        dom.addEventListener(type, function (ev) {
+        dom.addEventListener(type, eventFn, false);
+
+        function eventFn(ev) {
             return fn(ev, dom);
-        }, false);
-
-        i++;
+        }
     });
-
-    return i;
 }
 
 /**
-   * Binds xn-model
-   *
-   * @private
-   * @param {Object} ctrl The Controller
-   * @return {Node} context The Controller context
-   */
+     * Binds xn-model
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @return {Node} context The Controller context
+     */
 function bindModel(ctrl, context) {
     var result = [];
     var elements = queryDirective("model", "*", context);
@@ -352,12 +372,12 @@ function bindModel(ctrl, context) {
     bind(elements, "change", modelEvent);
     bind(elements, "keydown", modelEvent);
 
-    eachNode(elements, function (element, i) {
+    eachNode(elements, function (element, index) {
         result.push({
-            i: i,
+            index: index,
             element: element,
             type: "model",
-            value: read(element, "model")
+            value: readDirective(element, "model")
         });
     });
 
@@ -365,22 +385,22 @@ function bindModel(ctrl, context) {
 
     function modelEvent(ev, dom) {
         var content = dom.value;
-        var modelFor = read(dom, "model");
+        var modelFor = readDirective(dom, "model");
 
         console.log("MODEL:", modelFor, content);
         ctrl[modelFor] = content;
 
-        digest();
+        digest(ctrl);
     }
 }
 
 /**
-   * Binds directives to controller
-   *
-   * @private
-   * @param {Object} ctrl The Controller
-   * @return {Object} Returns bound Object
-   */
+     * Binds directives to controller
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @return {Object} Returns bound Object
+     */
 function bindDirectives(ctrl) {
     var context = ctrl.$context;
 
@@ -390,67 +410,83 @@ function bindDirectives(ctrl) {
 }
 
 /**
-   * Query Expressions
-   *
-   * @private
-   * @param {Node} context The Element context
-   * @return {NodeList} Returns NodeList
-   */
+     * Query Expressions
+     *
+     * @private
+     * @param {Node} context The Element context
+     * @return {NodeList} Returns NodeList
+     */
 function queryExpressions(context) {
     var result = [];
-    var str = context.outerHTML;
+    var nodes = getTextNodes(context);
     var match = void 0;
 
-    while ((match = _expressionRegex.exec(str)) !== null) {
-        if (match.index === _expressionRegex.lastIndex) {
-            _expressionRegex.lastIndex++;
-        }
+    //Iterate Nodes
+    nodes.forEach(function (node) {
+        //Iterate Regex
+        while ((match = _expressionRegex.exec(node.textContent)) !== null) {
+            if (match.index === _expressionRegex.lastIndex) {
+                _expressionRegex.lastIndex++;
+            }
 
-        result.push({
-            match: match[0],
-            data: match[1],
-            index: match.index
-        });
-    }
+            result.push({
+                match: match[0],
+                data: match[1],
+                val: match[0],
+                index: match.index,
+                parent: node
+            });
+        }
+    });
 
     return result;
+
+    //Modified version of http://stackoverflow.com/questions/10730309/find-all-text-nodes-in-html-page
+    function getTextNodes(node) {
+        var all = [];
+        for (node = node.firstChild; node; node = node.nextSibling) {
+            if (node.nodeType === 3 && node.parentNode.nodeName !== "SCRIPT") {
+                all.push(node);
+            } else {
+                all = all.concat(getTextNodes(node));
+            }
+        }
+        return all;
+    }
 }
 
 /**
-   * Binds expressions
-   *
-   * @private
-   * @return {Node} context The Controller context
-   */
+     * Binds expressions
+     *
+     * @private
+     * @return {Node} context The Controller context
+     */
 function bindExpressions$1(context) {
-    console.log(context);
     var elements = queryExpressions(context);
-
-    console.log(elements);
 
     return elements;
 }
 
 /**
-   * Binds directives to controller
-   *
-   * @private
-   * @param {Object} ctrl The Controller
-   * @return {Object} Returns bound Object
-   */
+     * Binds directives to controller
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @return {Object} Returns bound Object
+     */
 function bindExpressions(ctrl) {
     var context = ctrl.$context;
     return bindExpressions$1(context);
 }
 
 /**
-   * Creates typeList entry for Controller
-   *
-   * @private
-   * @param {Object} service The service
-   * @param {Object} bundle The service deps
-   * @return {Function} service
-   */
+     * Creates typeList entry for Controller
+     *
+     * @private
+     * @param {Object} service The service
+     * @param {Object} bundle The service deps
+     * @return {Function} service
+     */
 function controllerFn(service, bundle) {
     //Construct Controller
     //
@@ -458,21 +494,26 @@ function controllerFn(service, bundle) {
     bundle.unshift(null);
     //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
     var ctrl = service.fn = new (Function.prototype.bind.apply(service.fn, bundle))();
+
     //Bind Context
     ctrl.$context = queryDirective("controller", service.name)[0];
-    ctrl.$directives = bindDirectives(ctrl);
     ctrl.$expressions = bindExpressions(ctrl);
+    ctrl.$directives = bindDirectives(ctrl);
+    //run first digest
+    digest(ctrl);
+
+    console.log(service);
 
     return service;
 }
 
 /**
-   * Basic Axon Constructor
-   *
-   * @constructor
-   * @param {String} id To identify the instance
-   * @returns {Object} Returns Axon instance
-   */
+     * Basic Axon Constructor
+     *
+     * @constructor
+     * @param {String} id To identify the instance
+     * @returns {Object} Returns Axon instance
+     */
 var Axon = function Axon(id) {
     var _this = this;
 

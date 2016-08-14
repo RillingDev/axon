@@ -281,7 +281,25 @@ function readDirective(element, data) {
     }
 
 /**
-     * Digest & renders dom
+     * calculates Expression
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @param {Object} expression The Expression
+     * @return void
+     */
+function evaluate(ctrl, expression) {
+        const result = ctrl[expression.data];
+
+        console.log(expression.val, result);
+        expression.parent.textContent = expression.parent.textContent.replace(expression.val, result);
+        expression.val = result;
+
+        return result;
+    }
+
+/**
+     * Digest & render dom
      *
      * @private
      * @param {Object} ctrl The Controller
@@ -292,6 +310,9 @@ function digest(ctrl) {
 
         console.log("digest");
         //Calc expressions
+        ctrl.$expressions.forEach(expression => {
+            evaluate(ctrl, expression);
+        });
     }
 
 /**
@@ -409,7 +430,7 @@ function queryExpressions(context) {
                 result.push({
                     match: match[0],
                     data: match[1],
-                    val: match[1],
+                    val: match[0],
                     index: match.index,
                     parent : node
                 });
@@ -472,13 +493,13 @@ function controllerFn(service, bundle) {
         //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
         const ctrl = service.fn = new(Function.prototype.bind.apply(service.fn, bundle));
 
-        
+
         //Bind Context
         ctrl.$context = queryDirective("controller", service.name)[0];
         ctrl.$expressions = bindExpressions(ctrl);
         ctrl.$directives = bindDirectives(ctrl);
         //run first digest
-        digest();
+        digest(ctrl);
 
         console.log(service);
 

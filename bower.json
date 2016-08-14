@@ -1,21 +1,22 @@
 {
-  "name": "axonjs",
-  "description": "",
-  "main": "dist/axon.js",
-  "authors": [
-    "Felix Rilling"
-  ],
-  "license": "MIT",
-  "keywords": [
-    "dependencies",
-    "services"
-  ],
-  "homepage": "https://github.com/FelixRilling/axonjs",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ]
+    "name": "axonjs",
+    "version": "v0.2.0",
+    "description": "",
+    "main": "dist/axon.js",
+    "authors": [
+        "Felix Rilling"
+    ],
+    "license": "MIT",
+    "keywords": [
+        "dependencies",
+        "services"
+    ],
+    "homepage": "https://github.com/FelixRilling/axonjs",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
 }

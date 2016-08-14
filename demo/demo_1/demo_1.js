@@ -3,5 +3,6 @@
 let app = new Axon("myApp");
 
 app.controller("myController", [], function() {
-    this.bar = 1;
+    this.foo = "foooo";
+    this.bar = "barrr";
 });

@@ -27,7 +27,7 @@ export default function(context) {
             result.push({
                 match: match[0],
                 data: match[1],
-                val: match[1],
+                val: match[0],
                 index: match.index,
                 parent : node
             });

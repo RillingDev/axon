@@ -279,18 +279,44 @@ define('axon', function () {
      * @param {String} data The data attr to read
      * @return {String} Returns value
      */
-    function read(element, data) {
+    function readDirective(element, data) {
         return element.attributes[_domNameSpace + '-' + data].value;
     }
 
     /**
-     * Digest & renders dom
+     * calculates Expression
+     *
+     * @private
+     * @param {Object} ctrl The Controller
+     * @param {Object} expression The Expression
+     * @return void
+     */
+    function evaluate(ctrl, expression) {
+        var result = ctrl[expression.data];
+
+        console.log(expression.val, result);
+        expression.parent.textContent = expression.parent.textContent.replace(expression.val, result);
+        expression.val = result;
+
+        return result;
+    }
+
+    /**
+     * Digest & render dom
      *
      * @private
      * @param {Object} ctrl The Controller
      * @return {Node} context The Controller context
      */
-    function digest() {}
+    function digest(ctrl) {
+        //@TODO implement debounce
+
+        console.log("digest");
+        //Calc expressions
+        ctrl.$expressions.forEach(function (expression) {
+            evaluate(ctrl, expression);
+        });
+    }
 
     /**
      * Misc Utility functions
@@ -321,22 +347,16 @@ define('axon', function () {
      * @param {NodeList} domList The Elements to bind
      * @param {String} type The Event type
      * @param {Function} fn The Even function
-     * @return {Array} Returns Array of events
+     * @return void
      */
     function bind(domList, type, fn) {
-        //const result = {};
-        var i = 0;
-
         eachNode(domList, function (dom) {
-            /*result[i] = */
-            dom.addEventListener(type, function (ev) {
+            dom.addEventListener(type, eventFn, false);
+
+            function eventFn(ev) {
                 return fn(ev, dom);
-            }, false);
-
-            i++;
+            }
         });
-
-        return i;
     }
 
     /**
@@ -353,12 +373,12 @@ define('axon', function () {
         bind(elements, "change", modelEvent);
         bind(elements, "keydown", modelEvent);
 
-        eachNode(elements, function (element, i) {
+        eachNode(elements, function (element, index) {
             result.push({
-                i: i,
+                index: index,
                 element: element,
                 type: "model",
-                value: read(element, "model")
+                value: readDirective(element, "model")
             });
         });
 
@@ -366,12 +386,12 @@ define('axon', function () {
 
         function modelEvent(ev, dom) {
             var content = dom.value;
-            var modelFor = read(dom, "model");
+            var modelFor = readDirective(dom, "model");
 
             console.log("MODEL:", modelFor, content);
             ctrl[modelFor] = content;
 
-            digest();
+            digest(ctrl);
         }
     }
 
@@ -399,22 +419,41 @@ define('axon', function () {
      */
     function queryExpressions(context) {
         var result = [];
-        var str = context.outerHTML;
+        var nodes = getTextNodes(context);
         var match = void 0;
 
-        while ((match = _expressionRegex.exec(str)) !== null) {
-            if (match.index === _expressionRegex.lastIndex) {
-                _expressionRegex.lastIndex++;
-            }
+        //Iterate Nodes
+        nodes.forEach(function (node) {
+            //Iterate Regex
+            while ((match = _expressionRegex.exec(node.textContent)) !== null) {
+                if (match.index === _expressionRegex.lastIndex) {
+                    _expressionRegex.lastIndex++;
+                }
 
-            result.push({
-                match: match[0],
-                data: match[1],
-                index: match.index
-            });
-        }
+                result.push({
+                    match: match[0],
+                    data: match[1],
+                    val: match[0],
+                    index: match.index,
+                    parent: node
+                });
+            }
+        });
 
         return result;
+
+        //Modified version of http://stackoverflow.com/questions/10730309/find-all-text-nodes-in-html-page
+        function getTextNodes(node) {
+            var all = [];
+            for (node = node.firstChild; node; node = node.nextSibling) {
+                if (node.nodeType === 3 && node.parentNode.nodeName !== "SCRIPT") {
+                    all.push(node);
+                } else {
+                    all = all.concat(getTextNodes(node));
+                }
+            }
+            return all;
+        }
     }
 
     /**
@@ -424,10 +463,7 @@ define('axon', function () {
      * @return {Node} context The Controller context
      */
     function bindExpressions$1(context) {
-        console.log(context);
         var elements = queryExpressions(context);
-
-        console.log(elements);
 
         return elements;
     }
@@ -459,10 +495,15 @@ define('axon', function () {
         bundle.unshift(null);
         //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
         var ctrl = service.fn = new (Function.prototype.bind.apply(service.fn, bundle))();
+
         //Bind Context
         ctrl.$context = queryDirective("controller", service.name)[0];
-        ctrl.$directives = bindDirectives(ctrl);
         ctrl.$expressions = bindExpressions(ctrl);
+        ctrl.$directives = bindDirectives(ctrl);
+        //run first digest
+        digest(ctrl);
+
+        console.log(service);
 
         return service;
     }

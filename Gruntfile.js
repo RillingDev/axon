@@ -46,7 +46,7 @@ module.exports = function(grunt) {
             options: {
                 sourceMap: true,
                 presets: ["es2015"],
-                plugins: ["array-includes"]
+                plugins: []
             },
             dist: {
                 files: {

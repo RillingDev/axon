@@ -1,7 +1,9 @@
 "use strict";
 
+import evaluate from "./evaluate";
+
 /**
- * Digest & renders dom
+ * Digest & render dom
  *
  * @private
  * @param {Object} ctrl The Controller
@@ -13,6 +15,6 @@ export default function(ctrl) {
     console.log("digest");
     //Calc expressions
     ctrl.$expressions.forEach(expression => {
-      evaluate(ctrl,expression);
+        evaluate(ctrl, expression);
     });
 }
