@@ -8,8 +8,9 @@ import bindExpressions from "../dom/bind/expressions";
  * Creates typeList entry for Controller
  *
  * @private
- * @param {Object} _this The context
- * @return void
+ * @param {Object} service The service
+ * @param {Object} bundle The service deps
+ * @return {Function} service
  */
 export default function(service, bundle) {
     //Construct Controller

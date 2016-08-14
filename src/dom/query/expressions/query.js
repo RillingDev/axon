@@ -1,14 +1,33 @@
 "use strict";
 
+import {
+    _expressionRegex
+} from "../../../constants";
 
 /**
- * Read Data from element
+ * Query Expressions
  *
  * @private
- * @param {Node} element The Element to read
- * @param {String} data The data attr to read
- * @return {String} Returns value
+ * @param {Node} context The Element context
+ * @return {NodeList} Returns NodeList
  */
 export default function(context) {
+    const result = [];
+    const str = context.outerHTML;
+    let match;
 
+
+    while ((match = _expressionRegex.exec(str)) !== null) {
+        if (match.index === _expressionRegex.lastIndex) {
+            _expressionRegex.lastIndex++;
+        }
+
+        result.push({
+            match: match[0],
+            data: match[1],
+            index: match.index
+        });
+    }
+
+    return result;
 }

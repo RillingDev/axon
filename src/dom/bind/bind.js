@@ -1,5 +1,6 @@
 "use strict";
 
+import {eachNode} from "../../util";
 
 /**
  * Binds event to dom
@@ -14,7 +15,7 @@ export default function(domList, type, fn) {
     //const result = {};
     let i = 0;
 
-    [].forEach.call(domList, dom => {
+    eachNode(domList, dom => {
         /*result[i] = */
         dom.addEventListener(type, ev => {
             return fn(ev, dom);
