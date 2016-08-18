@@ -281,6 +281,41 @@ function readDirective(element, data) {
     }
 
 /**
+     * Misc Utility functions
+     */
+
+    /**
+     * iterate over NoddeList
+     *
+     * @private
+     * @param {NodeList} NodeList The Elements to bind
+     * @param {Function} fn The Function to call
+     * @returns void
+     */
+    function eachNode(NodeList, fn) {
+        const l = NodeList.length;
+        let i = 0;
+
+        while (i < l) {
+            fn(NodeList[i], i);
+            i++;
+        }
+    }
+    /**
+     * replace string at position
+     *
+     * @private
+     * @param {String} string The String to exec
+     * @param {String} find The String to find
+     * @param {String} replace The String to replace
+     * @param {Number} index The Index to start replacing
+     * @returns {String} replacedString
+     */
+    function replaceFrom(string, find, replace, index) {
+        return string.substr(0, index) + string.substr(index).replace(find, replace);
+    }
+
+/**
      * calculates Expression
      *
      * @private
@@ -290,9 +325,12 @@ function readDirective(element, data) {
      */
 function evaluate(ctrl, expression) {
         const result = ctrl[expression.data];
+        console.log([ctrl, expression.data, ctrl[expression.data]]);
 
-        console.log(expression.val, result);
-        expression.parent.textContent = expression.parent.textContent.replace(expression.val, result);
+
+        //console.log(["!!!!!!!!!!!!!", expression.val, result]);
+        expression.parent.textContent = replaceFrom(expression.parent.textContent, expression.val, result, expression.index);
+
         expression.val = result;
 
         return result;
@@ -313,28 +351,6 @@ function digest(ctrl) {
         ctrl.$expressions.forEach(expression => {
             evaluate(ctrl, expression);
         });
-    }
-
-/**
-     * Misc Utility functions
-     */
-
-    /**
-     * iterate over NoddeList
-     *
-     * @private
-     * @param {NodeList} NodeList The Elements to bind
-     * @param {Function} fn The Function to call
-     * @return void
-     */
-    function eachNode(NodeList, fn) {
-        const l = NodeList.length;
-        let i = 0;
-
-        while (i < l) {
-            fn(NodeList[i], i);
-            i++;
-        }
     }
 
 /**

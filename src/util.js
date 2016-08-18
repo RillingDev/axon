@@ -10,7 +10,7 @@
  * @private
  * @param {NodeList} NodeList The Elements to bind
  * @param {Function} fn The Function to call
- * @return void
+ * @returns void
  */
 export function eachNode(NodeList, fn) {
     const l = NodeList.length;
@@ -20,4 +20,17 @@ export function eachNode(NodeList, fn) {
         fn(NodeList[i], i);
         i++;
     }
+}
+/**
+ * replace string at position
+ *
+ * @private
+ * @param {String} string The String to exec
+ * @param {String} find The String to find
+ * @param {String} replace The String to replace
+ * @param {Number} index The Index to start replacing
+ * @returns {String} replacedString
+ */
+export function replaceFrom(string, find, replace, index) {
+    return string.substr(0, index) + string.substr(index).replace(find, replace);
 }
