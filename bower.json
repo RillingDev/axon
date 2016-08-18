@@ -1,6 +1,6 @@
 {
     "name": "axonjs",
-    "version": "v0.2.0",
+    "version": "v0.3.0",
     "description": "",
     "main": "dist/axon.js",
     "authors": [
@@ -8,8 +8,8 @@
     ],
     "license": "MIT",
     "keywords": [
-        "dependencies",
-        "services"
+      "mcv",
+      "framework"
     ],
     "homepage": "https://github.com/FelixRilling/axonjs",
     "ignore": [
