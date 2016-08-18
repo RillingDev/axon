@@ -3,7 +3,9 @@
 import {
     _expressionRegex
 } from "../../../constants";
-
+import {
+    replaceFrom
+} from "../../../util";
 
 export default {
     onBind: function(ctrl, context) {
@@ -45,7 +47,11 @@ export default {
         }
     },
     onDigest: function(ctrl, context, entry) {
-        console.log("foo", entry);
-        entry.element.value = ctrl[entry.value];
+        const result = ctrl[entry.data];
+
+        entry.parent.textContent = replaceFrom(entry.parent.textContent, entry.val, result, entry.index);
+        entry.val = result;
+
+        return result;
     }
 };

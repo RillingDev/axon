@@ -5,7 +5,7 @@ import queryDirective from "../dom/query/directives/query";
 import bindDirectives from "../dom/bind/directives";
 import bindExpressions from "../dom/bind/expressions";
 
-import digest from "../dom/render/digest";
+import digest from "../dom/digest/digest";
 /**
  * Creates typeList entry for Controller
  *

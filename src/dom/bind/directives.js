@@ -5,6 +5,7 @@ import  directives from "../../plugins/directives";
 import {
     eachObject
 } from "../../util";
+
 /**
  * Binds directives to controller
  *
@@ -16,7 +17,6 @@ export default function(ctrl) {
     const result = {};
 
     eachObject(directives, (directive, key, index) => {
-
         result[key] = directive.onBind(ctrl, ctrl.$context);
     });
 

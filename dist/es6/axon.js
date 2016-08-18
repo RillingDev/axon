@@ -376,35 +376,18 @@ var Axon = (function () {
                 }
             },
             onDigest: function(ctrl, context, entry) {
-                console.log("foo", entry);
-                entry.element.value = ctrl[entry.value];
+                const result = ctrl[entry.data];
+
+                entry.parent.textContent = replaceFrom(entry.parent.textContent, entry.val, result, entry.index);
+                entry.val = result;
+
+                return result;
             }
         };
 
     var expressions = {
             text
         };
-
-    /**
-         * calculates Expression
-         *
-         * @private
-         * @param {Object} ctrl The Controller
-         * @param {Object} expression The Expression
-         * @return void
-         */
-    function evaluate(ctrl, expression) {
-            const result = ctrl[expression.data];
-            //console.log([ctrl, expression.data, ctrl[expression.data]]);
-
-
-            //console.log(["!!!!!!!!!!!!!", expression.val, result]);
-            expression.parent.textContent = replaceFrom(expression.parent.textContent, expression.val, result, expression.index);
-
-            expression.val = result;
-
-            return result;
-        }
 
     /**
          * Digest & render dom
@@ -421,7 +404,7 @@ var Axon = (function () {
             });
 
             iteratePlugins(expressions, ctrl.$expressions, (entry, plugin) => {
-                evaluate(ctrl, entry);
+                plugin.onDigest(ctrl, ctrl.$context, entry);
             });
 
 
@@ -455,43 +438,40 @@ var Axon = (function () {
             });
         }
 
-    function onBind(ctrl, context) {
-            const result = [];
-            const elements = queryDirective("model", "*", context);
-
-            bind(elements, "change", modelEvent);
-            bind(elements, "keydown", modelEvent);
-
-            eachNode(elements, (element, index) => {
-                result.push({
-                    index,
-                    element,
-                    type: "model",
-                    value: readDirective(element, "model")
-                });
-            });
-
-            return result;
-
-            function modelEvent(ev, dom) {
-                const content = dom.value;
-                const modelFor = readDirective(dom, "model");
-
-                console.log("MODEL:", modelFor, content);
-                ctrl[modelFor] = content;
-
-                digest(ctrl);
-            }
-        }
-
-    function onDigest(ctrl, context, entry) {
-            console.log("foo", entry);
-            entry.element.value = ctrl[entry.value];
-        }
-
     var model = {
-            onBind,
-            onDigest
+            onBind: function(ctrl, context) {
+                const result = [];
+                const elements = queryDirective("model", "*", context);
+
+                bind(elements, "change", modelEvent);
+                bind(elements, "input", modelEvent);
+
+                eachNode(elements, (element, index) => {
+                    result.push({
+                        index,
+                        element,
+                        type: "model",
+                        value: readDirective(element, "model")
+                    });
+                });
+
+                return result;
+
+                function modelEvent(ev, dom) {
+                    _window.setTimeout(() => {
+                        const content = dom.value;
+                        const modelFor = readDirective(dom, "model");
+
+                        console.log("MODEL:", modelFor, content);
+                        ctrl[modelFor] = content;
+
+                        digest(ctrl);
+                    }, 5);
+                }
+            },
+            onDigest: function(ctrl, context, entry) {
+                entry.element.value = ctrl[entry.value];
+            }
         };
 
     //import changeImported from "./change";
@@ -511,7 +491,6 @@ var Axon = (function () {
             const result = {};
 
             eachObject(directives, (directive, key, index) => {
-
                 result[key] = directive.onBind(ctrl, ctrl.$context);
             });
 
@@ -519,7 +498,7 @@ var Axon = (function () {
         }
 
     /**
-         * Binds directives to controller
+         * Binds expressions to controller
          *
          * @private
          * @param {Object} ctrl The Controller
@@ -529,7 +508,6 @@ var Axon = (function () {
             const result = {};
 
             eachObject(expressions, (expressions, key, index) => {
-
                 result[key] = expressions.onBind(ctrl, ctrl.$context);
             });
 
