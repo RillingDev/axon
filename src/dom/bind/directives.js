@@ -1,7 +1,10 @@
 "use strict";
 
-import bindModel from "./directives/model";
+import * as directives from "../../plugins/directives/directives";
 
+import {
+    eachObject
+} from "../../util";
 /**
  * Binds directives to controller
  *
@@ -11,8 +14,12 @@ import bindModel from "./directives/model";
  */
 export default function(ctrl) {
     const context = ctrl.$context;
+    const result = {};
 
-    return {
-        model: bindModel(ctrl, context)
-    };
+    eachObject(directives, (directive, key, index) => {
+
+        result[key] = directive.onBind(ctrl, context);
+    });
+
+    return result;
 }

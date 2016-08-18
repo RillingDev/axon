@@ -22,6 +22,26 @@ export function eachNode(NodeList, fn) {
     }
 }
 /**
+ * Iterate object
+ *
+ * @private
+ * @param {Object} object The Object to iterate
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
+export function eachObject(object, fn) {
+    const keys = Object.keys(object);
+    const l = keys.length;
+    let i = 0;
+
+    while (i < l) {
+        const currentKey = keys[i];
+
+        fn(object[currentKey], currentKey, i);
+        i++;
+    }
+}
+/**
  * replace string at position
  *
  * @private

@@ -1,22 +1,16 @@
 "use strict";
 
-import queryDirective from "../../query/directives/query";
-import readDirective from "../../query/directives/read";
+import queryDirective from "../../../dom/query/directives/query";
+import readDirective from "../../../dom/query/directives/read";
 
-import digest from "../../render/digest";
+import digest from "../../../dom/render/digest";
 
-import bind from "../bind";
+import bind from "../../../dom/bind/bind";
 
 import {
     eachNode
 } from "../../../util";
-/**
- * Binds xn-model
- *
- * @private
- * @param {Object} ctrl The Controller
- * @return {Node} context The Controller context
- */
+
 export default function(ctrl, context) {
     const result = [];
     const elements = queryDirective("model", "*", context);

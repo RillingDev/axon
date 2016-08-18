@@ -305,6 +305,26 @@ var Axon = function () {
         }
     }
     /**
+     * Iterate object
+     *
+     * @private
+     * @param {Object} object The Object to iterate
+     * @param {Function} fn The Function to run
+     * @returns void
+     */
+    function eachObject(object, fn) {
+        var keys = Object.keys(object);
+        var l = keys.length;
+        var i = 0;
+
+        while (i < l) {
+            var currentKey = keys[i];
+
+            fn(object[currentKey], currentKey, i);
+            i++;
+        }
+    }
+    /**
      * replace string at position
      *
      * @private
@@ -328,7 +348,8 @@ var Axon = function () {
          */
     function evaluate(ctrl, expression) {
         var result = ctrl[expression.data];
-        console.log([ctrl, expression.data, ctrl[expression.data]]);
+        //console.log([ctrl, expression.data, ctrl[expression.data]]);
+
 
         //console.log(["!!!!!!!!!!!!!", expression.val, result]);
         expression.parent.textContent = replaceFrom(expression.parent.textContent, expression.val, result, expression.index);
@@ -348,11 +369,25 @@ var Axon = function () {
     function digest(ctrl) {
         //@TODO implement debounce
 
-        console.log("digest");
+        //console.log("digest");
+        iteratePlugins(directives, ctrl.$directives, function (entry, plugin) {
+            plugin.onDigest(ctrl, ctrl.$context, entry);
+        });
+
         //Calc expressions
         ctrl.$expressions.forEach(function (expression) {
             evaluate(ctrl, expression);
         });
+
+        function iteratePlugins(pluginData, data, fn) {
+            eachObject(pluginData, function (plugin, key) {
+                var active = data[key];
+
+                active.forEach(function (entry) {
+                    fn(entry, plugin);
+                });
+            });
+        }
     }
 
     /**
@@ -374,14 +409,7 @@ var Axon = function () {
         });
     }
 
-    /**
-         * Binds xn-model
-         *
-         * @private
-         * @param {Object} ctrl The Controller
-         * @return {Node} context The Controller context
-         */
-    function bindModel(ctrl, context) {
+    function onBind(ctrl, context) {
         var result = [];
         var elements = queryDirective("model", "*", context);
 
@@ -410,6 +438,35 @@ var Axon = function () {
         }
     }
 
+    function onDigest(ctrl, context, entry) {
+        console.log("foo", entry);
+    }
+
+    var modelImported = {
+        onBind: onBind,
+        onDigest: onDigest
+    };
+
+    var model = modelImported;
+    //export const change = changeImported;
+
+
+    var directives = Object.freeze({
+        model: model
+    });
+
+    var directives = Object.freeze({
+        model: model
+    });
+
+    var directives = Object.freeze({
+        model: model
+    });
+
+    var directives = Object.freeze({
+        model: model
+    });
+
     /**
          * Binds directives to controller
          *
@@ -419,10 +476,14 @@ var Axon = function () {
          */
     function bindDirectives(ctrl) {
         var context = ctrl.$context;
+        var result = {};
 
-        return {
-            model: bindModel(ctrl, context)
-        };
+        eachObject(directives, function (directive, key, index) {
+
+            result[key] = directive.onBind(ctrl, context);
+        });
+
+        return result;
     }
 
     /**

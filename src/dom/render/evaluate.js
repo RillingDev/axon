@@ -12,7 +12,7 @@ import {replaceFrom} from "../../util";
  */
 export default function(ctrl, expression) {
     const result = ctrl[expression.data];
-    console.log([ctrl, expression.data, ctrl[expression.data]]);
+    //console.log([ctrl, expression.data, ctrl[expression.data]]);
 
 
     //console.log(["!!!!!!!!!!!!!", expression.val, result]);
