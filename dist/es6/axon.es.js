@@ -333,6 +333,55 @@ function readDirective(element, data) {
         return string.substr(0, index) + string.substr(index).replace(find, replace);
     }
 
+var text = {
+        onBind: function(ctrl, context) {
+            const result = [];
+            const nodes = getTextNodes(context);
+            let match;
+
+            //Iterate Nodes
+            nodes.forEach(node => {
+                //Iterate Regex
+                while ((match = _expressionRegex.exec(node.textContent)) !== null) {
+                    if (match.index === _expressionRegex.lastIndex) {
+                        _expressionRegex.lastIndex++;
+                    }
+
+                    result.push({
+                        match: match[0],
+                        data: match[1],
+                        val: match[0],
+                        index: match.index,
+                        parent: node
+                    });
+                }
+            });
+
+            return result;
+
+            //Modified version of http://stackoverflow.com/questions/10730309/find-all-text-nodes-in-html-page
+            function getTextNodes(node) {
+                let all = [];
+                for (node = node.firstChild; node; node = node.nextSibling) {
+                    if (node.nodeType === 3 && node.parentNode.nodeName !== "SCRIPT") {
+                        all.push(node);
+                    } else {
+                        all = all.concat(getTextNodes(node));
+                    }
+                }
+                return all;
+            }
+        },
+        onDigest: function(ctrl, context, entry) {
+            console.log("foo", entry);
+            entry.element.value = ctrl[entry.value];
+        }
+    };
+
+var expressions = {
+        text
+    };
+
 /**
      * calculates Expression
      *
@@ -364,15 +413,14 @@ function evaluate(ctrl, expression) {
 function digest(ctrl) {
         //@TODO implement debounce
 
-        //console.log("digest");
         iteratePlugins(directives, ctrl.$directives, (entry, plugin) => {
             plugin.onDigest(ctrl, ctrl.$context, entry);
         });
 
-        //Calc expressions
-        ctrl.$expressions.forEach(expression => {
-            evaluate(ctrl, expression);
+        iteratePlugins(expressions, ctrl.$expressions, (entry, plugin) => {
+            evaluate(ctrl, entry);
         });
+
 
         function iteratePlugins(pluginData, data, fn) {
             eachObject(pluginData, (plugin, key) => {
@@ -435,28 +483,19 @@ function onBind(ctrl, context) {
 
 function onDigest(ctrl, context, entry) {
         console.log("foo", entry);
+        entry.element.value = ctrl[entry.value];
     }
 
-var modelImported = {
+var model = {
         onBind,
         onDigest
     };
 
-const model = modelImported;
-    //export const change = changeImported;
+//import changeImported from "./change";
 
-
-    var directives = Object.freeze({
-    	model: model
-    });
-
-var directives = Object.freeze({
-	model: model
-});
-
-var directives = Object.freeze({
-	model: model
-});
+var directives = {
+        model
+    };
 
 /**
      * Binds directives to controller
@@ -466,73 +505,14 @@ var directives = Object.freeze({
      * @return {Object} Returns bound Object
      */
 function bindDirectives(ctrl) {
-        const context = ctrl.$context;
         const result = {};
 
         eachObject(directives, (directive, key, index) => {
 
-            result[key] = directive.onBind(ctrl, context);
+            result[key] = directive.onBind(ctrl, ctrl.$context);
         });
 
         return result;
-    }
-
-/**
-     * Query Expressions
-     *
-     * @private
-     * @param {Node} context The Element context
-     * @return {NodeList} Returns NodeList
-     */
-function queryExpressions(context) {
-        const result = [];
-        const nodes = getTextNodes(context);
-        let match;
-
-        //Iterate Nodes
-        nodes.forEach(node => {
-          //Iterate Regex
-            while ((match = _expressionRegex.exec(node.textContent)) !== null) {
-                if (match.index === _expressionRegex.lastIndex) {
-                    _expressionRegex.lastIndex++;
-                }
-
-                result.push({
-                    match: match[0],
-                    data: match[1],
-                    val: match[0],
-                    index: match.index,
-                    parent : node
-                });
-            }
-        });
-
-        return result;
-
-        //Modified version of http://stackoverflow.com/questions/10730309/find-all-text-nodes-in-html-page
-        function getTextNodes(node) {
-            let all = [];
-            for (node = node.firstChild; node; node = node.nextSibling) {
-                if (node.nodeType === 3 && node.parentNode.nodeName !== "SCRIPT") {
-                    all.push(node);
-                } else {
-                    all = all.concat(getTextNodes(node));
-                }
-            }
-            return all;
-        }
-    }
-
-/**
-     * Binds expressions
-     *
-     * @private
-     * @return {Node} context The Controller context
-     */
-function bindExpressions$1(context) {
-        const elements = queryExpressions(context);
-
-        return elements;
     }
 
 /**
@@ -543,8 +523,14 @@ function bindExpressions$1(context) {
      * @return {Object} Returns bound Object
      */
 function bindExpressions(ctrl) {
-        const context = ctrl.$context;
-        return bindExpressions$1(context);
+        const result = {};
+
+        eachObject(expressions, (expressions, key, index) => {
+
+            result[key] = expressions.onBind(ctrl, ctrl.$context);
+        });
+
+        return result;
     }
 
 /**

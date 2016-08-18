@@ -1,6 +1,6 @@
 "use strict";
 
-import * as directives from "../../plugins/directives/directives";
+import  directives from "../../plugins/directives";
 
 import {
     eachObject
@@ -13,12 +13,11 @@ import {
  * @return {Object} Returns bound Object
  */
 export default function(ctrl) {
-    const context = ctrl.$context;
     const result = {};
 
     eachObject(directives, (directive, key, index) => {
 
-        result[key] = directive.onBind(ctrl, context);
+        result[key] = directive.onBind(ctrl, ctrl.$context);
     });
 
     return result;

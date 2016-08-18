@@ -4,7 +4,8 @@ import {
     eachObject
 } from "../../util";
 
-import * as directives from "../../plugins/directives/directives";
+import directives from "../../plugins/directives";
+import expressions from "../../plugins/expressions";
 
 import evaluate from "./evaluate";
 
@@ -18,15 +19,14 @@ import evaluate from "./evaluate";
 export default function(ctrl) {
     //@TODO implement debounce
 
-    //console.log("digest");
     iteratePlugins(directives, ctrl.$directives, (entry, plugin) => {
         plugin.onDigest(ctrl, ctrl.$context, entry);
     });
 
-    //Calc expressions
-    ctrl.$expressions.forEach(expression => {
-        evaluate(ctrl, expression);
+    iteratePlugins(expressions, ctrl.$expressions, (entry, plugin) => {
+        evaluate(ctrl, entry);
     });
+
 
     function iteratePlugins(pluginData, data, fn) {
         eachObject(pluginData, (plugin, key) => {

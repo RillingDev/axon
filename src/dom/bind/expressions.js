@@ -1,7 +1,10 @@
 "use strict";
 
-import bindExpressions from "./expressions/expression";
+import expressions from "../../plugins/expressions";
 
+import {
+    eachObject
+} from "../../util";
 /**
  * Binds directives to controller
  *
@@ -10,6 +13,12 @@ import bindExpressions from "./expressions/expression";
  * @return {Object} Returns bound Object
  */
 export default function(ctrl) {
-    const context = ctrl.$context;
-    return bindExpressions(context);
+    const result = {};
+
+    eachObject(expressions, (expressions, key, index) => {
+
+        result[key] = expressions.onBind(ctrl, ctrl.$context);
+    });
+
+    return result;
 }
