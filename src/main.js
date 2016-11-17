@@ -1,6 +1,6 @@
 "use strict";
 
-import Chevron from "chevronjs/src/main.js";
+import Chevron from "../node_modules/chevronjs/src/main.js";
 
 import controllerFn from "./types/controller";
 

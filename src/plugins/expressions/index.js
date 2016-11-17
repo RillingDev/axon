@@ -1,6 +1,6 @@
 "use strict";
 
-import text from "./text";
+import text from "./text/index";
 
 export default{
     text

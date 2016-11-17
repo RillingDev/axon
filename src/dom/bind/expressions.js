@@ -1,6 +1,6 @@
 "use strict";
 
-import expressions from "../../plugins/expressions";
+import expressions from "../../plugins/expressions/index";
 
 import {
     eachObject

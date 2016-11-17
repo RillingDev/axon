@@ -4,8 +4,8 @@ import {
     eachObject
 } from "../../util";
 
-import directives from "../../plugins/directives";
-import expressions from "../../plugins/expressions";
+import directives from "../../plugins/directives/index";
+import expressions from "../../plugins/expressions/index";
 
 /**
  * Digest & render dom

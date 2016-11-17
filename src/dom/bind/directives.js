@@ -1,6 +1,6 @@
 "use strict";
 
-import  directives from "../../plugins/directives";
+import  directives from "../../plugins/directives/index";
 
 import {
     eachObject
