@@ -1,10 +1,15 @@
 "use strict";
 
+//Chevron import
+import extend from "../node_modules/chevronjs/src/api/extend";
+import provider from "../node_modules/chevronjs/src/api/provider";
+import access from "../node_modules/chevronjs/src/api/access";
+
+//Axon import
 import {
     _document
 } from "./lib/constants";
-import Chevron from "../node_modules/chevronjs/src/main";
-//import controllerFn from "./types/controller";
+import initController from "./types/controller/index";
 import queryDirective from "./dom/query/queryDirective";
 
 /**
@@ -18,15 +23,25 @@ const Axon = function(id) {
     const _this = this;
 
     //Instance Id
-    _this.$id = id;
-    _this.$container = new Chevron();
+    _this.id = id;
+
     //Instance container
+    _this.chev = new Map();
 
     //context
-    _this.$context = queryDirective(_document, "app", id, false);
+    _this.context = queryDirective(_document, "app", id, false);
 
-    //Init Axon types
-    //_this.$container.extend("controller", controllerFn);
+    //Init default types
+    _this.extend.call(_this, "controller", initController.bind(_this));
+};
+
+/**
+ * Expose Axon methods
+ */
+Axon.prototype = {
+    extend, //Creates a new module type
+    provider, //Adds a new custom module to the container
+    access //Returns initialized module
 };
 
 export default Axon;

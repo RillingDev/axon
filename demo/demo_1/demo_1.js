@@ -2,7 +2,7 @@
 
 const app = new Axon("myApp");
 
-/*app.controller("myController", [], function() {
+app.controller("myController", [], function() {
     const vm = this;
     window.vm = this;
 
@@ -16,6 +16,6 @@ const app = new Axon("myApp");
     };
 });
 
-app.access("myController");*/
+app.access("myController");
 
 console.log(app);

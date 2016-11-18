@@ -8,14 +8,6 @@ var Axon = (function () {
 'use strict';
 
 /**
- * Store constants
- */
-
-var _window = window;
-var _document = _window.document;
-var _domNameSpace = "xn";
-
-/**
  * Adds a new module type to the Chevron instance
  * @param {String} type The name of the type
  * @param {Function} cf Constructor function to init the module with
@@ -153,69 +145,12 @@ var access = function access(name) {
 };
 
 /**
- * Constructor function for the service type
- * @private
- * @param {Object} _module The module object
- * @param {Array} dependencies Array of dependency contents
- * @returns {Mixed} Initialized _module
+ * Store constants
  */
 
-var service = function service(_module, dependencies) {
-    //Dereference fn to avoid unwanted recursion
-    var serviceFn = _module.fn;
-
-    _module.fn = function () {
-        //Chevron service function wrapper
-        //return function with args injected
-        return serviceFn.apply(null, dependencies.concat(Array.from(arguments)));
-    };
-
-    return _module;
-};
-
-/**
- * Constructor function for the factory type
- * @private
- * @param {Object} _module The module object
- * @param {Array} dependencies Array of dependency contents
- * @returns {Mixed} Initialized module
- */
-
-var factory = function factory(_module, dependencies) {
-    //First value gets ignored by calling 'new' like this, so we need to fill it with something
-    dependencies.unshift(0);
-
-    //Apply into new constructor by binding applying the bind method.
-    //@see: {@link http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible }
-    _module.fn = new (Function.prototype.bind.apply(_module.fn, dependencies))();
-
-    return _module;
-};
-
-/**
- * Chevron Constructor
- * @constructor
- * @returns {Object} Chevron instance
- */
-var Chevron = function Chevron() {
-    var _this = this;
-
-    //Instance container
-    _this.chev = new Map();
-
-    //Init default types
-    _this.extend("service", service);
-    _this.extend("factory", factory);
-};
-
-/**
- * Expose Chevron methods
- */
-Chevron.prototype = {
-    extend: extend, //Creates a new module type
-    provider: provider, //Adds a new custom module to the container
-    access: access //Returns initialized module
-};
+var _window = window;
+var _document = _window.document;
+var _domNameSpace = "xn";
 
 /**
  * Creates querySelector string
@@ -251,7 +186,44 @@ var queryDirective = function queryDirective(context, name, val) {
     return multi ? context.querySelectorAll(query) : context.querySelector(query);
 };
 
-//import controllerFn from "./types/controller";
+//import bindDirectives from "../dom/bind/directives";
+//import bindExpressions from "../dom/bind/expressions";
+
+//import digest from "../dom/digest/digest";
+
+/**
+ * Constructor function for the controller type
+ * @private
+ * @param {Object} _module The module object
+ * @param {Array} dependencies Array of dependency contents
+ * @returns {Mixed} Initialized module
+ */
+var controller = function controller(_module, dependencies) {
+    var _this = this;
+    var ctrl = void 0;
+
+    //First value gets ignored by calling 'new' like this, so we need to fill it with something
+    dependencies.unshift(0);
+
+    //Apply into new constructor by binding applying the bind method.
+    //@see: {@link http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible }
+    ctrl = _module.fn = new (Function.prototype.bind.apply(_module.fn, dependencies))();
+
+    //Bind Context
+    ctrl.$context = queryDirective(_this.context, "controller", _module.name, false);
+    //_module.fn.$expressions = bindExpressions(_module.fn);
+    //_module.fn.$directives = bindDirectives(_module.fn);
+    //run first digest
+    //digest(_module.fn);
+
+    console.log(_this);
+
+    return _module;
+};
+
+//Chevron import
+
+//Axon import
 /**
  * Basic Axon Constructor
  *
@@ -263,15 +235,25 @@ var Axon = function Axon(id) {
     var _this = this;
 
     //Instance Id
-    _this.$id = id;
-    _this.$container = new Chevron();
+    _this.id = id;
+
     //Instance container
+    _this.chev = new Map();
 
     //context
-    _this.$context = queryDirective(_document, "app", id, false);
+    _this.context = queryDirective(_document, "app", id, false);
 
-    //Init Axon types
-    //_this.$container.extend("controller", controllerFn);
+    //Init default types
+    _this.extend.call(_this, "controller", controller.bind(_this));
+};
+
+/**
+ * Expose Axon methods
+ */
+Axon.prototype = {
+    extend: extend, //Creates a new module type
+    provider: provider, //Adds a new custom module to the container
+    access: access //Returns initialized module
 };
 
 return Axon;
