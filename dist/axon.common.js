@@ -1,5 +1,5 @@
 /**
- * Axon v0.3.0
+ * Axon v0.4.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -182,9 +182,83 @@ const queryDirective = function(context, name, val, multi = true) {
     return multi ? context.querySelectorAll(query) : context.querySelector(query);
 };
 
-//import bindDirectives from "../dom/bind/directives";
-//import bindExpressions from "../dom/bind/expressions";
+/*
+import {
+    _window
+} from "../../../constants";
+import {
+    eachNode
+} from "../../../util";
 
+import queryDirective from "../../../dom/query/directives/query";
+import readDirective from "../../../dom/query/directives/read";
+import digest from "../../../dom/digest/digest";
+import bind from "../../../dom/bind/bind";
+*/
+
+const model = {
+    onBind: function(ctrl) {
+        /*const result = [];
+        const elements = queryDirective("model", "*", context);
+
+        bind(elements, "change", modelEvent);
+        bind(elements, "input", modelEvent);
+
+        eachNode(elements, (element, index) => {
+            result.push({
+                index,
+                element,
+                type: "model",
+                value: readDirective(element, "model")
+            });
+        });
+
+        return result;
+
+        function modelEvent(ev, dom) {
+            _window.setTimeout(() => {
+                const content = dom.value;
+                const modelFor = readDirective(dom, "model");
+
+                console.log("MODEL:", modelFor, content);
+                ctrl[modelFor] = content;
+
+                digest(ctrl);
+            }, 5);
+        }*/
+
+        return true;
+    },
+    onDigest: function(ctrl, entry) {
+        //entry.element.value = ctrl[entry.value];
+        return true;
+    }
+};
+
+//import changeImported from "./change";
+
+const plugins = [
+    model
+];
+
+/**
+ * Binds directives to controller
+ *
+ * @private
+ * @param {Object} ctrl The Controller
+ * @return {Object} Returns bound Object
+ */
+const bindDirectives = function(ctrl) {
+    const result = [];
+
+    plugins.forEach(directive => {
+        result.push(directive.onBind(ctrl));
+    });
+
+    return result;
+};
+
+//import bindExpressions from "../dom/bind/expressions";
 //import digest from "../dom/digest/digest";
 
 /**
@@ -196,24 +270,23 @@ const queryDirective = function(context, name, val, multi = true) {
  */
 const controller = function(_module, dependencies) {
     const _this = this;
-    let ctrl;
 
     //First value gets ignored by calling 'new' like this, so we need to fill it with something
     dependencies.unshift(0);
 
     //Apply into new constructor by binding applying the bind method.
     //@see: {@link http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible }
-    ctrl = _module.fn = new(Function.prototype.bind.apply(_module.fn, dependencies));
+    _module.fn = new(Function.prototype.bind.apply(_module.fn, dependencies));
 
 
     //Bind Context
-    ctrl.$context = queryDirective(_this.context, "controller", _module.name, false);
-    //_module.fn.$expressions = bindExpressions(_module.fn);
-    //_module.fn.$directives = bindDirectives(_module.fn);
+    _module.fn.$context = queryDirective(_this.$context, "controller", _module.name, false);
+    //ctrl.$expressions = bindExpressions(_module.fn);
+    _module.fn.$directives = bindDirectives(_module.fn);
     //run first digest
     //digest(_module.fn);
 
-    console.log(_this);
+    console.log("mainCtrl", _module.fn);
 
     return _module;
 };
@@ -231,16 +304,18 @@ const Axon = function(id) {
     const _this = this;
 
     //Instance Id
-    _this.id = id;
+    _this.$id = id;
 
     //Instance container
     _this.chev = new Map();
 
     //context
-    _this.context = queryDirective(_document, "app", id, false);
+    _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
     _this.extend.call(_this, "controller", controller.bind(_this));
+
+    console.log("myApp", _this);
 };
 
 /**

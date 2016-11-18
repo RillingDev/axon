@@ -1,23 +1,22 @@
 "use strict";
 
-import queryDirective from "../../../dom/query/directives/query";
-import readDirective from "../../../dom/query/directives/read";
-
-import digest from "../../../dom/digest/digest";
-
-import bind from "../../../dom/bind/bind";
-
+/*
 import {
     _window
 } from "../../../constants";
-
 import {
     eachNode
 } from "../../../util";
 
-export default {
-    onBind: function(ctrl, context) {
-        const result = [];
+import queryDirective from "../../../dom/query/directives/query";
+import readDirective from "../../../dom/query/directives/read";
+import digest from "../../../dom/digest/digest";
+import bind from "../../../dom/bind/bind";
+*/
+
+const model = {
+    onBind: function(ctrl) {
+        /*const result = [];
         const elements = queryDirective("model", "*", context);
 
         bind(elements, "change", modelEvent);
@@ -44,9 +43,14 @@ export default {
 
                 digest(ctrl);
             }, 5);
-        }
+        }*/
+
+        return true;
     },
-    onDigest: function(ctrl, context, entry) {
-        entry.element.value = ctrl[entry.value];
+    onDigest: function(ctrl, entry) {
+        //entry.element.value = ctrl[entry.value];
+        return true;
     }
 };
+
+export default model;

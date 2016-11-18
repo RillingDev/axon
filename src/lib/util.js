@@ -5,7 +5,7 @@
  */
 
 /**
- * iterate over NoddeList
+ * iterate over NodeList
  *
  * @private
  * @param {NodeList} NodeList The Elements to bind

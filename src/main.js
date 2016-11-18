@@ -23,16 +23,18 @@ const Axon = function(id) {
     const _this = this;
 
     //Instance Id
-    _this.id = id;
+    _this.$id = id;
 
     //Instance container
     _this.chev = new Map();
 
     //context
-    _this.context = queryDirective(_document, "app", id, false);
+    _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
     _this.extend.call(_this, "controller", initController.bind(_this));
+
+    console.log("myApp", _this);
 };
 
 /**
