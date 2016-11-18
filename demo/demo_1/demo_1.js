@@ -1,8 +1,8 @@
 "use strict";
 
-let app = new Axon("myApp");
+const app = new Axon("myApp");
 
-app.controller("myController", [], function() {
+/*app.controller("myController", [], function() {
     const vm = this;
     window.vm = this;
 
@@ -16,4 +16,6 @@ app.controller("myController", [], function() {
     };
 });
 
-app.access("myController");
+app.access("myController");*/
+
+console.log(app);
