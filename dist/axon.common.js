@@ -182,63 +182,55 @@ const queryDirective = function(context, name, val, multi = true) {
     return multi ? context.querySelectorAll(query) : context.querySelector(query);
 };
 
-/*
-import {
-    _window
-} from "../../../constants";
-import {
-    eachNode
-} from "../../../util";
+const directiveModelOnBind = function(ctrl) {
+    /*const result = [];
+    const elements = queryDirective("model", "*", context);
 
-import queryDirective from "../../../dom/query/directives/query";
-import readDirective from "../../../dom/query/directives/read";
-import digest from "../../../dom/digest/digest";
-import bind from "../../../dom/bind/bind";
-*/
+    bind(elements, "change", modelEvent);
+    bind(elements, "input", modelEvent);
 
-const model = {
-    onBind: function(ctrl) {
-        /*const result = [];
-        const elements = queryDirective("model", "*", context);
-
-        bind(elements, "change", modelEvent);
-        bind(elements, "input", modelEvent);
-
-        eachNode(elements, (element, index) => {
-            result.push({
-                index,
-                element,
-                type: "model",
-                value: readDirective(element, "model")
-            });
+    eachNode(elements, (element, index) => {
+        result.push({
+            index,
+            element,
+            type: "model",
+            value: readDirective(element, "model")
         });
+    });
 
-        return result;
+    return result;
 
-        function modelEvent(ev, dom) {
-            _window.setTimeout(() => {
-                const content = dom.value;
-                const modelFor = readDirective(dom, "model");
+    function modelEvent(ev, dom) {
+        _window.setTimeout(() => {
+            const content = dom.value;
+            const modelFor = readDirective(dom, "model");
 
-                console.log("MODEL:", modelFor, content);
-                ctrl[modelFor] = content;
+            console.log("MODEL:", modelFor, content);
+            ctrl[modelFor] = content;
 
-                digest(ctrl);
-            }, 5);
-        }*/
+            digest(ctrl);
+        }, 5);
+    }*/
 
-        return true;
-    },
-    onDigest: function(ctrl, entry) {
-        //entry.element.value = ctrl[entry.value];
-        return true;
-    }
+    return true;
+};
+
+const directiveModelOnDigest = function(ctrl, entry) {
+    //entry.element.value = ctrl[entry.value];
+    return true;
+};
+
+const directiveModel = {
+    name: "model",
+    id: "model",
+    onBind: directiveModelOnBind,
+    onDigest: directiveModelOnDigest
 };
 
 //import changeImported from "./change";
 
-const plugins = [
-    model
+const directives = [
+    directiveModel
 ];
 
 /**
@@ -251,7 +243,7 @@ const plugins = [
 const bindDirectives = function(ctrl) {
     const result = [];
 
-    plugins.forEach(directive => {
+    directives.forEach(directive => {
         result.push(directive.onBind(ctrl));
     });
 
@@ -268,7 +260,7 @@ const bindDirectives = function(ctrl) {
  * @param {Array} dependencies Array of dependency contents
  * @returns {Mixed} Initialized module
  */
-const controller = function(_module, dependencies) {
+const typeController = function(_module, dependencies) {
     const _this = this;
 
     //First value gets ignored by calling 'new' like this, so we need to fill it with something
@@ -313,7 +305,7 @@ const Axon = function(id) {
     _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
-    _this.extend.call(_this, "controller", controller.bind(_this));
+    _this.extend.call(_this, "controller", typeController.bind(_this));
 
     console.log("myApp", _this);
 };

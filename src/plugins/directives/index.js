@@ -3,8 +3,8 @@
 import model from "./model/index";
 //import changeImported from "./change";
 
-const plugins = [
+const directives = [
     model
 ];
 
-export default plugins;
+export default directives;

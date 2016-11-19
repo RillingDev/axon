@@ -12,7 +12,7 @@ import bindDirectives from "../../dom/bind/bindDirectives";
  * @param {Array} dependencies Array of dependency contents
  * @returns {Mixed} Initialized module
  */
-const controller = function(_module, dependencies) {
+const typeController = function(_module, dependencies) {
     const _this = this;
 
     //First value gets ignored by calling 'new' like this, so we need to fill it with something
@@ -35,4 +35,4 @@ const controller = function(_module, dependencies) {
     return _module;
 };
 
-export default controller;
+export default typeController;
