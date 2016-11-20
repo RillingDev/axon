@@ -16,7 +16,7 @@ const bindDirectives = function(ctrl) {
 
     directives.forEach(directive => {
         const directiveResult = [];
-        const directiveNodes = queryDirective(ctrl.$context, directive.id, false, true);
+        const directiveNodes = queryDirective(ctrl.$context, directive.name, false, true);
 
         eachNode(directiveNodes, node => {
             directiveResult.push(directive.onBind(node, ctrl));

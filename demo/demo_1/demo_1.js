@@ -1,20 +1,22 @@
 "use strict";
 
 const app = new Axon("myApp");
+let mainCtrl;
 
 app.controller("mainCtrl", [], function() {
     const vm = this;
 
-    window.vm = this;
-
     vm.foo = "foo";
     vm.bar = "bar";
+    vm.foobar = ""
 
-    vm.fooBar = vm.foo + vm.bar;
-
-    vm.updateFooBar = function() {
-        vm.fooBar = vm.foo + vm.bar;
+    vm.getFoobar = function() {
+        vm.foobar = vm.foo + vm.bar;
+        vm.$render();
     };
 });
 
-app.access("mainCtrl");
+mainCtrl = app.access("mainCtrl");
+mainCtrl.$render();
+
+console.log(app, mainCtrl);

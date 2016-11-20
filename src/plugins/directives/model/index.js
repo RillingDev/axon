@@ -2,12 +2,12 @@
 
 
 import directiveModelOnBind from "./lib/directiveModelOnBind";
-import directiveModelOnDigest from "./lib/directiveModelOnDigest";
+import directiveModelOnRender from "./lib/directiveModelOnRender";
 
 const directiveModel = {
-    id: "model",
+    name: "model",
     onBind: directiveModelOnBind,
-    onDigest: directiveModelOnDigest
+    onRender: directiveModelOnRender
 };
 
 export default directiveModel;

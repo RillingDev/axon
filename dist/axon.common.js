@@ -144,6 +144,44 @@ const access = function(name) {
 };
 
 /**
+ * Constructor function for the service type
+ * @private
+ * @param {Object} _module The module object
+ * @param {Array} dependencies Array of dependency contents
+ * @returns {Mixed} Initialized _module
+ */
+const service = function(_module, dependencies) {
+    //Dereference fn to avoid unwanted recursion
+    const serviceFn = _module.fn;
+
+    _module.fn = function() {
+        //Chevron service function wrapper
+        //return function with args injected
+        return serviceFn.apply(null, dependencies.concat(Array.from(arguments)));
+    };
+
+    return _module;
+};
+
+/**
+ * Constructor function for the factory type
+ * @private
+ * @param {Object} _module The module object
+ * @param {Array} dependencies Array of dependency contents
+ * @returns {Mixed} Initialized module
+ */
+const factory = function(_module, dependencies) {
+    //First value gets ignored by calling 'new' like this, so we need to fill it with something
+    dependencies.unshift(0);
+
+    //Apply into new constructor by binding applying the bind method.
+    //@see: {@link http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible }
+    _module.fn = new(Function.prototype.bind.apply(_module.fn, dependencies));
+
+    return _module;
+};
+
+/**
  * Store constants
  */
 
@@ -310,6 +348,11 @@ const directiveModelOnBind = function(node, ctrl) {
 
     bindEvent(node, "change", eventFn);
     bindEvent(node, "input", eventFn);
+
+    return {
+        modelType,
+        modelFor
+    };
 };
 
 const directiveModelOnDigest = function(node, ctrl) {
@@ -317,9 +360,9 @@ const directiveModelOnDigest = function(node, ctrl) {
 };
 
 const directiveModel = {
-    id: "model",
+    name: "model",
     onBind: directiveModelOnBind,
-    onDigest: directiveModelOnDigest
+    onRender: directiveModelOnDigest
 };
 
 //import changeImported from "./change";
@@ -338,7 +381,7 @@ const bindDirectives = function(ctrl) {
 
     directives.forEach(directive => {
         const directiveResult = [];
-        const directiveNodes = queryDirective(ctrl.$context, directive.id, false, true);
+        const directiveNodes = queryDirective(ctrl.$context, directive.name, false, true);
 
         eachNode(directiveNodes, node => {
             directiveResult.push(directive.onBind(node, ctrl));
@@ -362,29 +405,33 @@ const bindDirectives = function(ctrl) {
  */
 const typeController = function(_module, dependencies) {
     const _this = this;
+    let ctrl;
 
     //First value gets ignored by calling 'new' like this, so we need to fill it with something
     dependencies.unshift(0);
 
     //Apply into new constructor by binding applying the bind method.
     //@see: {@link http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible }
-    _module.fn = new(Function.prototype.bind.apply(_module.fn, dependencies));
+    ctrl = new(Function.prototype.bind.apply(_module.fn, dependencies));
 
 
     //Bind Context
-    _module.fn.$context = queryDirective(_this.$context, "controller", _module.name, false);
+    ctrl.$context = queryDirective(_this.$context, "controller", _module.name, false);
     //ctrl.$expressions = bindExpressions(_module.fn);
-    _module.fn.$directives = bindDirectives(_module.fn);
+    ctrl.$directives = bindDirectives(ctrl);
     //run first digest
-    //digest(_module.fn);
+    ctrl.$render = function() {
+        console.log("RENDER");
+    };
+    ctrl.$render();
 
-    console.log("mainCtrl", _module.fn);
+
+    _module.fn = ctrl;
 
     return _module;
 };
 
 //Chevron import
-//Axon import
 /**
  * Basic Axon Constructor
  *
@@ -397,17 +444,15 @@ const Axon = function(id) {
 
     //Instance Id
     _this.$id = id;
-
     //Instance container
     _this.chev = new Map();
-
     //context
     _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
+    _this.extend("service", service);
+    _this.extend("factory", factory);
     _this.extend("controller", typeController.bind(_this));
-
-    console.log("myApp", _this);
 };
 
 /**

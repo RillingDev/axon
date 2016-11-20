@@ -20,6 +20,11 @@ const directiveModelOnBind = function(node, ctrl) {
 
     bindEvent(node, "change", eventFn);
     bindEvent(node, "input", eventFn);
+
+    return {
+        modelType,
+        modelFor
+    };
 };
 
 export default directiveModelOnBind;

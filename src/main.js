@@ -5,7 +5,9 @@ import extend from "../node_modules/chevronjs/src/api/extend";
 import provider from "../node_modules/chevronjs/src/api/provider";
 import access from "../node_modules/chevronjs/src/api/access";
 
-//Axon import
+import initService from "../node_modules/chevronjs/src/types/service";
+import initfactory from "../node_modules/chevronjs/src/types/factory";
+
 import {
     _document
 } from "./lib/constants";
@@ -24,17 +26,15 @@ const Axon = function(id) {
 
     //Instance Id
     _this.$id = id;
-
     //Instance container
     _this.chev = new Map();
-
     //context
     _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
+    _this.extend("service", initService);
+    _this.extend("factory", initfactory);
     _this.extend("controller", initController.bind(_this));
-
-    console.log("myApp", _this);
 };
 
 /**

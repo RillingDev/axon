@@ -145,6 +145,46 @@ var access = function access(name) {
 };
 
 /**
+ * Constructor function for the service type
+ * @private
+ * @param {Object} _module The module object
+ * @param {Array} dependencies Array of dependency contents
+ * @returns {Mixed} Initialized _module
+ */
+
+var service = function service(_module, dependencies) {
+    //Dereference fn to avoid unwanted recursion
+    var serviceFn = _module.fn;
+
+    _module.fn = function () {
+        //Chevron service function wrapper
+        //return function with args injected
+        return serviceFn.apply(null, dependencies.concat(Array.from(arguments)));
+    };
+
+    return _module;
+};
+
+/**
+ * Constructor function for the factory type
+ * @private
+ * @param {Object} _module The module object
+ * @param {Array} dependencies Array of dependency contents
+ * @returns {Mixed} Initialized module
+ */
+
+var factory = function factory(_module, dependencies) {
+    //First value gets ignored by calling 'new' like this, so we need to fill it with something
+    dependencies.unshift(0);
+
+    //Apply into new constructor by binding applying the bind method.
+    //@see: {@link http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible }
+    _module.fn = new (Function.prototype.bind.apply(_module.fn, dependencies))();
+
+    return _module;
+};
+
+/**
  * Store constants
  */
 
@@ -315,6 +355,11 @@ var directiveModelOnBind = function directiveModelOnBind(node, ctrl) {
 
     bindEvent(node, "change", eventFn);
     bindEvent(node, "input", eventFn);
+
+    return {
+        modelType: modelType,
+        modelFor: modelFor
+    };
 };
 
 var directiveModelOnDigest = function directiveModelOnDigest(node, ctrl) {
@@ -322,9 +367,9 @@ var directiveModelOnDigest = function directiveModelOnDigest(node, ctrl) {
 };
 
 var directiveModel = {
-    id: "model",
+    name: "model",
     onBind: directiveModelOnBind,
-    onDigest: directiveModelOnDigest
+    onRender: directiveModelOnDigest
 };
 
 //import changeImported from "./change";
@@ -341,7 +386,7 @@ var bindDirectives = function bindDirectives(ctrl) {
 
     directives.forEach(function (directive) {
         var directiveResult = [];
-        var directiveNodes = queryDirective(ctrl.$context, directive.id, false, true);
+        var directiveNodes = queryDirective(ctrl.$context, directive.name, false, true);
 
         eachNode(directiveNodes, function (node) {
             directiveResult.push(directive.onBind(node, ctrl));
@@ -365,29 +410,32 @@ var bindDirectives = function bindDirectives(ctrl) {
  */
 var typeController = function typeController(_module, dependencies) {
     var _this = this;
+    var ctrl = void 0;
 
     //First value gets ignored by calling 'new' like this, so we need to fill it with something
     dependencies.unshift(0);
 
     //Apply into new constructor by binding applying the bind method.
     //@see: {@link http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible }
-    _module.fn = new (Function.prototype.bind.apply(_module.fn, dependencies))();
+    ctrl = new (Function.prototype.bind.apply(_module.fn, dependencies))();
 
     //Bind Context
-    _module.fn.$context = queryDirective(_this.$context, "controller", _module.name, false);
+    ctrl.$context = queryDirective(_this.$context, "controller", _module.name, false);
     //ctrl.$expressions = bindExpressions(_module.fn);
-    _module.fn.$directives = bindDirectives(_module.fn);
+    ctrl.$directives = bindDirectives(ctrl);
     //run first digest
-    //digest(_module.fn);
+    ctrl.$render = function () {
+        console.log("RENDER");
+    };
+    ctrl.$render();
 
-    console.log("mainCtrl", _module.fn);
+    _module.fn = ctrl;
 
     return _module;
 };
 
 //Chevron import
 
-//Axon import
 /**
  * Basic Axon Constructor
  *
@@ -400,17 +448,15 @@ var Axon = function Axon(id) {
 
     //Instance Id
     _this.$id = id;
-
     //Instance container
     _this.chev = new Map();
-
     //context
     _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
+    _this.extend("service", service);
+    _this.extend("factory", factory);
     _this.extend("controller", typeController.bind(_this));
-
-    console.log("myApp", _this);
 };
 
 /**
