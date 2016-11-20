@@ -1,5 +1,5 @@
 /**
- * Axon v0.5.1
+ * Axon v0.6.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -191,7 +191,7 @@ var factory = function factory(_module, dependencies) {
 
 var _document = document;
 var _domNameSpace = "xn";
-var _debounceTimeout = 24;
+var _debounceTimeout = 40;
 //export const _expressionRegex = /{{(.+)}}/g;
 
 /**
@@ -339,17 +339,28 @@ var bindEvent = function bindEvent(node, eventType, eventFn) {
     node.addEventListener(eventType, debouncedFn, false);
 };
 
+var renderDirectives = function renderDirectives(ctrl) {
+    console.log("RENDER");
+
+    ctrl.$directives.forEach(function (directive) {
+        directive.forEach(function (directiveInstance) {
+            directiveInstance.instanceOf.onRender(directiveInstance.node, ctrl, directiveInstance.data);
+        });
+    });
+};
+
+var render = function render(ctrl) {
+    var renderFn = debounce(renderDirectives, _debounceTimeout);
+
+    renderFn(ctrl);
+};
+
 var directiveModelOnBind = function directiveModelOnBind(node, ctrl) {
     var modelType = typeof node.value !== "undefined" ? "value" : "innerText";
     var modelFor = getDirectiveValue(node, "model");
     var eventFn = function eventFn(ev) {
-        console.log("EV!", node, ev);
+        render(ctrl);
     };
-
-    console.log({
-        modelType: modelType,
-        modelFor: modelFor
-    });
 
     node[modelType] = ctrl[modelFor];
 
@@ -389,7 +400,11 @@ var bindDirectives = function bindDirectives(ctrl) {
         var directiveNodes = queryDirective(ctrl.$context, directive.name, false, true);
 
         eachNode(directiveNodes, function (node) {
-            directiveResult.push(directive.onBind(node, ctrl));
+            directiveResult.push({
+                node: node,
+                instanceOf: directive,
+                data: directive.onBind(node, ctrl)
+            });
         });
 
         result.push(directiveResult);
@@ -397,9 +412,6 @@ var bindDirectives = function bindDirectives(ctrl) {
 
     return result;
 };
-
-//import bindExpressions from "../dom/bind/expressions";
-//import digest from "../dom/digest/digest";
 
 /**
  * Constructor function for the controller type
@@ -425,9 +437,10 @@ var typeController = function typeController(_module, dependencies) {
     ctrl.$directives = bindDirectives(ctrl);
     //run first digest
     ctrl.$render = function () {
-        console.log("RENDER");
+        render(ctrl);
     };
-    ctrl.$render();
+    //ctrl.$render();
+
 
     _module.fn = ctrl;
 

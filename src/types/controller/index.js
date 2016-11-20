@@ -2,8 +2,7 @@
 
 import queryDirective from "../../dom/query/queryDirective";
 import bindDirectives from "../../dom/bind/bindDirectives";
-//import bindExpressions from "../dom/bind/expressions";
-//import digest from "../dom/digest/digest";
+import render from "../../render/index";
 
 /**
  * Constructor function for the controller type
@@ -30,9 +29,9 @@ const typeController = function(_module, dependencies) {
     ctrl.$directives = bindDirectives(ctrl);
     //run first digest
     ctrl.$render = function() {
-        console.log("RENDER")
+        render(ctrl);
     };
-    ctrl.$render();
+    //ctrl.$render();
 
 
     _module.fn = ctrl;
