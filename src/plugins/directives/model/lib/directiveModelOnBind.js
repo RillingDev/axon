@@ -1,36 +1,21 @@
 "use strict";
 
-const directiveModelOnBind = function(ctrl) {
-    /*const result = [];
-    const elements = queryDirective("model", "*", context);
+import queryDirective from "../../../../dom/query/queryDirective";
+import getDirectiveValue from "../../../../dom/lib/getDirectiveValue";
 
-    bind(elements, "change", modelEvent);
-    bind(elements, "input", modelEvent);
+const directiveModelOnBind = function(node, ctrl) {
+    const modelType = typeof node.value !== "undefined" ? "value" : "innerText";
+    const modelFor = getDirectiveValue(node, "model");
 
-    eachNode(elements, (element, index) => {
-        result.push({
-            index,
-            element,
-            type: "model",
-            value: readDirective(element, "model")
-        });
+    console.log({
+        modelType,
+        modelFor
     });
 
-    return result;
+    node[modelType] = ctrl[modelFor];
 
-    function modelEvent(ev, dom) {
-        _window.setTimeout(() => {
-            const content = dom.value;
-            const modelFor = readDirective(dom, "model");
-
-            console.log("MODEL:", modelFor, content);
-            ctrl[modelFor] = content;
-
-            digest(ctrl);
-        }, 5);
-    }*/
-
-    return true;
+    //bindEvent(elements, "change", eventFn);
+    //bindEvent(elements, "input", eventFn);
 };
 
 export default directiveModelOnBind;

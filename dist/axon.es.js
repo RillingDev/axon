@@ -1,5 +1,5 @@
 /**
- * Axon v0.4.0
+ * Axon v0.5.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -149,6 +149,21 @@ const _document = _window.document;
 const _domNameSpace = "xn";
 
 /**
+ * Get directive dom name
+ * @param  {String} name Directive name
+ * @return {String}      Dom name
+ */
+const getDataQueryDom = function(name) {
+    return `${_domNameSpace}-${name}`;
+};
+
+/**
+ * Get directive dataset name
+ * @param  {String} name Directive name
+ * @return {String}      Dataset name
+ */
+
+/**
  * Creates querySelector string
  *
  * @private
@@ -156,70 +171,103 @@ const _domNameSpace = "xn";
  * @param {String} val The data value
  * @return {String} Returns Query
  */
-const constructQuery = function(name, val) {
+const getSelectorQuery = function(name, val) {
+    const dataQuery = getDataQueryDom(name);
+
     if (val) {
-        return `[${_domNameSpace}-${name}='${val}']`;
+        return `[${dataQuery}='${val}']`;
     } else {
-        return `[${_domNameSpace}-${name}]`;
+        return `[${dataQuery}]`;
     }
 };
 
 /**
- * Query Nodes with directives from DOM
- *
- * @private
- * @param {Node} context Node context to query
- * @param {String} name The data name
- * @param {String} val The data value
- * @param {Boolean} multi optional, if multiple should be queried
- * @return {NodeList} Returns NodeList
+ * Queries all nodes in context with the given directive
+ * @param  {Node}  context     Context to query
+ * @param  {String}  name         Directive name
+ * @param  {String|Boolean}  val          Directive value, or false if it should be ignored
+ * @param  {Boolean} [multi=true] If more than one element should be queried
+ * @return {Node|NodeList}               Query result
  */
 const queryDirective = function(context, name, val, multi = true) {
-    const query = constructQuery(name, val);
+    const query = getSelectorQuery(name, val);
 
     return multi ? context.querySelectorAll(query) : context.querySelector(query);
 };
 
-const directiveModelOnBind = function(ctrl) {
-    /*const result = [];
-    const elements = queryDirective("model", "*", context);
+/**
+ * Misc Utility functions
+ */
 
-    bind(elements, "change", modelEvent);
-    bind(elements, "input", modelEvent);
+/**
+ * iterate over NodeList
+ *
+ * @private
+ * @param {NodeList} NodeList The Elements to bind
+ * @param {Function} fn The Function to call
+ * @returns void
+ */
+function eachNode(NodeList, fn) {
+    const l = NodeList.length;
+    let i = 0;
 
-    eachNode(elements, (element, index) => {
-        result.push({
-            index,
-            element,
-            type: "model",
-            value: readDirective(element, "model")
-        });
-    });
+    while (i < l) {
+        fn(NodeList[i], i);
+        i++;
+    }
+}
+/**
+ * Iterate object
+ *
+ * @private
+ * @param {Object} object The Object to iterate
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
 
-    return result;
+/**
+ * replace string at position
+ *
+ * @private
+ * @param {String} string The String to exec
+ * @param {String} find The String to find
+ * @param {String} replace The String to replace
+ * @param {Number} index The Index to start replacing
+ * @returns {String} replacedString
+ */
 
-    function modelEvent(ev, dom) {
-        _window.setTimeout(() => {
-            const content = dom.value;
-            const modelFor = readDirective(dom, "model");
+/**
+ * Get value of directive on node
+ * @param  {Node} node Node to check
+ * @param  {String} name Directive to check
+ * @return {String}      Directive value
+ */
+const getDirectiveValue = function(node, name) {
+    const dataQuery = getDataQueryDom(name);
 
-            console.log("MODEL:", modelFor, content);
-            ctrl[modelFor] = content;
-
-            digest(ctrl);
-        }, 5);
-    }*/
-
-    return true;
+    return node.attributes[dataQuery].value;
 };
 
-const directiveModelOnDigest = function(ctrl, entry) {
-    //entry.element.value = ctrl[entry.value];
+const directiveModelOnBind = function(node, ctrl) {
+    const modelType = typeof node.value !== "undefined" ? "value" : "innerText";
+    const modelFor = getDirectiveValue(node, "model");
+
+    console.log({
+        modelType,
+        modelFor
+    });
+
+    node[modelType] = ctrl[modelFor];
+
+    //bindEvent(elements, "change", eventFn);
+    //bindEvent(elements, "input", eventFn);
+};
+
+const directiveModelOnDigest = function(node, ctrl) {
     return true;
 };
 
 const directiveModel = {
-    name: "model",
     id: "model",
     onBind: directiveModelOnBind,
     onDigest: directiveModelOnDigest
@@ -232,17 +280,22 @@ const directives = [
 ];
 
 /**
- * Binds directives to controller
- *
- * @private
- * @param {Object} ctrl The Controller
- * @return {Object} Returns bound Object
+ * Binds all directive plugins to the controller
+ * @param  {Object} ctrl Axon controller
+ * @return {Array}      Array of directive results
  */
 const bindDirectives = function(ctrl) {
     const result = [];
 
     directives.forEach(directive => {
-        result.push(directive.onBind(ctrl));
+        const directiveResult = [];
+        const directiveNodes = queryDirective(ctrl.$context, directive.id, false, true);
+
+        eachNode(directiveNodes, node => {
+            directiveResult.push(directive.onBind(node, ctrl));
+        });
+
+        result.push(directiveResult);
     });
 
     return result;
@@ -303,7 +356,7 @@ const Axon = function(id) {
     _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
-    _this.extend.call(_this, "controller", typeController.bind(_this));
+    _this.extend("controller", typeController.bind(_this));
 
     console.log("myApp", _this);
 };

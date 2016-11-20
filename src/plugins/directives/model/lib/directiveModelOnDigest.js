@@ -1,7 +1,6 @@
 "use strict";
 
-const directiveModelOnDigest = function(ctrl, entry) {
-    //entry.element.value = ctrl[entry.value];
+const directiveModelOnDigest = function(node, ctrl) {
     return true;
 };
 

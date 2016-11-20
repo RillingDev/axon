@@ -1,20 +1,17 @@
 "use strict";
 
-
-import constructQuery from "./lib/constructQuery";
+import getSelectorQuery from "../lib/getSelectorQuery";
 
 /**
- * Query Nodes with directives from DOM
- *
- * @private
- * @param {Node} context Node context to query
- * @param {String} name The data name
- * @param {String} val The data value
- * @param {Boolean} multi optional, if multiple should be queried
- * @return {NodeList} Returns NodeList
+ * Queries all nodes in context with the given directive
+ * @param  {Node}  context     Context to query
+ * @param  {String}  name         Directive name
+ * @param  {String|Boolean}  val          Directive value, or false if it should be ignored
+ * @param  {Boolean} [multi=true] If more than one element should be queried
+ * @return {Node|NodeList}               Query result
  */
 const queryDirective = function(context, name, val, multi = true) {
-    const query = constructQuery(name, val);
+    const query = getSelectorQuery(name, val);
 
     return multi ? context.querySelectorAll(query) : context.querySelector(query);
 };

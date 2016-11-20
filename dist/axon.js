@@ -1,5 +1,5 @@
 /**
- * Axon v0.4.0
+ * Axon v0.5.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -153,6 +153,21 @@ var _document = _window.document;
 var _domNameSpace = "xn";
 
 /**
+ * Get directive dom name
+ * @param  {String} name Directive name
+ * @return {String}      Dom name
+ */
+var getDataQueryDom = function getDataQueryDom(name) {
+    return _domNameSpace + "-" + name;
+};
+
+/**
+ * Get directive dataset name
+ * @param  {String} name Directive name
+ * @return {String}      Dataset name
+ */
+
+/**
  * Creates querySelector string
  *
  * @private
@@ -160,66 +175,106 @@ var _domNameSpace = "xn";
  * @param {String} val The data value
  * @return {String} Returns Query
  */
-var constructQuery = function constructQuery(name, val) {
+var getSelectorQuery = function getSelectorQuery(name, val) {
+    var dataQuery = getDataQueryDom(name);
+
     if (val) {
-        return "[" + _domNameSpace + "-" + name + "='" + val + "']";
+        return "[" + dataQuery + "='" + val + "']";
     } else {
-        return "[" + _domNameSpace + "-" + name + "]";
+        return "[" + dataQuery + "]";
     }
 };
 
 /**
- * Query Nodes with directives from DOM
- *
- * @private
- * @param {Node} context Node context to query
- * @param {String} name The data name
- * @param {String} val The data value
- * @param {Boolean} multi optional, if multiple should be queried
- * @return {NodeList} Returns NodeList
+ * Queries all nodes in context with the given directive
+ * @param  {Node}  context     Context to query
+ * @param  {String}  name         Directive name
+ * @param  {String|Boolean}  val          Directive value, or false if it should be ignored
+ * @param  {Boolean} [multi=true] If more than one element should be queried
+ * @return {Node|NodeList}               Query result
  */
 var queryDirective = function queryDirective(context, name, val) {
     var multi = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-    var query = constructQuery(name, val);
+    var query = getSelectorQuery(name, val);
 
     return multi ? context.querySelectorAll(query) : context.querySelector(query);
 };
 
-var directiveModelOnBind = function directiveModelOnBind(ctrl) {
-    /*const result = [];
-    const elements = queryDirective("model", "*", context);
-      bind(elements, "change", modelEvent);
-    bind(elements, "input", modelEvent);
-      eachNode(elements, (element, index) => {
-        result.push({
-            index,
-            element,
-            type: "model",
-            value: readDirective(element, "model")
-        });
-    });
-      return result;
-      function modelEvent(ev, dom) {
-        _window.setTimeout(() => {
-            const content = dom.value;
-            const modelFor = readDirective(dom, "model");
-              console.log("MODEL:", modelFor, content);
-            ctrl[modelFor] = content;
-              digest(ctrl);
-        }, 5);
-    }*/
+/**
+ * Misc Utility functions
+ */
 
-    return true;
+/**
+ * iterate over NodeList
+ *
+ * @private
+ * @param {NodeList} NodeList The Elements to bind
+ * @param {Function} fn The Function to call
+ * @returns void
+ */
+
+function eachNode(NodeList, fn) {
+    var l = NodeList.length;
+    var i = 0;
+
+    while (i < l) {
+        fn(NodeList[i], i);
+        i++;
+    }
+}
+/**
+ * Iterate object
+ *
+ * @private
+ * @param {Object} object The Object to iterate
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
+
+/**
+ * replace string at position
+ *
+ * @private
+ * @param {String} string The String to exec
+ * @param {String} find The String to find
+ * @param {String} replace The String to replace
+ * @param {Number} index The Index to start replacing
+ * @returns {String} replacedString
+ */
+
+/**
+ * Get value of directive on node
+ * @param  {Node} node Node to check
+ * @param  {String} name Directive to check
+ * @return {String}      Directive value
+ */
+var getDirectiveValue = function getDirectiveValue(node, name) {
+    var dataQuery = getDataQueryDom(name);
+
+    return node.attributes[dataQuery].value;
 };
 
-var directiveModelOnDigest = function directiveModelOnDigest(ctrl, entry) {
-    //entry.element.value = ctrl[entry.value];
+var directiveModelOnBind = function directiveModelOnBind(node, ctrl) {
+    var modelType = typeof node.value !== "undefined" ? "value" : "innerText";
+    var modelFor = getDirectiveValue(node, "model");
+
+    console.log({
+        modelType: modelType,
+        modelFor: modelFor
+    });
+
+    node[modelType] = ctrl[modelFor];
+
+    //bindEvent(elements, "change", eventFn);
+    //bindEvent(elements, "input", eventFn);
+};
+
+var directiveModelOnDigest = function directiveModelOnDigest(node, ctrl) {
     return true;
 };
 
 var directiveModel = {
-    name: "model",
     id: "model",
     onBind: directiveModelOnBind,
     onDigest: directiveModelOnDigest
@@ -230,17 +285,22 @@ var directiveModel = {
 var directives = [directiveModel];
 
 /**
- * Binds directives to controller
- *
- * @private
- * @param {Object} ctrl The Controller
- * @return {Object} Returns bound Object
+ * Binds all directive plugins to the controller
+ * @param  {Object} ctrl Axon controller
+ * @return {Array}      Array of directive results
  */
 var bindDirectives = function bindDirectives(ctrl) {
     var result = [];
 
     directives.forEach(function (directive) {
-        result.push(directive.onBind(ctrl));
+        var directiveResult = [];
+        var directiveNodes = queryDirective(ctrl.$context, directive.id, false, true);
+
+        eachNode(directiveNodes, function (node) {
+            directiveResult.push(directive.onBind(node, ctrl));
+        });
+
+        result.push(directiveResult);
     });
 
     return result;
@@ -301,7 +361,7 @@ var Axon = function Axon(id) {
     _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
-    _this.extend.call(_this, "controller", typeController.bind(_this));
+    _this.extend("controller", typeController.bind(_this));
 
     console.log("myApp", _this);
 };

@@ -32,7 +32,7 @@ const Axon = function(id) {
     _this.$context = queryDirective(_document, "app", id, false);
 
     //Init default types
-    _this.extend.call(_this, "controller", initController.bind(_this));
+    _this.extend("controller", initController.bind(_this));
 
     console.log("myApp", _this);
 };
