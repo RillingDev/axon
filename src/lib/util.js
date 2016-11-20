@@ -29,7 +29,7 @@ export function eachNode(NodeList, fn) {
  * @param {Function} fn The Function to run
  * @returns void
  */
-export function eachObject(object, fn) {
+/*export function eachObject(object, fn) {
     const keys = Object.keys(object);
     const l = keys.length;
     let i = 0;
@@ -40,7 +40,7 @@ export function eachObject(object, fn) {
         fn(object[currentKey], currentKey, i);
         i++;
     }
-}
+}*/
 /**
  * replace string at position
  *
@@ -51,6 +51,6 @@ export function eachObject(object, fn) {
  * @param {Number} index The Index to start replacing
  * @returns {String} replacedString
  */
-export function replaceFrom(string, find, replace, index) {
+/*export function replaceFrom(string, find, replace, index) {
     return string.substr(0, index) + string.substr(index).replace(find, replace);
-}
+}*/

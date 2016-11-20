@@ -1,5 +1,5 @@
 /**
- * Axon v0.5.0
+ * Axon v0.5.1
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -148,9 +148,11 @@ var access = function access(name) {
  * Store constants
  */
 
-var _window = window;
-var _document = _window.document;
+
+var _document = document;
 var _domNameSpace = "xn";
+var _debounceTimeout = 24;
+//export const _expressionRegex = /{{(.+)}}/g;
 
 /**
  * Get directive dom name
@@ -231,7 +233,18 @@ function eachNode(NodeList, fn) {
  * @param {Function} fn The Function to run
  * @returns void
  */
+/*export function eachObject(object, fn) {
+    const keys = Object.keys(object);
+    const l = keys.length;
+    let i = 0;
 
+    while (i < l) {
+        const currentKey = keys[i];
+
+        fn(object[currentKey], currentKey, i);
+        i++;
+    }
+}*/
 /**
  * replace string at position
  *
@@ -242,6 +255,9 @@ function eachNode(NodeList, fn) {
  * @param {Number} index The Index to start replacing
  * @returns {String} replacedString
  */
+/*export function replaceFrom(string, find, replace, index) {
+    return string.substr(0, index) + string.substr(index).replace(find, replace);
+}*/
 
 /**
  * Get value of directive on node
@@ -255,9 +271,40 @@ var getDirectiveValue = function getDirectiveValue(node, name) {
     return node.attributes[dataQuery].value;
 };
 
+var debounce = function debounce(fn, wait, immediate) {
+    var timeout = void 0;
+
+    return function () {
+        var context = this;
+        var args = arguments;
+        var later = function later() {
+            timeout = null;
+            if (!immediate) {
+                fn.apply(context, args);
+            }
+        };
+        var callNow = immediate && !timeout;
+
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) {
+            fn.apply(context, args);
+        }
+    };
+};
+
+var bindEvent = function bindEvent(node, eventType, eventFn) {
+    var debouncedFn = debounce(eventFn, _debounceTimeout);
+
+    node.addEventListener(eventType, debouncedFn, false);
+};
+
 var directiveModelOnBind = function directiveModelOnBind(node, ctrl) {
     var modelType = typeof node.value !== "undefined" ? "value" : "innerText";
     var modelFor = getDirectiveValue(node, "model");
+    var eventFn = function eventFn(ev) {
+        console.log("EV!", node, ev);
+    };
 
     console.log({
         modelType: modelType,
@@ -266,8 +313,8 @@ var directiveModelOnBind = function directiveModelOnBind(node, ctrl) {
 
     node[modelType] = ctrl[modelFor];
 
-    //bindEvent(elements, "change", eventFn);
-    //bindEvent(elements, "input", eventFn);
+    bindEvent(node, "change", eventFn);
+    bindEvent(node, "input", eventFn);
 };
 
 var directiveModelOnDigest = function directiveModelOnDigest(node, ctrl) {

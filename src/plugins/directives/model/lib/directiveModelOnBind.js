@@ -2,10 +2,14 @@
 
 import queryDirective from "../../../../dom/query/queryDirective";
 import getDirectiveValue from "../../../../dom/lib/getDirectiveValue";
+import bindEvent from "../../../../dom/bind/lib/bindEvent";
 
 const directiveModelOnBind = function(node, ctrl) {
     const modelType = typeof node.value !== "undefined" ? "value" : "innerText";
     const modelFor = getDirectiveValue(node, "model");
+    const eventFn = function(ev) {
+        console.log("EV!", node, ev);
+    };
 
     console.log({
         modelType,
@@ -14,8 +18,8 @@ const directiveModelOnBind = function(node, ctrl) {
 
     node[modelType] = ctrl[modelFor];
 
-    //bindEvent(elements, "change", eventFn);
-    //bindEvent(elements, "input", eventFn);
+    bindEvent(node, "change", eventFn);
+    bindEvent(node, "input", eventFn);
 };
 
 export default directiveModelOnBind;
