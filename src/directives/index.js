@@ -1,10 +1,11 @@
 "use strict";
 
 import model from "./model/index";
-//import changeImported from "./change";
+import on from "./on/index";
 
 const directives = [
-    model
+    model,
+    on
 ];
 
 export default directives;

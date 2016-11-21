@@ -349,43 +349,75 @@ var renderDirectives = function renderDirectives(ctrl) {
     });
 };
 
+// Ctrl -> UI
 var render = function render(ctrl) {
     var renderFn = debounce(renderDirectives, _debounceTimeout);
 
     renderFn(ctrl);
 };
 
-var directiveModelOnBind = function directiveModelOnBind(node, ctrl) {
+var directiveModelOnInit = function directiveModelOnInit(node, ctrl, directiveContent) {
     var modelType = typeof node.value !== "undefined" ? "value" : "innerText";
-    var modelFor = getDirectiveValue(node, "model");
     var eventFn = function eventFn(ev) {
         render(ctrl);
     };
 
-    node[modelType] = ctrl[modelFor];
+    node[modelType] = ctrl[directiveContent];
 
     bindEvent(node, "change", eventFn);
-    bindEvent(node, "input", eventFn);
+    bindEvent(node, "keydown", eventFn);
 
     return {
         modelType: modelType,
-        modelFor: modelFor
+        modelFor: directiveContent
     };
 };
 
-var directiveModelOnDigest = function directiveModelOnDigest(node, ctrl) {
-    return true;
+var directiveModelOnDigest = function directiveModelOnDigest(node, ctrl, data) {
+    ctrl[data.modelFor] = node[data.modelType];
 };
 
 var directiveModel = {
     name: "model",
-    onBind: directiveModelOnBind,
+    onInit: directiveModelOnInit,
     onRender: directiveModelOnDigest
 };
 
-//import changeImported from "./change";
+var directiveEventOnInit = function directiveEventOnInit(node, ctrl, directiveContent) {
+    var delemitEventList = function delemitEventList(str) {
+        return str.split(",").map(function (pair) {
+            return pair.trim().split(":").map(function (item) {
+                return item.trim();
+            });
+        });
+    };
+    var events = delemitEventList(directiveContent);
 
-var directives = [directiveModel];
+    events.forEach(function (eventItem) {
+        var eventFn = function eventFn(ev) {
+            console.log("FIRED");
+            ctrl[eventItem[1]](ev, node);
+
+            //render(ctrl);
+        };
+
+        bindEvent(node, eventItem[0], eventFn);
+    });
+
+    return {
+        events: events
+    };
+};
+
+var directiveEventOnRender = function directiveEventOnRender(node, ctrl, data) {};
+
+var directiveEvent = {
+    name: "on",
+    onInit: directiveEventOnInit,
+    onRender: directiveEventOnRender
+};
+
+var directives = [directiveModel, directiveEvent];
 
 /**
  * Binds all directive plugins to the controller
@@ -403,7 +435,7 @@ var bindDirectives = function bindDirectives(ctrl) {
             directiveResult.push({
                 node: node,
                 instanceOf: directive,
-                data: directive.onBind(node, ctrl)
+                data: directive.onInit(node, ctrl, getDirectiveValue(node, directive.name))
             });
         });
 
@@ -411,6 +443,13 @@ var bindDirectives = function bindDirectives(ctrl) {
     });
 
     return result;
+};
+
+// UI -> Ctrl
+var apply = function apply(ctrl) {
+    var renderFn = debounce(renderDirectives, _debounceTimeout);
+
+    renderFn(ctrl);
 };
 
 /**
@@ -438,6 +477,9 @@ var typeController = function typeController(_module, dependencies) {
     //run first digest
     ctrl.$render = function () {
         render(ctrl);
+    };
+    ctrl.$apply = function () {
+        apply(ctrl);
     };
     //ctrl.$render();
 

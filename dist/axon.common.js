@@ -342,44 +342,77 @@ const renderDirectives = function(ctrl) {
     });
 };
 
+// Ctrl -> UI
 const render = function(ctrl) {
     const renderFn = debounce(renderDirectives, _debounceTimeout);
 
     renderFn(ctrl);
 };
 
-const directiveModelOnBind = function(node, ctrl) {
+const directiveModelOnInit = function(node, ctrl, directiveContent) {
     const modelType = typeof node.value !== "undefined" ? "value" : "innerText";
-    const modelFor = getDirectiveValue(node, "model");
     const eventFn = function(ev) {
         render(ctrl);
     };
 
-    node[modelType] = ctrl[modelFor];
+    node[modelType] = ctrl[directiveContent];
 
     bindEvent(node, "change", eventFn);
-    bindEvent(node, "input", eventFn);
+    bindEvent(node, "keydown", eventFn);
 
     return {
         modelType,
-        modelFor
+        modelFor: directiveContent
     };
 };
 
-const directiveModelOnDigest = function(node, ctrl) {
-    return true;
+const directiveModelOnDigest = function(node, ctrl, data) {
+    ctrl[data.modelFor] = node[data.modelType];
 };
 
 const directiveModel = {
     name: "model",
-    onBind: directiveModelOnBind,
+    onInit: directiveModelOnInit,
     onRender: directiveModelOnDigest
 };
 
-//import changeImported from "./change";
+const directiveEventOnInit = function(node, ctrl, directiveContent) {
+    const delemitEventList = function(str) {
+        return str.split(",").map(pair => {
+            return pair.trim().split(":").map(item => item.trim());
+        });
+    };
+    const events = delemitEventList(directiveContent);
+
+    events.forEach(eventItem => {
+        const eventFn = function(ev) {
+            console.log("FIRED");
+            ctrl[eventItem[1]](ev, node);
+
+            //render(ctrl);
+        };
+
+        bindEvent(node, eventItem[0], eventFn);
+    });
+
+    return {
+        events
+    };
+};
+
+const directiveEventOnRender = function(node, ctrl, data) {
+  
+};
+
+const directiveEvent = {
+    name: "on",
+    onInit: directiveEventOnInit,
+    onRender: directiveEventOnRender
+};
 
 const directives = [
-    directiveModel
+    directiveModel,
+    directiveEvent
 ];
 
 /**
@@ -398,7 +431,7 @@ const bindDirectives = function(ctrl) {
             directiveResult.push({
                 node,
                 instanceOf: directive,
-                data: directive.onBind(node, ctrl)
+                data: directive.onInit(node, ctrl, getDirectiveValue(node, directive.name))
             });
         });
 
@@ -406,6 +439,13 @@ const bindDirectives = function(ctrl) {
     });
 
     return result;
+};
+
+// UI -> Ctrl
+const apply = function(ctrl) {
+    const renderFn = debounce(renderDirectives, _debounceTimeout);
+
+    renderFn(ctrl);
 };
 
 /**
@@ -434,6 +474,9 @@ const typeController = function(_module, dependencies) {
     //run first digest
     ctrl.$render = function() {
         render(ctrl);
+    };
+    ctrl.$apply = function() {
+        apply(ctrl);
     };
     //ctrl.$render();
 

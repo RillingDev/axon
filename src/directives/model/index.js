@@ -1,12 +1,12 @@
 "use strict";
 
 
-import directiveModelOnBind from "./lib/directiveModelOnBind";
+import directiveModelOnInit from "./lib/directiveModelOnInit";
 import directiveModelOnRender from "./lib/directiveModelOnRender";
 
 const directiveModel = {
     name: "model",
-    onBind: directiveModelOnBind,
+    onInit: directiveModelOnInit,
     onRender: directiveModelOnRender
 };
 

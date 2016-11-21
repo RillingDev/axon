@@ -1,8 +1,9 @@
 "use strict";
 
 import queryDirective from "../../dom/query/queryDirective";
-import bindDirectives from "../../dom/bind/bindDirectives";
-import render from "../../render/index";
+import initDirectives from "../../init/initDirectives";
+import render from "../../rendering/render";
+import apply from "../../rendering/apply";
 
 /**
  * Constructor function for the controller type
@@ -26,10 +27,13 @@ const typeController = function(_module, dependencies) {
     //Bind Context
     ctrl.$context = queryDirective(_this.$context, "controller", _module.name, false);
     //ctrl.$expressions = bindExpressions(_module.fn);
-    ctrl.$directives = bindDirectives(ctrl);
+    ctrl.$directives = initDirectives(ctrl);
     //run first digest
     ctrl.$render = function() {
         render(ctrl);
+    };
+    ctrl.$apply = function() {
+        apply(ctrl);
     };
     //ctrl.$render();
 

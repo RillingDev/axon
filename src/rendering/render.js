@@ -6,6 +6,7 @@ import {
 import debounce from "../lib/debounce";
 import renderDirectives from "./lib/renderDirectives";
 
+// Ctrl -> UI
 const render = function(ctrl) {
     const renderFn = debounce(renderDirectives, _debounceTimeout);
 

@@ -19,23 +19,19 @@
     <form>
         <div>
             <label>Foo:</label>
-            <input type="text" xn-model="foo">
+            <input type="text" xn-model="foo" xn-on="keydown: getFoobar">
         </div>
+        <br>
         <div>
             <label>Bar:</label>
-            <input type="text" xn-model="bar">
+            <input type="text" xn-model="bar" xn-on="keydown: getFoobar">
         </div>
+        <br>
         <div>
             <label>Foo + Bar:</label>
             <input type="text" xn-model="foobar">
         </div>
     </form>
-    <div>
-        <p>Foo: {{foo}}
-        </p>
-        <p>Bar: {{bar}}
-        </p>
-    </div>
 
     <script src="../../dist/axon.js"></script>
     <script src="demo_1.js"></script>

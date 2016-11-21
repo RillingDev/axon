@@ -2,9 +2,10 @@
 
 import {
     eachNode
-} from "../../lib/util";
-import directives from "../../plugins/directives/index";
-import queryDirective from "../query/queryDirective";
+} from "../lib/util";
+import directives from "../directives/index";
+import queryDirective from "../dom/query/queryDirective";
+import getDirectiveValue from "../dom/lib/getDirectiveValue";
 
 /**
  * Binds all directive plugins to the controller
@@ -22,7 +23,7 @@ const bindDirectives = function(ctrl) {
             directiveResult.push({
                 node,
                 instanceOf: directive,
-                data: directive.onBind(node, ctrl)
+                data: directive.onInit(node, ctrl, getDirectiveValue(node, directive.name))
             });
         });
 

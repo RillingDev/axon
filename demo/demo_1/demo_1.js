@@ -8,15 +8,17 @@ app.controller("mainCtrl", [], function() {
 
     vm.foo = "foo";
     vm.bar = "bar";
-    vm.foobar = ""
+    vm.foobar = "notgood"
 
     vm.getFoobar = function() {
         vm.foobar = vm.foo + vm.bar;
-        vm.$render();
+
+        console.log("EVENT",  `${vm.foo} + ${vm.bar} => ${vm.foobar}`);
+        //vm.$render();
     };
 });
 
 mainCtrl = app.access("mainCtrl");
-mainCtrl.$render();
+//mainCtrl.$render();
 
 console.log(app, mainCtrl);
