@@ -5,7 +5,7 @@ import on from "./on/index";
 
 const directives = [
     model,
-    on
+    //on
 ];
 
 export default directives;

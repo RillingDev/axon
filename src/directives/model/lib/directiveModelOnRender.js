@@ -1,7 +1,8 @@
 "use strict";
 
-const directiveModelOnDigest = function(node, ctrl, data) {
-    ctrl[data.modelFor] = node[data.modelType];
+const directiveModelOnRender = function(node, ctrl, data) {
+    console.log("D:RENDER");
+    node[data.modelType] = ctrl[data.modelFor];
 };
 
-export default directiveModelOnDigest;
+export default directiveModelOnRender;
