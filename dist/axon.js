@@ -367,13 +367,23 @@ var apply = function apply(ctrl) {
     renderFn(ctrl);
 };
 
+// Ctrl -> UI
+var render = function render(ctrl) {
+    var renderFn = debounce(renderDirectives, _debounceTimeout);
+    var applyFn = debounce(applyDirectives, _debounceTimeout);
+
+    console.log("C:RENDER");
+    renderFn(ctrl);
+    applyFn(ctrl);
+};
+
 var directiveModelOnInit = function directiveModelOnInit(node, ctrl, directiveContent) {
     var modelType = typeof node.value !== "undefined" ? "value" : "innerText";
     var eventFn = function eventFn(ev) {
         apply(ctrl);
     };
 
-    node[modelType] = ctrl[directiveContent];
+    render(ctrl);
 
     //Bin dependent on nodetype
     bindEvent(node, "change", eventFn);
@@ -402,17 +412,45 @@ var directiveModel = {
     onApply: directiveModelOnApply
 };
 
-// Ctrl -> UI
-var render = function render(ctrl) {
-    var renderFn = debounce(renderDirectives, _debounceTimeout);
-    var applyFn = debounce(applyDirectives, _debounceTimeout);
+var directiveEventOnInit = function directiveEventOnInit(node, ctrl, directiveContent) {
+    var delemitEventList = function delemitEventList(str) {
+        return str.split(",").map(function (pair) {
+            return pair.trim().split(":").map(function (item) {
+                return item.trim();
+            });
+        });
+    };
+    var events = delemitEventList(directiveContent);
 
-    console.log("C:RENDER");
-    renderFn(ctrl);
-    applyFn(ctrl);
+    events.forEach(function (eventItem) {
+        var eventFn = function eventFn(ev) {
+            var fn = ctrl[eventItem[1]];
+            console.log("C:FIRED");
+            fn(ev, node);
+
+            //render(ctrl);
+        };
+
+        bindEvent(node, eventItem[0], eventFn);
+    });
+
+    return {
+        events: events
+    };
 };
 
-var directives = [directiveModel];
+var directiveEventOnRender = function directiveEventOnRender(node, ctrl, data) {};
+
+var directiveEventOnApply = function directiveEventOnApply(node, ctrl, data) {};
+
+var directiveEvent = {
+    name: "on",
+    onInit: directiveEventOnInit,
+    onRender: directiveEventOnRender,
+    onApply: directiveEventOnApply
+};
+
+var directives = [directiveEvent, directiveModel];
 
 /**
  * Binds all directive plugins to the controller

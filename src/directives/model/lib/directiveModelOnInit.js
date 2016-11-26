@@ -4,6 +4,7 @@ import queryDirective from "../../../dom/query/queryDirective";
 import getDirectiveValue from "../../../dom/lib/getDirectiveValue";
 import bindEvent from "../../../dom/event/bindEvent";
 import apply from "../../../rendering/apply";
+import render from "../../../rendering/render";
 
 const directiveModelOnInit = function(node, ctrl, directiveContent) {
     const modelType = typeof node.value !== "undefined" ? "value" : "innerText";
@@ -11,7 +12,7 @@ const directiveModelOnInit = function(node, ctrl, directiveContent) {
         apply(ctrl);
     };
 
-    node[modelType] = ctrl[directiveContent];
+    render(ctrl);
 
     //Bin dependent on nodetype
     bindEvent(node, "change", eventFn);

@@ -13,8 +13,9 @@ const directiveEventOnInit = function(node, ctrl, directiveContent) {
 
     events.forEach(eventItem => {
         const eventFn = function(ev) {
-            console.log("FIRED");
-            ctrl[eventItem[1]](ev, node);
+            const fn = ctrl[eventItem[1]];
+            console.log("C:FIRED");
+            fn(ev, node);
 
             //render(ctrl);
         };

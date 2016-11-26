@@ -360,13 +360,23 @@ const apply = function(ctrl) {
     renderFn(ctrl);
 };
 
+// Ctrl -> UI
+const render = function(ctrl) {
+    const renderFn = debounce(renderDirectives, _debounceTimeout);
+    const applyFn = debounce(applyDirectives, _debounceTimeout);
+
+    console.log("C:RENDER");
+    renderFn(ctrl);
+    applyFn(ctrl);
+};
+
 const directiveModelOnInit = function(node, ctrl, directiveContent) {
     const modelType = typeof node.value !== "undefined" ? "value" : "innerText";
     const eventFn = function(ev) {
         apply(ctrl);
     };
 
-    node[modelType] = ctrl[directiveContent];
+    render(ctrl);
 
     //Bin dependent on nodetype
     bindEvent(node, "change", eventFn);
@@ -395,19 +405,49 @@ const directiveModel = {
     onApply: directiveModelOnApply
 };
 
-// Ctrl -> UI
-const render = function(ctrl) {
-    const renderFn = debounce(renderDirectives, _debounceTimeout);
-    const applyFn = debounce(applyDirectives, _debounceTimeout);
+const directiveEventOnInit = function(node, ctrl, directiveContent) {
+    const delemitEventList = function(str) {
+        return str.split(",").map(pair => {
+            return pair.trim().split(":").map(item => item.trim());
+        });
+    };
+    const events = delemitEventList(directiveContent);
 
-    console.log("C:RENDER");
-    renderFn(ctrl);
-    applyFn(ctrl);
+    events.forEach(eventItem => {
+        const eventFn = function(ev) {
+            const fn = ctrl[eventItem[1]];
+            console.log("C:FIRED");
+            fn(ev, node);
+
+            //render(ctrl);
+        };
+
+        bindEvent(node, eventItem[0], eventFn);
+    });
+
+    return {
+        events
+    };
+};
+
+const directiveEventOnRender = function(node, ctrl, data) {
+  
+};
+
+const directiveEventOnApply = function(node, ctrl, data) {
+
+};
+
+const directiveEvent = {
+    name: "on",
+    onInit: directiveEventOnInit,
+    onRender: directiveEventOnRender,
+    onApply: directiveEventOnApply
 };
 
 const directives = [
-    directiveModel,
-    //on
+    directiveEvent,
+    directiveModel
 ];
 
 /**
