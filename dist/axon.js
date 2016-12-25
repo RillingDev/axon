@@ -95,10 +95,34 @@ var getDirectives = function getDirectives(node, allowedNames, fn) {
     });
 };
 
+var bindEventString = function bindEventString(node, eventType, eventFnString, instance) {
+    //@TODO make this safer
+    //Split up function string
+    var eventFnStringSplit = eventFnString.substr(0, eventFnString.length - 1).split("(");
+    var eventFnName = eventFnStringSplit[0];
+    var eventFnArgs = eventFnStringSplit[1].split(",").map(Number);
+    var eventFnTarget = instance.$methods[eventFnName];
+
+    if (typeof eventFnTarget === "function") {
+        var eventFn = function eventFn(e) {
+            var args = Array.from(eventFnArgs);
+
+            eventFnArgs.push(e);
+            eventFnTarget.call(instance, args);
+        };
+
+        node.addEventListener(eventType, eventFn, false);
+    } else {
+        throw new Error("Event fn '" + eventFnName + "' not found");
+    }
+};
+
 var init = function init() {
-    return crawlNodes(this.$context, function (node) {
-        return getDirectives(node, ["on"], function (name, eventType, eventFn) {
-            console.log(name, eventType, eventFn);
+    var _this = this;
+
+    return crawlNodes(_this.$context, function (node) {
+        getDirectives(node, ["on"], function (name, eventType, eventFnString) {
+            bindEventString(node, eventType, eventFnString, _this);
         });
     });
 };

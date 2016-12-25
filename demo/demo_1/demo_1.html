@@ -14,12 +14,12 @@
     <div id="myApp">
         <div>
             <label>Foo:</label>
-            <input type="text" x-model="foo" x-on:keydown="getFoobar()">
+            <input type="text" x-model="foo" x-on:input="getFoobar(1,3)">
         </div>
         <br>
         <div>
             <label>Bar:</label>
-            <input type="text" x-model="bar" x-on:keydown="getFoobar()">
+            <input type="text" x-model="bar" x-on:input="getFoobar()">
         </div>
         <br>
         <div x-if="foobar">

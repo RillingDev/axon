@@ -43,7 +43,5 @@
         "vinyl-source-stream": "^1.1.0"
     },
     "dependencies": {
-        "chevronjs": "^6.2.0",
-        "extended-types": "^1.1.1"
     }
 }
