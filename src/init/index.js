@@ -1,14 +1,16 @@
 "use strict";
 
 import crawlNodes from "../dom/crawlNodes";
+import getDirectives from "../dom/getDirectives";
 
 const init = function () {
-    const _this = this;
-
-    crawlNodes(_this.$context, node => {
-        console.log("N", node);
-
-        return true;
+    return crawlNodes(this.$context, node => {
+        return getDirectives(
+            node, ["on"],
+            (name, eventType, eventFn) => {
+                console.log(name, eventType, eventFn);
+            }
+        );
     });
 };
 

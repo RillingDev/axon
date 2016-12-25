@@ -7,12 +7,9 @@
 var Axon = (function () {
 'use strict';
 
-/**
- * Store constants
- */
-
-
 var _document = document;
+
+var DOM_PREFIX = "x-";
 
 /**
  * iterate over NodeList
@@ -42,6 +39,27 @@ function eachNode(nodeList, fn) {
  * @returns void
  */
 
+
+/**
+ * Iterate over NamedNodeMap
+ *
+ * @private
+ * @param {NamedNodeMap} namedNodeMap The NamedNodeMap to iterate over
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
+function eachAttribute(namedNodeMap, fn) {
+    var l = namedNodeMap.length;
+    var i = 0;
+
+    while (i < l) {
+        var item = namedNodeMap.item(i);
+
+        fn(item.name, item.value, i);
+        i++;
+    }
+}
+
 var crawlNodes = function crawlNodes(entry, fn) {
     var recurseNodes = function recurseNodes(node, fn) {
         var children = node.children;
@@ -62,13 +80,26 @@ var crawlNodes = function crawlNodes(entry, fn) {
     return recurseNodes(entry, fn);
 };
 
+var getDirectives = function getDirectives(node, allowedNames, fn) {
+    eachAttribute(node.attributes, function (attributeName, attributeValue) {
+
+        //If is Axon attribute
+        if (attributeName.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
+            var splitName = attributeName.replace(DOM_PREFIX, "").split(":");
+
+            //If name is allowed
+            if (allowedNames.indexOf(splitName[0]) !== -1) {
+                fn(splitName[0], splitName[1], attributeValue);
+            }
+        }
+    });
+};
+
 var init = function init() {
-    var _this = this;
-
-    crawlNodes(_this.$context, function (node) {
-        console.log("N", node);
-
-        return true;
+    return crawlNodes(this.$context, function (node) {
+        return getDirectives(node, ["on"], function (name, eventType, eventFn) {
+            console.log(name, eventType, eventFn);
+        });
     });
 };
 
