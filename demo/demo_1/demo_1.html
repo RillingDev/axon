@@ -1,37 +1,32 @@
 <!doctype html>
-<html lang="en" xn-app="myApp">
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
     <title>AxonJS Demo</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- Place favicon.ico in the root directory -->
 </head>
 
-<body xn-controller="mainCtrl">
-    <!--[if lt IE 8]> <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p> <![endif]-->
+<body>
+    <h1>Demo 1</h1>
 
-    <!-- Add your site or application content here -->
-    <p>Demo 1</p>
-    <form>
+    <div id="myApp">
         <div>
             <label>Foo:</label>
-            <input type="text" xn-model="foo" xn-on="keydown: getFoobar">
+            <input type="text" x-model="foo" x-on:keydown="getFoobar()">
         </div>
         <br>
         <div>
             <label>Bar:</label>
-            <input type="text" xn-model="bar" xn-on="keydown: getFoobar">
+            <input type="text" x-model="bar" x-on:keydown="getFoobar()">
         </div>
         <br>
-        <div>
+        <div x-if="foobar">
             <label>Foo + Bar:</label>
-            <input type="text" xn-model="foobar">
+            <input type="text" x-model="foobar">
         </div>
-    </form>
+    </div>
 
     <script src="../../dist/axon.js"></script>
     <script src="demo_1.js"></script>
