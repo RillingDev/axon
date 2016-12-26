@@ -7,7 +7,7 @@ import {
     eachAttribute
 } from "../lib/util";
 
-const getDirectives = function (node, allowedNames, fn) {
+const eachDirective = function (node, allowedNames, fn) {
     eachAttribute(node.attributes, (attributeName, attributeValue) => {
 
         //If is Axon attribute
@@ -16,10 +16,14 @@ const getDirectives = function (node, allowedNames, fn) {
 
             //If name is allowed
             if (allowedNames.indexOf(splitName[0]) !== -1) {
-                fn(splitName[0], splitName[1], attributeValue);
+                fn({
+                    name: splitName[0],
+                    secondary: splitName[1],
+                    value: attributeValue
+                });
             }
         }
     });
 };
 
-export default getDirectives;
+export default eachDirective;

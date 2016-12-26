@@ -20,16 +20,16 @@ const Axon = function (appConfig) {
     _this.$data = appConfig.data;
     _this.$methods = appConfig.methods;
 
-    _this.init();
-    _this.render();
+    _this.$init();
+    _this.$render();
 };
 
 /**
  * Expose Axon methods
  */
 Axon.prototype = {
-    init,
-    render,
+    $init:init,
+    $render:render,
     constructor: Axon,
 };
 

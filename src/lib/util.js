@@ -19,6 +19,26 @@ export function eachNode(nodeList, fn) {
 }
 
 /**
+ * Iterate over NamedNodeMap
+ *
+ * @private
+ * @param {NamedNodeMap} namedNodeMap The NamedNodeMap to iterate over
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
+export function eachAttribute(namedNodeMap, fn) {
+    const l = namedNodeMap.length;
+    let i = 0;
+
+    while (i < l) {
+        const item = namedNodeMap.item(i);
+
+        fn(item.name, item.value, i);
+        i++;
+    }
+}
+
+/**
  * Iterate over Object
  *
  * @private
@@ -35,26 +55,6 @@ export function eachObject(object, fn) {
         const currentKey = keys[i];
 
         fn(object[currentKey], currentKey, i);
-        i++;
-    }
-}
-
-/**
- * Iterate over NamedNodeMap
- *
- * @private
- * @param {NamedNodeMap} namedNodeMap The NamedNodeMap to iterate over
- * @param {Function} fn The Function to run
- * @returns void
- */
-export function eachAttribute(namedNodeMap, fn) {
-    const l = namedNodeMap.length;
-    let i = 0;
-
-    while (i < l) {
-        const item = namedNodeMap.item(i);
-
-        fn(item.name, item.value, i);
         i++;
     }
 }

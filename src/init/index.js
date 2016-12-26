@@ -1,17 +1,22 @@
 "use strict";
 
 import crawlNodes from "../dom/crawlNodes";
-import getDirectives from "../dom/getDirectives";
-import bindEventString from "../dom/bindEventString";
+import eachDirective from "../dom/eachDirective";
+import bindEvent from "../dom/bindEvent";
+
+import retrieveMethod from "../controller/retrieveMethod";
 
 const init = function () {
     const _this = this;
 
-    return crawlNodes(_this.$context, node => {
-        getDirectives(
+    //Bind events
+    crawlNodes(_this.$context, node => {
+        eachDirective(
             node, ["on"],
-            (name, eventType, eventFnString) => {
-                bindEventString(node, eventType, eventFnString, _this);
+            directive => {
+                const eventFn = retrieveMethod(_this, directive.value);
+
+                bindEvent(node, directive.secondary, eventFn, [], _this);
             }
         );
     });

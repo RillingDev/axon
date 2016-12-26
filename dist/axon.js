@@ -10,6 +10,7 @@ var Axon = (function () {
 var _document = document;
 
 var DOM_PREFIX = "x-";
+var DEBOUNCE_TIMEOUT = 40; //event timeout in ms
 
 /**
  * iterate over NodeList
@@ -31,16 +32,6 @@ function eachNode(nodeList, fn) {
 }
 
 /**
- * Iterate over Object
- *
- * @private
- * @param {Object} object The Object to iterate over
- * @param {Function} fn The Function to run
- * @returns void
- */
-
-
-/**
  * Iterate over NamedNodeMap
  *
  * @private
@@ -59,6 +50,15 @@ function eachAttribute(namedNodeMap, fn) {
         i++;
     }
 }
+
+/**
+ * Iterate over Object
+ *
+ * @private
+ * @param {Object} object The Object to iterate over
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
 
 var crawlNodes = function crawlNodes(entry, fn) {
     var recurseNodes = function recurseNodes(node, fn) {
@@ -80,7 +80,7 @@ var crawlNodes = function crawlNodes(entry, fn) {
     return recurseNodes(entry, fn);
 };
 
-var getDirectives = function getDirectives(node, allowedNames, fn) {
+var eachDirective = function eachDirective(node, allowedNames, fn) {
     eachAttribute(node.attributes, function (attributeName, attributeValue) {
 
         //If is Axon attribute
@@ -89,40 +89,64 @@ var getDirectives = function getDirectives(node, allowedNames, fn) {
 
             //If name is allowed
             if (allowedNames.indexOf(splitName[0]) !== -1) {
-                fn(splitName[0], splitName[1], attributeValue);
+                fn({
+                    name: splitName[0],
+                    secondary: splitName[1],
+                    value: attributeValue
+                });
             }
         }
     });
 };
 
-var bindEventString = function bindEventString(node, eventType, eventFnString, instance) {
-    //@TODO make this safer
-    //Split up function string
-    var eventFnStringSplit = eventFnString.substr(0, eventFnString.length - 1).split("(");
-    var eventFnName = eventFnStringSplit[0];
-    var eventFnArgs = eventFnStringSplit[1].split(",").map(Number);
-    var eventFnTarget = instance.$methods[eventFnName];
+var debounce = function debounce(fn, wait, immediate) {
+    var timeout = void 0;
 
-    if (typeof eventFnTarget === "function") {
-        var eventFn = function eventFn(e) {
-            var args = Array.from(eventFnArgs);
-
-            eventFnArgs.push(e);
-            eventFnTarget.call(instance, args);
+    return function () {
+        var context = this;
+        var args = Array.from(arguments);
+        var callNow = immediate && !timeout;
+        var later = function later() {
+            timeout = null;
+            if (!immediate) {
+                fn.apply(context, args);
+            }
         };
 
-        node.addEventListener(eventType, eventFn, false);
-    } else {
-        throw new Error("Event fn '" + eventFnName + "' not found");
-    }
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) {
+            fn.apply(context, args);
+        }
+    };
+};
+
+var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance) {
+    var debouncedFn = debounce(eventFn, DEBOUNCE_TIMEOUT);
+    var eventFnWrapper = function eventFnWrapper(e) {
+        var args = Array.from(eventArgs);
+
+        args.push(e);
+
+        return debouncedFn.apply(instance, args);
+    };
+
+    return node.addEventListener(eventType, eventFnWrapper, false);
+};
+
+var retrieveMethod = function retrieveMethod(app, methodName) {
+    return app.$methods.getFoobar;
 };
 
 var init = function init() {
     var _this = this;
 
-    return crawlNodes(_this.$context, function (node) {
-        getDirectives(node, ["on"], function (name, eventType, eventFnString) {
-            bindEventString(node, eventType, eventFnString, _this);
+    //Bind events
+    crawlNodes(_this.$context, function (node) {
+        eachDirective(node, ["on"], function (directive) {
+            var eventFn = retrieveMethod(_this, directive.value);
+
+            bindEvent(node, directive.secondary, eventFn, [], _this);
         });
     });
 };
@@ -145,16 +169,16 @@ var Axon = function Axon(appConfig) {
     _this.$data = appConfig.data;
     _this.$methods = appConfig.methods;
 
-    _this.init();
-    _this.render();
+    _this.$init();
+    _this.$render();
 };
 
 /**
  * Expose Axon methods
  */
 Axon.prototype = {
-    init: init,
-    render: render,
+    $init: init,
+    $render: render,
     constructor: Axon
 };
 

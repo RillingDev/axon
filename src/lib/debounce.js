@@ -1,18 +1,18 @@
 "use strict";
 
-const debounce = function(fn, wait, immediate) {
+const debounce = function (fn, wait, immediate) {
     let timeout;
 
-    return function() {
+    return function () {
         const context = this;
-        const args = arguments;
-        const later = function() {
+        const args = Array.from(arguments);
+        const callNow = immediate && !timeout;
+        const later = function () {
             timeout = null;
             if (!immediate) {
                 fn.apply(context, args);
             }
         };
-        const callNow = immediate && !timeout;
 
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);

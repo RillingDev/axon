@@ -9,6 +9,7 @@
 const _document = document;
 
 const DOM_PREFIX = "x-";
+const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
 
 /**
  * iterate over NodeList
@@ -27,16 +28,6 @@ function eachNode(nodeList, fn) {
         i++;
     }
 }
-
-/**
- * Iterate over Object
- *
- * @private
- * @param {Object} object The Object to iterate over
- * @param {Function} fn The Function to run
- * @returns void
- */
-
 
 /**
  * Iterate over NamedNodeMap
@@ -58,6 +49,15 @@ function eachAttribute(namedNodeMap, fn) {
     }
 }
 
+/**
+ * Iterate over Object
+ *
+ * @private
+ * @param {Object} object The Object to iterate over
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
+
 const crawlNodes = function (entry, fn) {
     const recurseNodes = function (node, fn) {
         const children = node.children;
@@ -78,7 +78,7 @@ const crawlNodes = function (entry, fn) {
     return recurseNodes(entry, fn)
 };
 
-const getDirectives = function (node, allowedNames, fn) {
+const eachDirective = function (node, allowedNames, fn) {
     eachAttribute(node.attributes, (attributeName, attributeValue) => {
 
         //If is Axon attribute
@@ -87,42 +87,66 @@ const getDirectives = function (node, allowedNames, fn) {
 
             //If name is allowed
             if (allowedNames.indexOf(splitName[0]) !== -1) {
-                fn(splitName[0], splitName[1], attributeValue);
+                fn({
+                    name: splitName[0],
+                    secondary: splitName[1],
+                    value: attributeValue
+                });
             }
         }
     });
 };
 
-const bindEventString = function (node, eventType, eventFnString, instance) {
-    //@TODO make this safer
-    //Split up function string
-    const eventFnStringSplit = eventFnString.substr(0, eventFnString.length - 1).split("(");
-    const eventFnName = eventFnStringSplit[0];
-    const eventFnArgs = eventFnStringSplit[1].split(",").map(Number);
-    const eventFnTarget = instance.$methods[eventFnName];
+const debounce = function (fn, wait, immediate) {
+    let timeout;
 
-    if (typeof eventFnTarget === "function") {
-        const eventFn = function (e) {
-            const args = Array.from(eventFnArgs);
-
-            eventFnArgs.push(e);
-            eventFnTarget.call(instance, args);
+    return function () {
+        const context = this;
+        const args = Array.from(arguments);
+        const callNow = immediate && !timeout;
+        const later = function () {
+            timeout = null;
+            if (!immediate) {
+                fn.apply(context, args);
+            }
         };
 
-        node.addEventListener(eventType, eventFn, false);
-    } else {
-        throw new Error(`Event fn '${eventFnName}' not found`);
-    }
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) {
+            fn.apply(context, args);
+        }
+    };
+};
+
+const bindEvent = function (node, eventType, eventFn, eventArgs, instance) {
+    const debouncedFn = debounce(eventFn, DEBOUNCE_TIMEOUT);
+    const eventFnWrapper = function (e) {
+        const args = Array.from(eventArgs);
+
+        args.push(e);
+
+        return debouncedFn.apply(instance, args);
+    };
+
+    return node.addEventListener(eventType, eventFnWrapper, false);
+};
+
+const retrieveMethod = function (app, methodName) {
+    return app.$methods.getFoobar;
 };
 
 const init = function () {
     const _this = this;
 
-    return crawlNodes(_this.$context, node => {
-        getDirectives(
+    //Bind events
+    crawlNodes(_this.$context, node => {
+        eachDirective(
             node, ["on"],
-            (name, eventType, eventFnString) => {
-                bindEventString(node, eventType, eventFnString, _this);
+            directive => {
+                const eventFn = retrieveMethod(_this, directive.value);
+
+                bindEvent(node, directive.secondary, eventFn, [], _this);
             }
         );
     });
@@ -147,16 +171,16 @@ const Axon = function (appConfig) {
     _this.$data = appConfig.data;
     _this.$methods = appConfig.methods;
 
-    _this.init();
-    _this.render();
+    _this.$init();
+    _this.$render();
 };
 
 /**
  * Expose Axon methods
  */
 Axon.prototype = {
-    init,
-    render,
+    $init:init,
+    $render:render,
     constructor: Axon,
 };
 
