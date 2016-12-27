@@ -1,5 +1,5 @@
 /**
- * Axon v0.6.0
+ * Axon v0.7.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -122,12 +122,25 @@ var debounce = function debounce(fn, wait, immediate) {
     };
 };
 
+var getNodeValueType = function getNodeValueType(node) {
+    if (typeof node.value !== "undefined") {
+        return "value";
+    } else if (typeof node.textContent !== "undefined") {
+        return "textContent";
+    } else {
+        return "innerHTML";
+    }
+};
+
 var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance) {
     var debouncedFn = debounce(eventFn, DEBOUNCE_TIMEOUT);
-    var eventFnWrapper = function eventFnWrapper(e) {
+    var nodeValueType = getNodeValueType(node);
+
+    var eventFnWrapper = function eventFnWrapper(event) {
+        var target = event.target;
         var args = Array.from(eventArgs);
 
-        args.push(e.target, e);
+        args.push(target[nodeValueType], target, event);
 
         return debouncedFn.apply(instance, args);
     };
@@ -196,16 +209,10 @@ var init = function init() {
 };
 
 var model = function model(instance, node, propName) {
-    var _this = this;
+    var nodeValueType = getNodeValueType(node);
     var propValue = retrieveProp(instance, propName);
 
-    if (typeof node.value !== "undefined") {
-        node.value = propValue;
-    } else if (typeof node.textContent !== "undefined") {
-        node.textContent = propValue;
-    } else {
-        node.innerHTML = propValue;
-    }
+    node[nodeValueType] = propValue;
 };
 
 var render = function render() {

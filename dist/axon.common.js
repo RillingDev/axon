@@ -1,5 +1,5 @@
 /**
- * Axon v0.6.0
+ * Axon v0.7.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -59,8 +59,8 @@ function eachAttribute(namedNodeMap, fn) {
     }
 }
 
-const crawlNodes = function (entry, fn) {
-    const recurseNodes = function (node, fn) {
+const crawlNodes = function(entry, fn) {
+    const recurseNodes = function(node, fn) {
         const children = node.children;
 
         if (children && children.length > 0) {
@@ -79,7 +79,7 @@ const crawlNodes = function (entry, fn) {
     return recurseNodes(entry, fn)
 };
 
-const eachDirective = function (node, allowedNames, fn) {
+const eachDirective = function(node, allowedNames, fn) {
     eachAttribute(node.attributes, (attributeName, attributeValue) => {
 
         //If is Axon attribute
@@ -98,14 +98,14 @@ const eachDirective = function (node, allowedNames, fn) {
     });
 };
 
-const debounce = function (fn, wait, immediate) {
+const debounce = function(fn, wait, immediate) {
     let timeout;
 
-    return function () {
+    return function() {
         const context = this;
         const args = Array.from(arguments);
         const callNow = immediate && !timeout;
-        const later = function () {
+        const later = function() {
             timeout = null;
             if (!immediate) {
                 fn.apply(context, args);
@@ -120,12 +120,25 @@ const debounce = function (fn, wait, immediate) {
     };
 };
 
-const bindEvent = function (node, eventType, eventFn, eventArgs, instance) {
+const getNodeValueType = function(node) {
+    if (typeof node.value !== "undefined") {
+        return "value";
+    } else if (typeof node.textContent !== "undefined") {
+        return "textContent";
+    } else {
+        return "innerHTML";
+    }
+};
+
+const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
     const debouncedFn = debounce(eventFn, DEBOUNCE_TIMEOUT);
-    const eventFnWrapper = function (e) {
+    const nodeValueType = getNodeValueType(node);
+
+    const eventFnWrapper = function(event) {
+        const target = event.target;
         const args = Array.from(eventArgs);
 
-        args.push(e.target,e);
+        args.push(target[nodeValueType], target, event);
 
         return debouncedFn.apply(instance, args);
     };
@@ -133,7 +146,7 @@ const bindEvent = function (node, eventType, eventFn, eventArgs, instance) {
     return node.addEventListener(eventType, eventFnWrapper, false);
 };
 
-const retrieveProp = function (instance, propName) {
+const retrieveProp = function(instance, propName) {
     const castNumber = Number(propName);
     const stringChars = ["'", "\"", "`"];
 
@@ -157,7 +170,7 @@ const retrieveProp = function (instance, propName) {
     return null;
 };
 
-const retrieveMethod = function (instance, methodString) {
+const retrieveMethod = function(instance, methodString) {
     const methodStringSplit = methodString.substr(0, methodString.length - 1).split("(");
     const methodName = methodStringSplit[0];
     const methodArgs = methodStringSplit[1].split(",").filter(item => item !== "").map(arg => retrieveProp(instance, arg));
@@ -174,7 +187,7 @@ const retrieveMethod = function (instance, methodString) {
     }
 };
 
-const init = function () {
+const init = function() {
     const _this = this;
 
     //Bind events
@@ -192,20 +205,14 @@ const init = function () {
     console.log("CALLED $init");
 };
 
-const model = function (instance, node, propName) {
-    const _this = this;
+const model = function(instance, node, propName) {
+    const nodeValueType = getNodeValueType(node);
     const propValue = retrieveProp(instance, propName);
 
-    if (typeof node.value !== "undefined") {
-        node.value = propValue;
-    } else if (typeof node.textContent !== "undefined") {
-        node.textContent = propValue;
-    } else {
-        node.innerHTML = propValue;
-    }
+    node[nodeValueType] = propValue;
 };
 
-const render = function () {
+const render = function() {
     const _this = this;
 
     //Bind events
@@ -230,7 +237,7 @@ const render = function () {
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-const Axon = function (appConfig) {
+const Axon = function(appConfig) {
     const _this = this;
 
     _this.$context = _document.querySelector(appConfig.context);
@@ -245,8 +252,8 @@ const Axon = function (appConfig) {
  * Expose Axon methods
  */
 Axon.prototype = {
-    $init:init,
-    $render:render,
+    $init: init,
+    $render: render,
     constructor: Axon,
 };
 

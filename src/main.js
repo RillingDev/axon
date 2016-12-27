@@ -13,7 +13,7 @@ import render from "./render/index";
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-const Axon = function (appConfig) {
+const Axon = function(appConfig) {
     const _this = this;
 
     _this.$context = _document.querySelector(appConfig.context);
@@ -28,8 +28,8 @@ const Axon = function (appConfig) {
  * Expose Axon methods
  */
 Axon.prototype = {
-    $init:init,
-    $render:render,
+    $init: init,
+    $render: render,
     constructor: Axon,
 };
 

@@ -4,13 +4,17 @@ import debounce from "../lib/debounce";
 import {
     DEBOUNCE_TIMEOUT
 } from "../lib/constants";
+import getNodeValueType from "./getNodeValueType";
 
-const bindEvent = function (node, eventType, eventFn, eventArgs, instance) {
+const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
     const debouncedFn = debounce(eventFn, DEBOUNCE_TIMEOUT);
-    const eventFnWrapper = function (e) {
+    const nodeValueType = getNodeValueType(node);
+
+    const eventFnWrapper = function(event) {
+        const target = event.target;
         const args = Array.from(eventArgs);
 
-        args.push(e.target,e);
+        args.push(target[nodeValueType], target, event);
 
         return debouncedFn.apply(instance, args);
     };

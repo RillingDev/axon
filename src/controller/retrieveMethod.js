@@ -2,7 +2,7 @@
 
 import retrieveProp from "./retrieveProp";
 
-const retrieveMethod = function (instance, methodString) {
+const retrieveMethod = function(instance, methodString) {
     const methodStringSplit = methodString.substr(0, methodString.length - 1).split("(");
     const methodName = methodStringSplit[0];
     const methodArgs = methodStringSplit[1].split(",").filter(item => item !== "").map(arg => retrieveProp(instance, arg));

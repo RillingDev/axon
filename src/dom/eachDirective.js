@@ -7,7 +7,7 @@ import {
     eachAttribute
 } from "../lib/util";
 
-const eachDirective = function (node, allowedNames, fn) {
+const eachDirective = function(node, allowedNames, fn) {
     eachAttribute(node.attributes, (attributeName, attributeValue) => {
 
         //If is Axon attribute

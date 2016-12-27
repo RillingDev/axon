@@ -4,8 +4,8 @@ import {
     eachNode
 } from "../lib/util";
 
-const crawlNodes = function (entry, fn) {
-    const recurseNodes = function (node, fn) {
+const crawlNodes = function(entry, fn) {
+    const recurseNodes = function(node, fn) {
         const children = node.children;
 
         if (children && children.length > 0) {

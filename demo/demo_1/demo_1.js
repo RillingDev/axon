@@ -8,10 +8,10 @@ const app = new Axon({
         foobar: "foooobaaar"
     },
     methods: {
-        changeValue: function (type, target, event) {
+        changeValue: function (type, value) {
             const _this = this;
 
-            _this.$data[type] = target.value;
+            _this.$data[type] = value;
             _this.$data.foobar = _this.$data.foo + _this.$data.bar;
 
             console.log(_this.$data);

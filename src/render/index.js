@@ -5,7 +5,7 @@ import eachDirective from "../dom/eachDirective";
 
 import model from "./model";
 
-const render = function () {
+const render = function() {
     const _this = this;
 
     //Bind events

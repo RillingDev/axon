@@ -6,7 +6,7 @@ import bindEvent from "../dom/bindEvent";
 
 import retrieveMethod from "../controller/retrieveMethod";
 
-const init = function () {
+const init = function() {
     const _this = this;
 
     //Bind events

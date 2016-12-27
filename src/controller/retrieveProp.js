@@ -1,6 +1,6 @@
 "use strict";
 
-const retrieveProp = function (instance, propName) {
+const retrieveProp = function(instance, propName) {
     const castNumber = Number(propName);
     const stringChars = ["'", "\"", "`"];
 
