@@ -125,7 +125,7 @@ const bindEvent = function (node, eventType, eventFn, eventArgs, instance) {
     const eventFnWrapper = function (e) {
         const args = Array.from(eventArgs);
 
-        args.push(e);
+        args.push(e.target,e);
 
         return debouncedFn.apply(instance, args);
     };
@@ -192,8 +192,33 @@ const init = function () {
     console.log("CALLED $init");
 };
 
+const model = function (instance, node, propName) {
+    const _this = this;
+    const propValue = retrieveProp(instance, propName);
+
+    if (typeof node.value !== "undefined") {
+        node.value = propValue;
+    } else if (typeof node.textContent !== "undefined") {
+        node.textContent = propValue;
+    } else {
+        node.innerHTML = propValue;
+    }
+};
+
 const render = function () {
     const _this = this;
+
+    //Bind events
+    crawlNodes(_this.$context, node => {
+        eachDirective(
+            node, ["model"],
+            directive => {
+                if (directive.name === "model") {
+                    model(_this, node, directive.value);
+                }
+            }
+        );
+    });
 
     console.log("CALLED $render");
 };

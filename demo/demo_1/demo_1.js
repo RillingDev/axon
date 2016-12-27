@@ -5,15 +5,16 @@ const app = new Axon({
     data: {
         foo: "foooo",
         bar: "baaar",
-        foobar: "wrong!"
+        foobar: "foooobaaar"
     },
     methods: {
-        getFoobar: function (a, b) {
+        changeValue: function (type, target, event) {
             const _this = this;
 
-            console.log("getFoobar()!", [a, b]);
-
+            _this.$data[type] = target.value;
             _this.$data.foobar = _this.$data.foo + _this.$data.bar;
+
+            console.log(_this.$data);
             _this.$render();
         }
     }

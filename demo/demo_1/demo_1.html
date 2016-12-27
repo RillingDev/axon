@@ -14,12 +14,12 @@
     <div id="myApp">
         <div>
             <label>Foo:</label>
-            <input type="text" x-model="foo" x-on:input="getFoobar(1,3)">
+            <input type="text" x-model="foo" x-on:input="changeValue('foo')">
         </div>
         <br>
         <div>
             <label>Bar:</label>
-            <input type="text" x-model="bar" x-on:input="getFoobar('foo',foo)">
+            <input type="text" x-model="bar" x-on:input="changeValue('bar')">
         </div>
         <br>
         <div x-if="foobar">

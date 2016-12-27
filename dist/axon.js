@@ -127,7 +127,7 @@ var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance
     var eventFnWrapper = function eventFnWrapper(e) {
         var args = Array.from(eventArgs);
 
-        args.push(e);
+        args.push(e.target, e);
 
         return debouncedFn.apply(instance, args);
     };
@@ -195,8 +195,30 @@ var init = function init() {
     console.log("CALLED $init");
 };
 
+var model = function model(instance, node, propName) {
+    var _this = this;
+    var propValue = retrieveProp(instance, propName);
+
+    if (typeof node.value !== "undefined") {
+        node.value = propValue;
+    } else if (typeof node.textContent !== "undefined") {
+        node.textContent = propValue;
+    } else {
+        node.innerHTML = propValue;
+    }
+};
+
 var render = function render() {
     var _this = this;
+
+    //Bind events
+    crawlNodes(_this.$context, function (node) {
+        eachDirective(node, ["model"], function (directive) {
+            if (directive.name === "model") {
+                model(_this, node, directive.value);
+            }
+        });
+    });
 
     console.log("CALLED $render");
 };

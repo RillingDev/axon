@@ -10,7 +10,7 @@ const bindEvent = function (node, eventType, eventFn, eventArgs, instance) {
     const eventFnWrapper = function (e) {
         const args = Array.from(eventArgs);
 
-        args.push(e);
+        args.push(e.target,e);
 
         return debouncedFn.apply(instance, args);
     };
