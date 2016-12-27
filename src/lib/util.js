@@ -9,7 +9,7 @@
  * @param {Function} fn The Function to run
  * @returns void
  */
-export function eachObject(object, fn) {
+const eachObject = function(object, fn) {
     const keys = Object.keys(object);
     const l = keys.length;
     let i = 0;
@@ -30,7 +30,7 @@ export function eachObject(object, fn) {
  * @param {Function} fn The Function to call
  * @returns void
  */
-export function eachNode(nodeList, fn) {
+const eachNode = function(nodeList, fn) {
     const l = nodeList.length;
     let i = 0;
 
@@ -48,7 +48,7 @@ export function eachNode(nodeList, fn) {
  * @param {Function} fn The Function to run
  * @returns void
  */
-export function eachAttribute(namedNodeMap, fn) {
+const eachAttribute = function(namedNodeMap, fn) {
     const l = namedNodeMap.length;
     let i = 0;
 
@@ -59,3 +59,9 @@ export function eachAttribute(namedNodeMap, fn) {
         i++;
     }
 }
+
+export {
+    eachObject,
+    eachNode,
+    eachAttribute
+};

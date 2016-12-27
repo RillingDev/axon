@@ -12,16 +12,6 @@ const DOM_PREFIX = "x-";
 const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
 
 /**
- * Iterate over Object
- *
- * @private
- * @param {Object} object The Object to iterate over
- * @param {Function} fn The Function to run
- * @returns void
- */
-
-
-/**
  * iterate over NodeList
  *
  * @private
@@ -29,7 +19,7 @@ const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
  * @param {Function} fn The Function to call
  * @returns void
  */
-function eachNode(nodeList, fn) {
+const eachNode = function(nodeList, fn) {
     const l = nodeList.length;
     let i = 0;
 
@@ -37,7 +27,7 @@ function eachNode(nodeList, fn) {
         fn(nodeList[i], i);
         i++;
     }
-}
+};
 
 /**
  * Iterate over NamedNodeMap
@@ -47,7 +37,7 @@ function eachNode(nodeList, fn) {
  * @param {Function} fn The Function to run
  * @returns void
  */
-function eachAttribute(namedNodeMap, fn) {
+const eachAttribute = function(namedNodeMap, fn) {
     const l = namedNodeMap.length;
     let i = 0;
 
@@ -57,7 +47,7 @@ function eachAttribute(namedNodeMap, fn) {
         fn(item.name, item.value, i);
         i++;
     }
-}
+};
 
 const crawlNodes = function(entry, fn) {
     const recurseNodes = function(node, fn) {

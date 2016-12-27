@@ -1,7 +1,14 @@
 "use strict";
 
-export const _window = window;
-export const _document = document;
+const _window = window;
+const _document = document;
 
-export const DOM_PREFIX = "x-";
-export const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
+const DOM_PREFIX = "x-";
+const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
+
+export {
+    _window,
+    _document,
+    DEBOUNCE_TIMEOUT,
+    DOM_PREFIX
+};
