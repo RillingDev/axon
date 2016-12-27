@@ -12,6 +12,16 @@ const DOM_PREFIX = "x-";
 const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
 
 /**
+ * Iterate over Object
+ *
+ * @private
+ * @param {Object} object The Object to iterate over
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
+
+
+/**
  * iterate over NodeList
  *
  * @private
@@ -48,15 +58,6 @@ function eachAttribute(namedNodeMap, fn) {
         i++;
     }
 }
-
-/**
- * Iterate over Object
- *
- * @private
- * @param {Object} object The Object to iterate over
- * @param {Function} fn The Function to run
- * @returns void
- */
 
 const crawlNodes = function (entry, fn) {
     const recurseNodes = function (node, fn) {
@@ -132,8 +133,45 @@ const bindEvent = function (node, eventType, eventFn, eventArgs, instance) {
     return node.addEventListener(eventType, eventFnWrapper, false);
 };
 
-const retrieveMethod = function (app, methodName) {
-    return app.$methods.getFoobar;
+const retrieveProp = function (instance, propName) {
+    const castNumber = Number(propName);
+    const stringChars = ["'", "\"", "`"];
+
+    if (!isNaN(castNumber)) {
+        //If number
+        return castNumber;
+    } else if (stringChars.includes(propName[0])) {
+        //If String
+        return propName.substr(1, propName.length - 2);
+    } else {
+        //If prop
+        const prop = instance.$data[propName];
+
+        if (typeof prop === "undefined") {
+            throw new Error(`prop '${propName}' not found`);
+        } else {
+            return prop;
+        }
+    }
+
+    return null;
+};
+
+const retrieveMethod = function (instance, methodString) {
+    const methodStringSplit = methodString.substr(0, methodString.length - 1).split("(");
+    const methodName = methodStringSplit[0];
+    const methodArgs = methodStringSplit[1].split(",").filter(item => item !== "").map(arg => retrieveProp(instance, arg));
+
+    const methodFn = instance.$methods[methodName];
+
+    if (typeof methodFn !== "function") {
+        throw new Error(`method '${methodName}' not found`);
+    } else {
+        return {
+            fn: methodFn,
+            args: methodArgs
+        };
+    }
 };
 
 const init = function () {
@@ -144,17 +182,20 @@ const init = function () {
         eachDirective(
             node, ["on"],
             directive => {
-                const eventFn = retrieveMethod(_this, directive.value);
+                const targetMethod = retrieveMethod(_this, directive.value);
 
-                bindEvent(node, directive.secondary, eventFn, [], _this);
+                bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
             }
         );
     });
+
+    console.log("CALLED $init");
 };
 
 const render = function () {
     const _this = this;
 
+    console.log("CALLED $render");
 };
 
 /**

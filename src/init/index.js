@@ -14,12 +14,14 @@ const init = function () {
         eachDirective(
             node, ["on"],
             directive => {
-                const eventFn = retrieveMethod(_this, directive.value);
+                const targetMethod = retrieveMethod(_this, directive.value);
 
-                bindEvent(node, directive.secondary, eventFn, [], _this);
+                bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
             }
         );
     });
+
+    console.log("CALLED $init");
 };
 
 export default init;

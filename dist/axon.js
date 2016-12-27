@@ -13,6 +13,17 @@ var DOM_PREFIX = "x-";
 var DEBOUNCE_TIMEOUT = 40; //event timeout in ms
 
 /**
+ * Iterate over Object
+ *
+ * @private
+ * @param {Object} object The Object to iterate over
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
+
+
+
+/**
  * iterate over NodeList
  *
  * @private
@@ -20,7 +31,6 @@ var DEBOUNCE_TIMEOUT = 40; //event timeout in ms
  * @param {Function} fn The Function to call
  * @returns void
  */
-
 function eachNode(nodeList, fn) {
     var l = nodeList.length;
     var i = 0;
@@ -50,15 +60,6 @@ function eachAttribute(namedNodeMap, fn) {
         i++;
     }
 }
-
-/**
- * Iterate over Object
- *
- * @private
- * @param {Object} object The Object to iterate over
- * @param {Function} fn The Function to run
- * @returns void
- */
 
 var crawlNodes = function crawlNodes(entry, fn) {
     var recurseNodes = function recurseNodes(node, fn) {
@@ -134,8 +135,49 @@ var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance
     return node.addEventListener(eventType, eventFnWrapper, false);
 };
 
-var retrieveMethod = function retrieveMethod(app, methodName) {
-    return app.$methods.getFoobar;
+var retrieveProp = function retrieveProp(instance, propName) {
+    var castNumber = Number(propName);
+    var stringChars = ["'", "\"", "`"];
+
+    if (!isNaN(castNumber)) {
+        //If number
+        return castNumber;
+    } else if (stringChars.includes(propName[0])) {
+        //If String
+        return propName.substr(1, propName.length - 2);
+    } else {
+        //If prop
+        var prop = instance.$data[propName];
+
+        if (typeof prop === "undefined") {
+            throw new Error("prop '" + propName + "' not found");
+        } else {
+            return prop;
+        }
+    }
+
+    return null;
+};
+
+var retrieveMethod = function retrieveMethod(instance, methodString) {
+    var methodStringSplit = methodString.substr(0, methodString.length - 1).split("(");
+    var methodName = methodStringSplit[0];
+    var methodArgs = methodStringSplit[1].split(",").filter(function (item) {
+        return item !== "";
+    }).map(function (arg) {
+        return retrieveProp(instance, arg);
+    });
+
+    var methodFn = instance.$methods[methodName];
+
+    if (typeof methodFn !== "function") {
+        throw new Error("method '" + methodName + "' not found");
+    } else {
+        return {
+            fn: methodFn,
+            args: methodArgs
+        };
+    }
 };
 
 var init = function init() {
@@ -144,15 +186,19 @@ var init = function init() {
     //Bind events
     crawlNodes(_this.$context, function (node) {
         eachDirective(node, ["on"], function (directive) {
-            var eventFn = retrieveMethod(_this, directive.value);
+            var targetMethod = retrieveMethod(_this, directive.value);
 
-            bindEvent(node, directive.secondary, eventFn, [], _this);
+            bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
         });
     });
+
+    console.log("CALLED $init");
 };
 
 var render = function render() {
     var _this = this;
+
+    console.log("CALLED $render");
 };
 
 /**
