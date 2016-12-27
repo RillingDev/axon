@@ -1,19 +1,23 @@
 "use strict";
 
-let app = new Axon("myApp");
+const app = new Axon({
+    context: "#myApp",
+    data: {
+        foo: "foooo",
+        bar: "baaar",
+        foobar: "foooobaaar"
+    },
+    methods: {
+        changeValue: function (type, value) {
+            const _this = this;
 
-app.controller("myController", [], function() {
-    const vm = this;
-    window.vm = this;
+            _this.$data[type] = value;
+            _this.$data.foobar = _this.$data.foo + _this.$data.bar;
 
-    vm.foo = "foo";
-    vm.bar = "bar";
-
-    vm.fooBar = vm.foo + vm.bar;
-
-    vm.updateFooBar = function() {
-        vm.fooBar = vm.foo + vm.bar;
-    };
+            console.log(_this.$data);
+            _this.$render();
+        }
+    }
 });
 
-app.access("myController");
+console.log(app);

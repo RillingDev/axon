@@ -1,0 +1,8 @@
+.git/
+.tmp/
+test/
+spec/
+node_modules/
+bower_components/
+.DS_Store
+npm-debug.*

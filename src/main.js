@@ -1,10 +1,11 @@
 "use strict";
 
-import Chevron from "chevronjs/src/main.js";
+import {
+    _document
+} from "./lib/constants";
+import init from "./init/index";
+import render from "./render/index";
 
-import controllerFn from "./types/controller";
-
-import queryDirective from "./dom/query/directives/query";
 /**
  * Basic Axon Constructor
  *
@@ -12,28 +13,24 @@ import queryDirective from "./dom/query/directives/query";
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-let Axon = function(id) {
+const Axon = function(appConfig) {
     const _this = this;
 
-    //Instance Id
-    _this.id = id;
-    //Instance container
-    _this.cv = new Chevron(id + "Container");
-    //context
-    _this.context = queryDirective("app", id)[0];
+    _this.$context = _document.querySelector(appConfig.context);
+    _this.$data = appConfig.data;
+    _this.$methods = appConfig.methods;
 
-    //Init Axon types
-    _this.cv.extend("controller", controllerFn);
+    _this.$init();
+    _this.$render();
 };
 
-//Bind Chevron methods directly to parent
-const methods = ["access", "extend", "provider", "service", "factory", "controller"];
-
-methods.forEach(method => {
-    Axon.prototype[method] = function() {
-        return this.cv[method].apply(this.cv, Array.from(arguments));
-    };
-});
-
+/**
+ * Expose Axon methods
+ */
+Axon.prototype = {
+    $init: init,
+    $render: render,
+    constructor: Axon,
+};
 
 export default Axon;

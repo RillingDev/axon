@@ -1,578 +1,253 @@
-"use strict";
+/**
+ * Axon v0.7.0
+ * Author: Felix Rilling
+ * Repository: git+https://github.com/FelixRilling/axonjs.git
+ */
 
-var Axon = function () {
-    'use strict';
+var Axon = (function () {
+'use strict';
 
-    /**
-         * Store strings to avoid duplicate strings
-         */
+var _document = document;
 
-    var _more = ": ";
-    var _error = "error in ";
-    var _factory = "factory";
-    var _service = "service";
-    var _isUndefined = " is undefined";
+var DOM_PREFIX = "x-";
+var DEBOUNCE_TIMEOUT = 40; //event timeout in ms
 
-    /**
-         * Checks if service exist, else add it
-         *
-         * @param {String} type The type of the service (service/factory)
-         * @param {Function} cf The Constructor function of the service
-         * @param {String} name The name to register/id the service
-         * @param {Array} deps List of dependencies
-         * @param {Function} fn Content of the service
-         * @returns {Object} Returns `this`
-         */
-    function provider(type, cf, name, deps, fn) {
-        var _this = this;
+/**
+ * iterate over NodeList
+ *
+ * @private
+ * @param {NodeList} nodeList The nodeList to iterate over
+ * @param {Function} fn The Function to call
+ * @returns void
+ */
+var eachNode = function eachNode(nodeList, fn) {
+    var l = nodeList.length;
+    var i = 0;
 
-        if (_this.chev[name]) {
-            //throw error if a service with this name already exists
-            throw _this.id + _more + _error + name + " already exists";
-        } else {
-            //Add the service to container
-            _this.chev[name] = {
-                type: type,
-                cf: cf,
-                name: name,
-                deps: deps,
-                fn: fn,
-                init: false
-            };
-
-            return _this;
-        }
+    while (i < l) {
+        fn(nodeList[i], i);
+        i++;
     }
+};
 
-    /**
-         * Adds a new service type
-         *
-         * @param {String} type The name of the type
-         * @param {Function} cf Constructor function to init the service with
-         * @returns {Object} Returns `this`
-         */
-    function extend(type, cf) {
-        var _this = this;
+/**
+ * Iterate over NamedNodeMap
+ *
+ * @private
+ * @param {NamedNodeMap} namedNodeMap The NamedNodeMap to iterate over
+ * @param {Function} fn The Function to run
+ * @returns void
+ */
+var eachAttribute = function eachAttribute(namedNodeMap, fn) {
+    var l = namedNodeMap.length;
+    var i = 0;
 
-        //Add customType method to container
-        _this[type] = function (name, deps, fn) {
-            return _this.provider(type, cf, name, deps, fn);
+    while (i < l) {
+        var item = namedNodeMap.item(i);
+
+        fn(item.name, item.value, i);
+        i++;
+    }
+};
+
+var crawlNodes = function crawlNodes(entry, fn) {
+    var recurseNodes = function recurseNodes(node, fn) {
+        var children = node.children;
+
+        if (children && children.length > 0) {
+            var result = true;
+
+            result = eachNode(children, function (childNode) {
+                return recurseNodes(childNode, fn);
+            });
+
+            return result;
+        } else {
+            return fn(node);
+        }
+    };
+
+    return recurseNodes(entry, fn);
+};
+
+var eachDirective = function eachDirective(node, allowedNames, fn) {
+    eachAttribute(node.attributes, function (attributeName, attributeValue) {
+
+        //If is Axon attribute
+        if (attributeName.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
+            var splitName = attributeName.replace(DOM_PREFIX, "").split(":");
+
+            //If name is allowed
+            if (allowedNames.indexOf(splitName[0]) !== -1) {
+                fn({
+                    name: splitName[0],
+                    secondary: splitName[1],
+                    value: attributeValue
+                });
+            }
+        }
+    });
+};
+
+var debounce = function debounce(fn, wait, immediate) {
+    var timeout = void 0;
+
+    return function () {
+        var context = this;
+        var args = Array.from(arguments);
+        var callNow = immediate && !timeout;
+        var later = function later() {
+            timeout = null;
+            if (!immediate) {
+                fn.apply(context, args);
+            }
         };
 
-        return _this;
-    }
-
-    /**
-         * Collects dependencies and initializes service
-         *
-         * @private
-         * @param {Object} _this The context
-         * @param {Object} service The service to check
-         * @param {Object} list The list of dependencies
-         * @returns {Object} Returns `service`
-         */
-    function initialize(_this, service, list) {
-        if (!service.init) {
-            (function () {
-                var bundle = [];
-
-                //Collect an ordered Array of dependencies
-                service.deps.forEach(function (item) {
-                    var dependency = list[item];
-
-                    if (dependency) {
-                        bundle.push(dependency.fn);
-                    }
-                });
-
-                //Init service
-                //Call Constructor fn with service/deps
-                service = service.cf(service, bundle);
-                service.init = true;
-            })();
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) {
+            fn.apply(context, args);
         }
+    };
+};
 
-        return service;
+var getNodeValueType = function getNodeValueType(node) {
+    if (typeof node.value !== "undefined") {
+        return "value";
+    } else if (typeof node.textContent !== "undefined") {
+        return "textContent";
+    } else {
+        return "innerHTML";
     }
+};
 
-    /**
-         * Loops trough dependencies, recurse if new dependencies has dependencies itself; then execute fn.
-         *
-         * @private
-         * @param {Object} _this The context
-         * @param {Array} service The dependencyList to iterate
-         * @param {Function} fn The function run over each dependency
-         * @returns void
-         */
-    function recurseDependencies(_this, service, fn) {
-        //loop trough deps
-        service.deps.forEach(function (name) {
-            var dependency = _this.chev[name];
+var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance) {
+    var debouncedFn = debounce(eventFn, DEBOUNCE_TIMEOUT);
+    var nodeValueType = getNodeValueType(node);
 
-            if (dependency) {
-                //recurse over sub-deps
-                recurseDependencies(_this, dependency, fn);
-                //run fn
-                fn(dependency);
-            } else {
-                //if not found error with name
-                throw _this.id + _more + _error + service.name + _more + "dependency " + name + _isUndefined;
-            }
-        });
-    }
+    var eventFnWrapper = function eventFnWrapper(event) {
+        var target = event.target;
+        var args = Array.from(eventArgs);
 
-    /**
-         * Check if every dependency is available
-         *
-         * @private
-         * @param {Object} _this The context
-         * @param {Object} service The service to prepare
-         * @returns {Object} Initialized service
-         */
-    function prepare(_this, service) {
-        var list = {};
+        args.push(target[nodeValueType], target, event);
 
-        //Recurse trough service deps
-        recurseDependencies(_this, service,
-        //run this over every dependency to add it to the dependencyList
-        function (dependency) {
-            //make sure if dependency is initialized, then add
-            list[dependency.name] = initialize(_this, dependency, list);
-        });
-
-        return initialize(_this, service, list);
-    }
-
-    /**
-         * Access service with dependencies bound
-         *
-         * @param {String} name The Name of the service
-         * @returns {*} Returns Content of the service
-         */
-    function access(name) {
-        var _this = this,
-            accessedService = _this.chev[name];
-
-        //Check if accessed service is registered
-        if (accessedService) {
-            //Call prepare with bound context
-            return prepare(_this, accessedService).fn;
-        }
-    }
-
-    /**
-         * Creates method entry for service
-         *
-         * @private
-         * @param {Object} _this The context
-         * @returns Returns void
-         */
-    function initService(_this) {
-        _this.extend(_service, function (service, bundle) {
-            //Construct service
-            var serviceFn = service.fn;
-
-            service.fn = function () {
-                //Chevron service function wrapper
-                return serviceFn.apply(null, bundle.concat(Array.from(arguments)));
-            };
-
-            return service;
-        });
-    }
-
-    /**
-         * Creates method entry for factory
-         *
-         * @private
-         * @param {Object} _this The context
-         * @returns Returns void
-         */
-    function initFactory(_this) {
-        _this.extend(_factory, function (service, bundle) {
-            //Construct factory
-
-            //First value gets ignored by calling new like this, so we need to fill it
-            bundle.unshift(null);
-
-            //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-            service.fn = new (Function.prototype.bind.apply(service.fn, bundle))();
-
-            return service;
-        });
-    }
-
-    /**
-         * Basic Chevron Constructor
-         *
-         * @constructor
-         * @param {String} id To identify the instance
-         * @returns {Object} Returns Chevron instance
-         */
-    var Chevron = function Chevron(id) {
-        var _this = this;
-
-        //Instance Id
-        _this.id = id || "cv";
-        //Instance container
-        _this.chev = {};
-
-        //Init default types
-        initService(_this);
-        initFactory(_this);
+        return debouncedFn.apply(instance, args);
     };
 
-    /**
-     * Expose Chevron methods
-     */
-    Chevron.prototype = {
-        //Core service/factory method
-        provider: provider,
-        //Prepare/init services/factory with deps injected
-        access: access,
-        //Add new service type
-        extend: extend
-    };
+    return node.addEventListener(eventType, eventFnWrapper, false);
+};
 
-    /**
-         * Store constants
-         */
-    var _window = window;
-    var _document = _window.document;
-    var _domNameSpace = "xn";
-    var _expressionRegex = /{{(.+)}}/g;
+var retrieveProp = function retrieveProp(instance, propName) {
+    var castNumber = Number(propName);
+    var stringChars = ["'", "\"", "`"];
 
-    /**
-         * Creates querySelector string
-         *
-         * @private
-         * @param {String} data The data id
-         * @param {String} val The data value
-         * @return {String} Returns Query
-         */
-    function constructQuery(data, val) {
-        if (!val || val === "*") {
-            return "[" + _domNameSpace + "-" + data + "]";
+    if (!isNaN(castNumber)) {
+        //If number
+        return castNumber;
+    } else if (stringChars.includes(propName[0])) {
+        //If String
+        return propName.substr(1, propName.length - 2);
+    } else {
+        //If prop
+        var prop = instance.$data[propName];
+
+        if (typeof prop === "undefined") {
+            throw new Error("prop '" + propName + "' not found");
         } else {
-            return "[" + _domNameSpace + "-" + data + "='" + val + "']";
+            return prop;
         }
     }
 
-    /**
-         * Query multiple from DOM
-         *
-         * @private
-         * @param {String} data The data id
-         * @param {String} val The data value
-         * @param {Node} context optional, query context
-         * @return {NodeList} Returns NodeList
-         */
-    function queryDirective(data, val, context) {
-        return (context ? context : _document).querySelectorAll(constructQuery(data, val));
-    }
+    return null;
+};
 
-    /**
-         * Read Data from element
-         *
-         * @private
-         * @param {Node} element The Element to read
-         * @param {String} data The data attr to read
-         * @return {String} Returns value
-         */
-    function readDirective(element, data) {
-        return element.attributes[_domNameSpace + "-" + data].value;
-    }
-
-    /**
-         * Misc Utility functions
-         */
-
-    /**
-     * iterate over NoddeList
-     *
-     * @private
-     * @param {NodeList} NodeList The Elements to bind
-     * @param {Function} fn The Function to call
-     * @returns void
-     */
-    function eachNode(NodeList, fn) {
-        var l = NodeList.length;
-        var i = 0;
-
-        while (i < l) {
-            fn(NodeList[i], i);
-            i++;
-        }
-    }
-    /**
-     * Iterate object
-     *
-     * @private
-     * @param {Object} object The Object to iterate
-     * @param {Function} fn The Function to run
-     * @returns void
-     */
-    function eachObject(object, fn) {
-        var keys = Object.keys(object);
-        var l = keys.length;
-        var i = 0;
-
-        while (i < l) {
-            var currentKey = keys[i];
-
-            fn(object[currentKey], currentKey, i);
-            i++;
-        }
-    }
-    /**
-     * replace string at position
-     *
-     * @private
-     * @param {String} string The String to exec
-     * @param {String} find The String to find
-     * @param {String} replace The String to replace
-     * @param {Number} index The Index to start replacing
-     * @returns {String} replacedString
-     */
-    function replaceFrom(string, find, replace, index) {
-        return string.substr(0, index) + string.substr(index).replace(find, replace);
-    }
-
-    var text = {
-        onBind: function onBind(ctrl, context) {
-            var result = [];
-            var nodes = getTextNodes(context);
-            var match = void 0;
-
-            //Iterate Nodes
-            nodes.forEach(function (node) {
-                //Iterate Regex
-                while ((match = _expressionRegex.exec(node.textContent)) !== null) {
-                    if (match.index === _expressionRegex.lastIndex) {
-                        _expressionRegex.lastIndex++;
-                    }
-
-                    result.push({
-                        match: match[0],
-                        data: match[1],
-                        val: match[0],
-                        index: match.index,
-                        parent: node
-                    });
-                }
-            });
-
-            return result;
-
-            //Modified version of http://stackoverflow.com/questions/10730309/find-all-text-nodes-in-html-page
-            function getTextNodes(node) {
-                var all = [];
-                for (node = node.firstChild; node; node = node.nextSibling) {
-                    if (node.nodeType === 3 && node.parentNode.nodeName !== "SCRIPT") {
-                        all.push(node);
-                    } else {
-                        all = all.concat(getTextNodes(node));
-                    }
-                }
-                return all;
-            }
-        },
-        onDigest: function onDigest(ctrl, context, entry) {
-            var result = ctrl[entry.data];
-
-            entry.parent.textContent = replaceFrom(entry.parent.textContent, entry.val, result, entry.index);
-            entry.val = result;
-
-            return result;
-        }
-    };
-
-    var expressions = {
-        text: text
-    };
-
-    /**
-         * Digest & render dom
-         *
-         * @private
-         * @param {Object} ctrl The Controller
-         * @return {Node} context The Controller context
-         */
-    function digest(ctrl) {
-        //@TODO implement debounce
-
-        iteratePlugins(directives, ctrl.$directives, function (entry, plugin) {
-            plugin.onDigest(ctrl, ctrl.$context, entry);
-        });
-
-        iteratePlugins(expressions, ctrl.$expressions, function (entry, plugin) {
-            plugin.onDigest(ctrl, ctrl.$context, entry);
-        });
-
-        function iteratePlugins(pluginData, data, fn) {
-            eachObject(pluginData, function (plugin, key) {
-                var active = data[key];
-
-                active.forEach(function (entry) {
-                    fn(entry, plugin);
-                });
-            });
-        }
-    }
-
-    /**
-         * Binds event to dom
-         *
-         * @private
-         * @param {NodeList} domList The Elements to bind
-         * @param {String} type The Event type
-         * @param {Function} fn The Even function
-         * @return void
-         */
-    function bind(domList, type, fn) {
-        eachNode(domList, function (dom) {
-            dom.addEventListener(type, eventFn, false);
-
-            function eventFn(ev) {
-                return fn(ev, dom);
-            }
-        });
-    }
-
-    var model = {
-        onBind: function onBind(ctrl, context) {
-            var result = [];
-            var elements = queryDirective("model", "*", context);
-
-            bind(elements, "change", modelEvent);
-            bind(elements, "input", modelEvent);
-
-            eachNode(elements, function (element, index) {
-                result.push({
-                    index: index,
-                    element: element,
-                    type: "model",
-                    value: readDirective(element, "model")
-                });
-            });
-
-            return result;
-
-            function modelEvent(ev, dom) {
-                _window.setTimeout(function () {
-                    var content = dom.value;
-                    var modelFor = readDirective(dom, "model");
-
-                    console.log("MODEL:", modelFor, content);
-                    ctrl[modelFor] = content;
-
-                    digest(ctrl);
-                }, 5);
-            }
-        },
-        onDigest: function onDigest(ctrl, context, entry) {
-            entry.element.value = ctrl[entry.value];
-        }
-    };
-
-    //import changeImported from "./change";
-
-    var directives = {
-        model: model
-    };
-
-    /**
-         * Binds directives to controller
-         *
-         * @private
-         * @param {Object} ctrl The Controller
-         * @return {Object} Returns bound Object
-         */
-    function bindDirectives(ctrl) {
-        var result = {};
-
-        eachObject(directives, function (directive, key, index) {
-            result[key] = directive.onBind(ctrl, ctrl.$context);
-        });
-
-        return result;
-    }
-
-    /**
-         * Binds expressions to controller
-         *
-         * @private
-         * @param {Object} ctrl The Controller
-         * @return {Object} Returns bound Object
-         */
-    function bindExpressions(ctrl) {
-        var result = {};
-
-        eachObject(expressions, function (expressions, key, index) {
-            result[key] = expressions.onBind(ctrl, ctrl.$context);
-        });
-
-        return result;
-    }
-
-    /**
-         * Creates typeList entry for Controller
-         *
-         * @private
-         * @param {Object} service The service
-         * @param {Object} bundle The service deps
-         * @return {Function} service
-         */
-    function controllerFn(service, bundle) {
-        //Construct Controller
-        //
-        //First value gets ignored by calling new like this, so we need to fill it
-        bundle.unshift(null);
-        //Apply into new constructor by accessing bind proto. from: http://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-        var ctrl = service.fn = new (Function.prototype.bind.apply(service.fn, bundle))();
-
-        //Bind Context
-        ctrl.$context = queryDirective("controller", service.name)[0];
-        ctrl.$expressions = bindExpressions(ctrl);
-        ctrl.$directives = bindDirectives(ctrl);
-        //run first digest
-        digest(ctrl);
-
-        console.log(service);
-
-        return service;
-    }
-
-    /**
-         * Basic Axon Constructor
-         *
-         * @constructor
-         * @param {String} id To identify the instance
-         * @returns {Object} Returns Axon instance
-         */
-    var Axon = function Axon(id) {
-        var _this = this;
-
-        //Instance Id
-        _this.id = id;
-        //Instance container
-        _this.cv = new Chevron(id + "Container");
-        //context
-        _this.context = queryDirective("app", id)[0];
-
-        //Init Axon types
-        _this.cv.extend("controller", controllerFn);
-    };
-
-    //Bind Chevron methods directly to parent
-    var methods = ["access", "extend", "provider", "service", "factory", "controller"];
-
-    methods.forEach(function (method) {
-        Axon.prototype[method] = function () {
-            return this.cv[method].apply(this.cv, Array.from(arguments));
-        };
+var retrieveMethod = function retrieveMethod(instance, methodString) {
+    var methodStringSplit = methodString.substr(0, methodString.length - 1).split("(");
+    var methodName = methodStringSplit[0];
+    var methodArgs = methodStringSplit[1].split(",").filter(function (item) {
+        return item !== "";
+    }).map(function (arg) {
+        return retrieveProp(instance, arg);
     });
 
-    return Axon;
-}();
+    var methodFn = instance.$methods[methodName];
+
+    if (typeof methodFn !== "function") {
+        throw new Error("method '" + methodName + "' not found");
+    } else {
+        return {
+            fn: methodFn,
+            args: methodArgs
+        };
+    }
+};
+
+var init = function init() {
+    var _this = this;
+
+    //Bind events
+    crawlNodes(_this.$context, function (node) {
+        eachDirective(node, ["on"], function (directive) {
+            var targetMethod = retrieveMethod(_this, directive.value);
+
+            bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
+        });
+    });
+
+    console.log("CALLED $init");
+};
+
+var model = function model(instance, node, propName) {
+    var nodeValueType = getNodeValueType(node);
+    var propValue = retrieveProp(instance, propName);
+
+    node[nodeValueType] = propValue;
+};
+
+var render = function render() {
+    var _this = this;
+
+    //Bind events
+    crawlNodes(_this.$context, function (node) {
+        eachDirective(node, ["model"], function (directive) {
+            if (directive.name === "model") {
+                model(_this, node, directive.value);
+            }
+        });
+    });
+
+    console.log("CALLED $render");
+};
+
+/**
+ * Basic Axon Constructor
+ *
+ * @constructor
+ * @param {String} id To identify the instance
+ * @returns {Object} Returns Axon instance
+ */
+var Axon = function Axon(appConfig) {
+    var _this = this;
+
+    _this.$context = _document.querySelector(appConfig.context);
+    _this.$data = appConfig.data;
+    _this.$methods = appConfig.methods;
+
+    _this.$init();
+    _this.$render();
+};
+
+/**
+ * Expose Axon methods
+ */
+Axon.prototype = {
+    $init: init,
+    $render: render,
+    constructor: Axon
+};
+
+return Axon;
+
+}());
+
 //# sourceMappingURL=axon.js.map
