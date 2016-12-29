@@ -8,12 +8,12 @@ Currently implemented:
 
 - `x-model`
 - `x-on:{event}`
+- `x-bind`
 
 Planned:
 
 - `x-if`
 - `x-for`
-- `x-bind`
 
 Idea:
  

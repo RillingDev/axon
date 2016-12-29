@@ -143,6 +143,12 @@ var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance
     return node.addEventListener(eventType, eventFnWrapper, false);
 };
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
 var retrieveProp = function retrieveProp(instance, propName) {
     var castNumber = Number(propName);
     var stringChars = ["'", "\"", "`"];
@@ -154,14 +160,25 @@ var retrieveProp = function retrieveProp(instance, propName) {
         //If String
         return propName.substr(1, propName.length - 2);
     } else {
-        //If Prop
-        var prop = instance.$data[propName];
+        var _ret = function () {
+            //If Prop
+            var propPath = propName.split(".");
+            var prop = instance.$data;
 
-        if (typeof prop === "undefined") {
-            throw new Error("prop '" + propName + "' not found");
-        } else {
-            return prop;
-        }
+            propPath.forEach(function (propItem) {
+                prop = prop[propItem];
+            });
+
+            if (typeof prop === "undefined") {
+                throw new Error("prop '" + propName + "' not found");
+            } else {
+                return {
+                    v: prop
+                };
+            }
+        }();
+
+        if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
     }
 };
 
@@ -221,6 +238,8 @@ var renderBind = function renderBind(instance, node, bindType, propName) {
     //const nodeValueType = getNodeValueType(node);
     var propValue = retrieveProp(instance, propName);
 
+    console.log(propValue);
+
     node.setAttribute(bindType, propValue);
 };
 
@@ -262,8 +281,8 @@ var Axon = function Axon(config) {
     _this.$methods = config.methods;
 
     if (autoInit) {
-        _this.$init();
         _this.$render();
+        _this.$init();
     }
 };
 

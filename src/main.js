@@ -21,8 +21,8 @@ const Axon = function (config, autoInit = true) {
     _this.$methods = config.methods;
 
     if (autoInit) {
-        _this.$init();
         _this.$render();
+        _this.$init();
     }
 };
 

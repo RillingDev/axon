@@ -1,6 +1,6 @@
 "use strict";
 
-const retrieveProp = function(instance, propName) {
+const retrieveProp = function (instance, propName) {
     const castNumber = Number(propName);
     const stringChars = ["'", "\"", "`"];
 
@@ -12,7 +12,12 @@ const retrieveProp = function(instance, propName) {
         return propName.substr(1, propName.length - 2);
     } else {
         //If Prop
-        const prop = instance.$data[propName];
+        const propPath = propName.split(".");
+        let prop = instance.$data;
+
+        propPath.forEach(propItem => {
+            prop = prop[propItem];
+        });
 
         if (typeof prop === "undefined") {
             throw new Error(`prop '${propName}' not found`);
