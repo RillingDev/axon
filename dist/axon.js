@@ -71,16 +71,21 @@ var crawlNodes = function crawlNodes(entry, fn) {
     return recurseNodes(entry, fn);
 };
 
-var eachDirective = function eachDirective(node, allowedNames, fn) {
+var eachDirective = function eachDirective(node, namesList) {
+    var names = namesList.map(function (item) {
+        return item.name;
+    });
+
     eachAttribute(node.attributes, function (attributeName, attributeValue) {
 
         //If is Axon attribute
         if (attributeName.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
             var splitName = attributeName.replace(DOM_PREFIX, "").split(":");
+            var nameIndex = names.indexOf(splitName[0]);
 
             //If name is allowed
-            if (allowedNames.indexOf(splitName[0]) !== -1) {
-                fn({
+            if (nameIndex !== -1) {
+                namesList[nameIndex].fn({
                     name: splitName[0],
                     secondary: splitName[1],
                     value: attributeValue
@@ -192,9 +197,12 @@ var init = function init() {
 
     //Bind events
     crawlNodes(_this.$context, function (node) {
-        eachDirective(node, ["on"], function (directive) {
-            initOn(_this, node, directive.secondary, directive.value);
-        });
+        eachDirective(node, [{
+            name: "on",
+            fn: function fn(directive) {
+                initOn(_this, node, directive.secondary, directive.value);
+            }
+        }]);
 
         return true;
     });
@@ -221,13 +229,17 @@ var render = function render() {
 
     //Bind events
     crawlNodes(_this.$context, function (node) {
-        eachDirective(node, ["model", "bind"], function (directive) {
-            if (directive.name === "model") {
+        eachDirective(node, [{
+            name: "model",
+            fn: function fn(directive) {
                 renderModel(_this, node, directive.value);
-            } else if (directive.name === "bind") {
+            }
+        }, {
+            name: "bind",
+            fn: function fn(directive) {
                 renderBind(_this, node, directive.secondary, directive.value);
             }
-        });
+        }]);
     });
 
     console.log("CALLED $render");

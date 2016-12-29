@@ -11,10 +11,12 @@ const init = function () {
     //Bind events
     crawlNodes(_this.$context, node => {
         eachDirective(
-            node, ["on"],
-            directive => {
-                initOn(_this, node, directive.secondary, directive.value);
-            }
+            node, [{
+                name: "on",
+                fn: directive => {
+                    initOn(_this, node, directive.secondary, directive.value);
+                }
+            }]
         );
 
         return true;
