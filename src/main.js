@@ -13,15 +13,17 @@ import render from "./render/index";
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-const Axon = function(appConfig) {
+const Axon = function (config, autoInit = true) {
     const _this = this;
 
-    _this.$context = _document.querySelector(appConfig.context);
-    _this.$data = appConfig.data;
-    _this.$methods = appConfig.methods;
+    _this.$context = _document.querySelector(config.context);
+    _this.$data = config.data;
+    _this.$methods = config.methods;
 
-    _this.$init();
-    _this.$render();
+    if (autoInit) {
+        _this.$init();
+        _this.$render();
+    }
 };
 
 /**

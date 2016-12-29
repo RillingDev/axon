@@ -6,11 +6,15 @@
 
 Currently implemented:
 
-- x-bind
-- x-on:{event}
+- `x-model`
+- `x-on:{event}`
 
 Planned:
 
-- x-if
-- x-for
-- x-bin
+- `x-if`
+- `x-for`
+- `x-bind`
+
+Idea:
+ 
+ - `x-ignore`

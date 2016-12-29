@@ -636,8 +636,8 @@ debug-fabulous@0.0.X:
     object-assign "4.1.0"
 
 debug@2.X, debug@^2.1.1, debug@^2.2.0:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.5.2.tgz#50c295a53dbf1657146e0c1b21307275e90d49cb"
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.0.tgz#bc596bcabe7617f11d9fa15361eded5608b8499b"
   dependencies:
     ms "0.7.2"
 
@@ -1981,8 +1981,8 @@ rollup-stream@^1.14.0:
     rollup "^0.38.0"
 
 rollup@^0.38.0:
-  version "0.38.0"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.38.0.tgz#b58d99538ad96dd1c0239f1de383a80b0e067f70"
+  version "0.38.2"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.38.2.tgz#9719a8b8f5a42def0b54dc4c7f867acc543bb45d"
   dependencies:
     source-map-support "^0.4.0"
 

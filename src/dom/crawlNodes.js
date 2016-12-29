@@ -10,7 +10,7 @@ const crawlNodes = function(entry, fn) {
 
         if (children && children.length > 0) {
             let result = true;
-
+            
             result = eachNode(children, childNode => {
                 return recurseNodes(childNode, fn);
             });
@@ -21,7 +21,7 @@ const crawlNodes = function(entry, fn) {
         }
     };
 
-    return recurseNodes(entry, fn)
+    return recurseNodes(entry, fn);
 };
 
 export default crawlNodes;

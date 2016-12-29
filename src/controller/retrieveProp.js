@@ -11,7 +11,7 @@ const retrieveProp = function(instance, propName) {
         //If String
         return propName.substr(1, propName.length - 2);
     } else {
-        //If prop
+        //If Prop
         const prop = instance.$data[propName];
 
         if (typeof prop === "undefined") {
@@ -20,8 +20,6 @@ const retrieveProp = function(instance, propName) {
             return prop;
         }
     }
-
-    return null;
 };
 
 export default retrieveProp;

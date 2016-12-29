@@ -9,8 +9,9 @@ var Axon = (function () {
 
 var _document = document;
 
-var DOM_PREFIX = "x-";
 var DEBOUNCE_TIMEOUT = 40; //event timeout in ms
+
+var DOM_PREFIX = "x-";
 
 /**
  * iterate over NodeList
@@ -148,7 +149,7 @@ var retrieveProp = function retrieveProp(instance, propName) {
         //If String
         return propName.substr(1, propName.length - 2);
     } else {
-        //If prop
+        //If Prop
         var prop = instance.$data[propName];
 
         if (typeof prop === "undefined") {
@@ -157,8 +158,6 @@ var retrieveProp = function retrieveProp(instance, propName) {
             return prop;
         }
     }
-
-    return null;
 };
 
 var retrieveMethod = function retrieveMethod(instance, methodString) {
@@ -192,16 +191,25 @@ var init = function init() {
 
             bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
         });
+
+        return true;
     });
 
     console.log("CALLED $init");
 };
 
-var model = function model(instance, node, propName) {
+var renderModel = function renderModel(instance, node, propName) {
     var nodeValueType = getNodeValueType(node);
     var propValue = retrieveProp(instance, propName);
 
     node[nodeValueType] = propValue;
+};
+
+var renderBind = function renderBind(instance, node, bindType, propName) {
+    //const nodeValueType = getNodeValueType(node);
+    var propValue = retrieveProp(instance, propName);
+
+    node.setAttribute(bindType, propValue);
 };
 
 var render = function render() {
@@ -209,9 +217,11 @@ var render = function render() {
 
     //Bind events
     crawlNodes(_this.$context, function (node) {
-        eachDirective(node, ["model"], function (directive) {
+        eachDirective(node, ["model", "bind"], function (directive) {
             if (directive.name === "model") {
-                model(_this, node, directive.value);
+                renderModel(_this, node, directive.value);
+            } else if (directive.name === "bind") {
+                renderBind(_this, node, directive.secondary, directive.value);
             }
         });
     });
@@ -226,15 +236,19 @@ var render = function render() {
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-var Axon = function Axon(appConfig) {
+var Axon = function Axon(config) {
+    var autoInit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
     var _this = this;
 
-    _this.$context = _document.querySelector(appConfig.context);
-    _this.$data = appConfig.data;
-    _this.$methods = appConfig.methods;
+    _this.$context = _document.querySelector(config.context);
+    _this.$data = config.data;
+    _this.$methods = config.methods;
 
-    _this.$init();
-    _this.$render();
+    if (autoInit) {
+        _this.$init();
+        _this.$render();
+    }
 };
 
 /**

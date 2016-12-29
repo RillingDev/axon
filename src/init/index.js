@@ -19,6 +19,8 @@ const init = function() {
                 bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
             }
         );
+
+        return true;
     });
 
     console.log("CALLED $init");

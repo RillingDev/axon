@@ -10,7 +10,6 @@
 
 <body>
     <h1>Demo 1</h1>
-
     <div id="myApp">
         <div>
             <label>Foo:</label>
@@ -24,10 +23,12 @@
         <br>
         <div x-if="foobar">
             <label>Foo + Bar:</label>
-            <input type="text" x-model="foobar">
+            <input type="text" x-model="foobar" x-bind:class="foobar">
+        </div>
+        <div>
+            <p>Lorem ipsum</p>
         </div>
     </div>
-
     <script src="../../dist/axon.js"></script>
     <script src="demo_1.js"></script>
 </body>

@@ -3,7 +3,8 @@
 import crawlNodes from "../dom/crawlNodes";
 import eachDirective from "../dom/eachDirective";
 
-import model from "./model";
+import renderModel from "./renderModel";
+import renderBind from "./renderBind";
 
 const render = function() {
     const _this = this;
@@ -11,10 +12,12 @@ const render = function() {
     //Bind events
     crawlNodes(_this.$context, node => {
         eachDirective(
-            node, ["model"],
+            node, ["model","bind"],
             directive => {
                 if (directive.name === "model") {
-                    model(_this, node, directive.value);
+                    renderModel(_this, node, directive.value);
+                }else if(directive.name === "bind"){
+                     renderBind(_this, node, directive.secondary,directive.value);
                 }
             }
         );
