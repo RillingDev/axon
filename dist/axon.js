@@ -181,15 +181,19 @@ var retrieveMethod = function retrieveMethod(instance, methodString) {
     }
 };
 
+var initOn = function initOn(instance, node, eventType, methodName) {
+    var targetMethod = retrieveMethod(instance, methodName);
+
+    bindEvent(node, eventType, targetMethod.fn, targetMethod.args, instance);
+};
+
 var init = function init() {
     var _this = this;
 
     //Bind events
     crawlNodes(_this.$context, function (node) {
         eachDirective(node, ["on"], function (directive) {
-            var targetMethod = retrieveMethod(_this, directive.value);
-
-            bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
+            initOn(_this, node, directive.secondary, directive.value);
         });
 
         return true;

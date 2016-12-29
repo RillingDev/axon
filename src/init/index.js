@@ -2,11 +2,10 @@
 
 import crawlNodes from "../dom/crawlNodes";
 import eachDirective from "../dom/eachDirective";
-import bindEvent from "../dom/bindEvent";
 
-import retrieveMethod from "../controller/retrieveMethod";
+import initOn from "./initOn";
 
-const init = function() {
+const init = function () {
     const _this = this;
 
     //Bind events
@@ -14,9 +13,7 @@ const init = function() {
         eachDirective(
             node, ["on"],
             directive => {
-                const targetMethod = retrieveMethod(_this, directive.value);
-
-                bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
+                initOn(_this, node, directive.secondary, directive.value);
             }
         );
 
