@@ -1,13 +1,14 @@
 /**
- * Axon v0.7.0
+ * Axon v0.8.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
 
 const _document = document;
 
-const DOM_PREFIX = "x-";
 const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
+
+const DOM_PREFIX = "x-";
 
 /**
  * iterate over NodeList
@@ -53,7 +54,7 @@ const crawlNodes = function(entry, fn) {
 
         if (children && children.length > 0) {
             let result = true;
-
+            
             result = eachNode(children, childNode => {
                 return recurseNodes(childNode, fn);
             });
@@ -64,19 +65,22 @@ const crawlNodes = function(entry, fn) {
         }
     };
 
-    return recurseNodes(entry, fn)
+    return recurseNodes(entry, fn);
 };
 
-const eachDirective = function(node, allowedNames, fn) {
+const eachDirective = function (node, namesList) {
+    const names = namesList.map(item => item.name);
+
     eachAttribute(node.attributes, (attributeName, attributeValue) => {
 
         //If is Axon attribute
         if (attributeName.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
             const splitName = attributeName.replace(DOM_PREFIX, "").split(":");
+            const nameIndex = names.indexOf(splitName[0]);
 
             //If name is allowed
-            if (allowedNames.indexOf(splitName[0]) !== -1) {
-                fn({
+            if (nameIndex !== -1) {
+                namesList[nameIndex].fn({
                     name: splitName[0],
                     secondary: splitName[1],
                     value: attributeValue
@@ -134,7 +138,7 @@ const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
     return node.addEventListener(eventType, eventFnWrapper, false);
 };
 
-const retrieveProp = function(instance, propName) {
+const retrieveProp = function (instance, propName) {
     const castNumber = Number(propName);
     const stringChars = ["'", "\"", "`"];
 
@@ -145,8 +149,13 @@ const retrieveProp = function(instance, propName) {
         //If String
         return propName.substr(1, propName.length - 2);
     } else {
-        //If prop
-        const prop = instance.$data[propName];
+        //If Prop
+        const propPath = propName.split(".");
+        let prop = instance.$data;
+
+        propPath.forEach(propItem => {
+            prop = prop[propItem];
+        });
 
         if (typeof prop === "undefined") {
             throw new Error(`prop '${propName}' not found`);
@@ -154,8 +163,6 @@ const retrieveProp = function(instance, propName) {
             return prop;
         }
     }
-
-    return null;
 };
 
 const retrieveMethod = function(instance, methodString) {
@@ -175,43 +182,65 @@ const retrieveMethod = function(instance, methodString) {
     }
 };
 
-const init = function() {
+const initOn = function (instance, node, eventType, methodName) {
+    const targetMethod = retrieveMethod(instance, methodName);
+
+    bindEvent(node, eventType, targetMethod.fn, targetMethod.args, instance);
+};
+
+const init = function () {
     const _this = this;
 
     //Bind events
     crawlNodes(_this.$context, node => {
         eachDirective(
-            node, ["on"],
-            directive => {
-                const targetMethod = retrieveMethod(_this, directive.value);
-
-                bindEvent(node, directive.secondary, targetMethod.fn, targetMethod.args, _this);
-            }
+            node, [{
+                name: "on",
+                fn: directive => {
+                    initOn(_this, node, directive.secondary, directive.value);
+                }
+            }]
         );
+
+        return true;
     });
 
     console.log("CALLED $init");
 };
 
-const model = function(instance, node, propName) {
+const renderModel = function(instance, node, propName) {
     const nodeValueType = getNodeValueType(node);
     const propValue = retrieveProp(instance, propName);
 
     node[nodeValueType] = propValue;
 };
 
-const render = function() {
+const renderBind = function (instance, node, bindType, propName) {
+    //const nodeValueType = getNodeValueType(node);
+    const propValue = retrieveProp(instance, propName);
+
+    console.log(propValue);
+
+    node.setAttribute(bindType,propValue);
+};
+
+const render = function () {
     const _this = this;
 
     //Bind events
     crawlNodes(_this.$context, node => {
         eachDirective(
-            node, ["model"],
-            directive => {
-                if (directive.name === "model") {
-                    model(_this, node, directive.value);
+            node, [{
+                name: "model",
+                fn: directive => {
+                    renderModel(_this, node, directive.value);
                 }
-            }
+            }, {
+                name: "bind",
+                fn: directive => {
+                    renderBind(_this, node, directive.secondary, directive.value);
+                }
+            }]
         );
     });
 
@@ -225,15 +254,17 @@ const render = function() {
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-const Axon = function(appConfig) {
+const Axon = function (config, autoInit = true) {
     const _this = this;
 
-    _this.$context = _document.querySelector(appConfig.context);
-    _this.$data = appConfig.data;
-    _this.$methods = appConfig.methods;
+    _this.$context = _document.querySelector(config.context);
+    _this.$data = config.data;
+    _this.$methods = config.methods;
 
-    _this.$init();
-    _this.$render();
+    if (autoInit) {
+        _this.$render();
+        _this.$init();
+    }
 };
 
 /**

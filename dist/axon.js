@@ -1,5 +1,5 @@
 /**
- * Axon v0.7.0
+ * Axon v0.8.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
