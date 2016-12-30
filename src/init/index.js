@@ -13,8 +13,8 @@ const init = function () {
         eachDirective(
             node, [{
                 name: "on",
-                fn: directive => {
-                    initOn(_this, node, directive.secondary, directive.value);
+                fn: (name, nameSecondary, value) => {
+                    initOn(_this, node, nameSecondary, value);
                 }
             }]
         );

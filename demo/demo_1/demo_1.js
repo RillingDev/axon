@@ -5,23 +5,29 @@ const app = new Axon({
     data: {
         foo: "foooo",
         bar: "baaar",
-        foobar: "nope",
-        classes:{
-            foo:""
+        foobar: "foooobaaar",
+        classes: {
+            foo: "class_foooobaaar"
         }
     },
     methods: {
-        changeValue: function (type, value) {
-            const _this = this;
+        changeValue(type, value) {
+            const vm = app;
 
-            _this.$data[type] = value;
-            _this.$data.foobar = _this.$data.foo + _this.$data.bar;
-            _this.$data.classes.foo="class_"+_this.$data.foobar;
+            vm.$data[type] = value;
+            vm.$methods.updateFoobar();
+        },
+        updateFoobar() {
+            const vm = app;
 
-            //console.log(_this.$data);
-            _this.$render();
+            vm.$data.foobar = vm.$data.foo + vm.$data.bar;
+            vm.$data.classes.foo = "class_" + vm.$data.foobar;
+
+            vm.$render();
         }
     }
 });
+
+app.$methods.updateFoobar();
 
 console.log(app);

@@ -1,5 +1,5 @@
 /**
- * Axon v0.8.0
+ * Axon v0.9.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -12,59 +12,19 @@ const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
 
 const DOM_PREFIX = "x-";
 
-/**
- * iterate over NodeList
- *
- * @private
- * @param {NodeList} nodeList The nodeList to iterate over
- * @param {Function} fn The Function to call
- * @returns void
- */
-const eachNode = function(nodeList, fn) {
-    const l = nodeList.length;
-    let i = 0;
+const crawlNodes = function (entry, fn) {
+    const recurseNodes = function (node, fn) {
+        let result = fn(node);
 
-    while (i < l) {
-        fn(nodeList[i], i);
-        i++;
-    }
-};
+        if (node.childElementCount) {
+            const childArr = Array.from(node.children);
 
-/**
- * Iterate over NamedNodeMap
- *
- * @private
- * @param {NamedNodeMap} namedNodeMap The NamedNodeMap to iterate over
- * @param {Function} fn The Function to run
- * @returns void
- */
-const eachAttribute = function(namedNodeMap, fn) {
-    const l = namedNodeMap.length;
-    let i = 0;
-
-    while (i < l) {
-        const item = namedNodeMap.item(i);
-
-        fn(item.name, item.value, i);
-        i++;
-    }
-};
-
-const crawlNodes = function(entry, fn) {
-    const recurseNodes = function(node, fn) {
-        const children = node.children;
-
-        if (children && children.length > 0) {
-            let result = true;
-            
-            result = eachNode(children, childNode => {
-                return recurseNodes(childNode, fn);
+            childArr.forEach(childNode => {
+                result = recurseNodes(childNode, fn);
             });
-
-            return result;
-        } else {
-            return fn(node);
         }
+
+        return result;
     };
 
     return recurseNodes(entry, fn);
@@ -72,21 +32,17 @@ const crawlNodes = function(entry, fn) {
 
 const eachDirective = function (node, namesList) {
     const names = namesList.map(item => item.name);
+    const attrArr = Array.from(node.attributes);
 
-    eachAttribute(node.attributes, (attributeName, attributeValue) => {
-
+    attrArr.forEach(attr => {
         //If is Axon attribute
-        if (attributeName.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
-            const splitName = attributeName.replace(DOM_PREFIX, "").split(":");
+        if (attr.name.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
+            const splitName = attr.name.replace(DOM_PREFIX, "").split(":");
             const nameIndex = names.indexOf(splitName[0]);
 
             //If name is allowed
             if (nameIndex !== -1) {
-                namesList[nameIndex].fn({
-                    name: splitName[0],
-                    secondary: splitName[1],
-                    value: attributeValue
-                });
+                namesList[nameIndex].fn(splitName[0], splitName[1], attr.value);
             }
         }
     });
@@ -198,8 +154,8 @@ const init = function () {
         eachDirective(
             node, [{
                 name: "on",
-                fn: directive => {
-                    initOn(_this, node, directive.secondary, directive.value);
+                fn: (name, nameSecondary, value) => {
+                    initOn(_this, node, nameSecondary, value);
                 }
             }]
         );
@@ -210,6 +166,14 @@ const init = function () {
     console.log("CALLED $init");
 };
 
+const renderIf = function (instance, node, propName) {
+    //const nodeValueType = getNodeValueType(node);
+    //const propValue = retrieveProp(instance, propName);
+    //console.log("IF",propName);
+    //node.setAttribute(bindType,propValue);
+    
+};
+
 const renderModel = function(instance, node, propName) {
     const nodeValueType = getNodeValueType(node);
     const propValue = retrieveProp(instance, propName);
@@ -218,10 +182,7 @@ const renderModel = function(instance, node, propName) {
 };
 
 const renderBind = function (instance, node, bindType, propName) {
-    //const nodeValueType = getNodeValueType(node);
     const propValue = retrieveProp(instance, propName);
-
-    console.log(propValue);
 
     node.setAttribute(bindType,propValue);
 };
@@ -229,18 +190,24 @@ const renderBind = function (instance, node, bindType, propName) {
 const render = function () {
     const _this = this;
 
-    //Bind events
+    //Render DOM
     crawlNodes(_this.$context, node => {
+        console.log(node);
         eachDirective(
             node, [{
+                name: "if",
+                fn: (name, nameSecondary, value) => {
+                    renderIf(_this, node, value);
+                }
+            }, {
                 name: "model",
-                fn: directive => {
-                    renderModel(_this, node, directive.value);
+                fn: (name, nameSecondary, value) => {
+                    renderModel(_this, node, value);
                 }
             }, {
                 name: "bind",
-                fn: directive => {
-                    renderBind(_this, node, directive.secondary, directive.value);
+                fn: (name, nameSecondary, value) => {
+                    renderBind(_this, node, nameSecondary, value);
                 }
             }]
         );
@@ -264,8 +231,8 @@ const Axon = function (config, autoInit = true) {
     _this.$methods = config.methods;
 
     if (autoInit) {
-        _this.$render();
         _this.$init();
+        _this.$render();
     }
 };
 

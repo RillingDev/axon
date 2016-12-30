@@ -1,5 +1,5 @@
 /**
- * Axon v0.8.0
+ * Axon v0.9.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -13,59 +13,19 @@ var DEBOUNCE_TIMEOUT = 40; //event timeout in ms
 
 var DOM_PREFIX = "x-";
 
-/**
- * iterate over NodeList
- *
- * @private
- * @param {NodeList} nodeList The nodeList to iterate over
- * @param {Function} fn The Function to call
- * @returns void
- */
-var eachNode = function eachNode(nodeList, fn) {
-    var l = nodeList.length;
-    var i = 0;
-
-    while (i < l) {
-        fn(nodeList[i], i);
-        i++;
-    }
-};
-
-/**
- * Iterate over NamedNodeMap
- *
- * @private
- * @param {NamedNodeMap} namedNodeMap The NamedNodeMap to iterate over
- * @param {Function} fn The Function to run
- * @returns void
- */
-var eachAttribute = function eachAttribute(namedNodeMap, fn) {
-    var l = namedNodeMap.length;
-    var i = 0;
-
-    while (i < l) {
-        var item = namedNodeMap.item(i);
-
-        fn(item.name, item.value, i);
-        i++;
-    }
-};
-
 var crawlNodes = function crawlNodes(entry, fn) {
     var recurseNodes = function recurseNodes(node, fn) {
-        var children = node.children;
+        var result = fn(node);
 
-        if (children && children.length > 0) {
-            var result = true;
+        if (node.childElementCount) {
+            var childArr = Array.from(node.children);
 
-            result = eachNode(children, function (childNode) {
-                return recurseNodes(childNode, fn);
+            childArr.forEach(function (childNode) {
+                result = recurseNodes(childNode, fn);
             });
-
-            return result;
-        } else {
-            return fn(node);
         }
+
+        return result;
     };
 
     return recurseNodes(entry, fn);
@@ -75,21 +35,17 @@ var eachDirective = function eachDirective(node, namesList) {
     var names = namesList.map(function (item) {
         return item.name;
     });
+    var attrArr = Array.from(node.attributes);
 
-    eachAttribute(node.attributes, function (attributeName, attributeValue) {
-
+    attrArr.forEach(function (attr) {
         //If is Axon attribute
-        if (attributeName.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
-            var splitName = attributeName.replace(DOM_PREFIX, "").split(":");
+        if (attr.name.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
+            var splitName = attr.name.replace(DOM_PREFIX, "").split(":");
             var nameIndex = names.indexOf(splitName[0]);
 
             //If name is allowed
             if (nameIndex !== -1) {
-                namesList[nameIndex].fn({
-                    name: splitName[0],
-                    secondary: splitName[1],
-                    value: attributeValue
-                });
+                namesList[nameIndex].fn(splitName[0], splitName[1], attr.value);
             }
         }
     });
@@ -216,8 +172,8 @@ var init = function init() {
     crawlNodes(_this.$context, function (node) {
         eachDirective(node, [{
             name: "on",
-            fn: function fn(directive) {
-                initOn(_this, node, directive.secondary, directive.value);
+            fn: function fn(name, nameSecondary, value) {
+                initOn(_this, node, nameSecondary, value);
             }
         }]);
 
@@ -225,6 +181,14 @@ var init = function init() {
     });
 
     console.log("CALLED $init");
+};
+
+var renderIf = function renderIf(instance, node, propName) {
+    //const nodeValueType = getNodeValueType(node);
+    //const propValue = retrieveProp(instance, propName);
+    //console.log("IF",propName);
+    //node.setAttribute(bindType,propValue);
+
 };
 
 var renderModel = function renderModel(instance, node, propName) {
@@ -235,10 +199,7 @@ var renderModel = function renderModel(instance, node, propName) {
 };
 
 var renderBind = function renderBind(instance, node, bindType, propName) {
-    //const nodeValueType = getNodeValueType(node);
     var propValue = retrieveProp(instance, propName);
-
-    console.log(propValue);
 
     node.setAttribute(bindType, propValue);
 };
@@ -246,17 +207,23 @@ var renderBind = function renderBind(instance, node, bindType, propName) {
 var render = function render() {
     var _this = this;
 
-    //Bind events
+    //Render DOM
     crawlNodes(_this.$context, function (node) {
+        console.log(node);
         eachDirective(node, [{
+            name: "if",
+            fn: function fn(name, nameSecondary, value) {
+                renderIf(_this, node, value);
+            }
+        }, {
             name: "model",
-            fn: function fn(directive) {
-                renderModel(_this, node, directive.value);
+            fn: function fn(name, nameSecondary, value) {
+                renderModel(_this, node, value);
             }
         }, {
             name: "bind",
-            fn: function fn(directive) {
-                renderBind(_this, node, directive.secondary, directive.value);
+            fn: function fn(name, nameSecondary, value) {
+                renderBind(_this, node, nameSecondary, value);
             }
         }]);
     });
@@ -281,8 +248,8 @@ var Axon = function Axon(config) {
     _this.$methods = config.methods;
 
     if (autoInit) {
-        _this.$render();
         _this.$init();
+        _this.$render();
     }
 };
 

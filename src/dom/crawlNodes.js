@@ -1,24 +1,18 @@
 "use strict";
 
-import {
-    eachNode
-} from "../lib/util";
+const crawlNodes = function (entry, fn) {
+    const recurseNodes = function (node, fn) {
+        let result = fn(node);
 
-const crawlNodes = function(entry, fn) {
-    const recurseNodes = function(node, fn) {
-        const children = node.children;
+        if (node.childElementCount) {
+            const childArr = Array.from(node.children);
 
-        if (children && children.length > 0) {
-            let result = true;
-            
-            result = eachNode(children, childNode => {
-                return recurseNodes(childNode, fn);
+            childArr.forEach(childNode => {
+                result = recurseNodes(childNode, fn);
             });
-
-            return result;
-        } else {
-            return fn(node);
         }
+
+        return result;
     };
 
     return recurseNodes(entry, fn);
