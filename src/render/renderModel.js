@@ -8,6 +8,8 @@ const renderModel = function(instance, node, propName) {
     const propValue = retrieveProp(instance, propName);
 
     node[nodeValueType] = propValue;
+
+    return true;
 };
 
 export default renderModel;

@@ -14,7 +14,7 @@ const crawlNodes = function (entry, fn) {
     const recurseNodes = function (node, fn) {
         let result = fn(node);
 
-        if (node.childElementCount) {
+        if (result && node.childElementCount) {
             const childArr = Array.from(node.children);
 
             childArr.forEach(childNode => {
@@ -31,6 +31,7 @@ const crawlNodes = function (entry, fn) {
 const eachDirective = function (node, namesList) {
     const names = namesList.map(item => item.name);
     const attrArr = Array.from(node.attributes);
+    let result = true;
 
     attrArr.forEach(attr => {
         //If is Axon attribute
@@ -40,10 +41,12 @@ const eachDirective = function (node, namesList) {
 
             //If name is allowed
             if (nameIndex !== -1) {
-                namesList[nameIndex].fn(splitName[0], splitName[1], attr.value);
+                result = namesList[nameIndex].fn(splitName[0], splitName[1], attr.value);
             }
         }
     });
+
+    return result;
 };
 
 const debounce = function(fn, wait, immediate) {
@@ -142,6 +145,8 @@ const initOn = function (instance, node, eventType, methodName) {
     const targetMethod = retrieveMethod(instance, methodName);
 
     bindEvent(node, eventType, targetMethod.fn, targetMethod.args, instance);
+
+    return true;
 };
 
 const init = function () {
@@ -149,27 +154,30 @@ const init = function () {
 
     //Bind events
     crawlNodes(_this.$context, node => {
-        eachDirective(
+        return eachDirective(
             node, [{
                 name: "on",
                 fn: (name, nameSecondary, value) => {
-                    initOn(_this, node, nameSecondary, value);
+                    return initOn(_this, node, nameSecondary, value);
                 }
             }]
         );
-
-        return true;
     });
 
     console.log("CALLED $init");
 };
 
 const renderIf = function (instance, node, propName) {
-    //const nodeValueType = getNodeValueType(node);
-    //const propValue = retrieveProp(instance, propName);
-    //console.log("IF",propName);
-    //node.setAttribute(bindType,propValue);
-    
+    const propValue = retrieveProp(instance, propName);
+    const result = Boolean(propValue);
+
+    if (result) {
+        node.removeAttribute("hidden");
+    } else {
+        node.setAttribute("hidden", result);
+    }
+
+    return result;
 };
 
 const renderModel = function(instance, node, propName) {
@@ -177,12 +185,16 @@ const renderModel = function(instance, node, propName) {
     const propValue = retrieveProp(instance, propName);
 
     node[nodeValueType] = propValue;
+
+    return true;
 };
 
 const renderBind = function (instance, node, bindType, propName) {
     const propValue = retrieveProp(instance, propName);
 
     node.setAttribute(bindType,propValue);
+
+    return true;
 };
 
 const render = function () {
@@ -190,22 +202,27 @@ const render = function () {
 
     //Render DOM
     crawlNodes(_this.$context, node => {
-        console.log(node);
-        eachDirective(
+        //console.log(node);
+        return eachDirective(
             node, [{
+                name: "ignore",
+                fn: () => {
+                    return false;
+                }
+            }, {
                 name: "if",
                 fn: (name, nameSecondary, value) => {
-                    renderIf(_this, node, value);
+                    return renderIf(_this, node, value);
                 }
             }, {
                 name: "model",
                 fn: (name, nameSecondary, value) => {
-                    renderModel(_this, node, value);
+                    return renderModel(_this, node, value);
                 }
             }, {
                 name: "bind",
                 fn: (name, nameSecondary, value) => {
-                    renderBind(_this, node, nameSecondary, value);
+                    return renderBind(_this, node, nameSecondary, value);
                 }
             }]
         );

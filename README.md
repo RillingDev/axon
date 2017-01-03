@@ -8,13 +8,12 @@ Currently implemented:
 
 - `x-model`
 - `x-on:{event}`
-- `x-bind`
-
+- `x-bind:{attr}`
+- `x-if` 
+ - `x-ignore`
+ 
 Planned:
 
-- `x-if`
 - `x-for`
 
 Idea:
- 
- - `x-ignore`

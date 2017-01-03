@@ -8,6 +8,8 @@ const initOn = function (instance, node, eventType, methodName) {
     const targetMethod = retrieveMethod(instance, methodName);
 
     bindEvent(node, eventType, targetMethod.fn, targetMethod.args, instance);
+
+    return true;
 };
 
 export default initOn;

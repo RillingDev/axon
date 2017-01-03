@@ -12,22 +12,27 @@ const render = function () {
 
     //Render DOM
     crawlNodes(_this.$context, node => {
-        console.log(node);
-        eachDirective(
+        //console.log(node);
+        return eachDirective(
             node, [{
+                name: "ignore",
+                fn: () => {
+                    return false;
+                }
+            }, {
                 name: "if",
                 fn: (name, nameSecondary, value) => {
-                    renderIf(_this, node, value);
+                    return renderIf(_this, node, value);
                 }
             }, {
                 name: "model",
                 fn: (name, nameSecondary, value) => {
-                    renderModel(_this, node, value);
+                    return renderModel(_this, node, value);
                 }
             }, {
                 name: "bind",
                 fn: (name, nameSecondary, value) => {
-                    renderBind(_this, node, nameSecondary, value);
+                    return renderBind(_this, node, nameSecondary, value);
                 }
             }]
         );

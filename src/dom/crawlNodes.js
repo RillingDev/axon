@@ -4,7 +4,7 @@ const crawlNodes = function (entry, fn) {
     const recurseNodes = function (node, fn) {
         let result = fn(node);
 
-        if (node.childElementCount) {
+        if (result && node.childElementCount) {
             const childArr = Array.from(node.children);
 
             childArr.forEach(childNode => {

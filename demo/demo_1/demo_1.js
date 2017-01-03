@@ -6,6 +6,7 @@ const app = new Axon({
         foo: "foooo",
         bar: "baaar",
         foobar: "foooobaaar",
+        dataChanged: false,
         classes: {
             foo: "class_foooobaaar"
         }
@@ -22,12 +23,11 @@ const app = new Axon({
 
             vm.$data.foobar = vm.$data.foo + vm.$data.bar;
             vm.$data.classes.foo = "class_" + vm.$data.foobar;
+            vm.$data.dataChanged = true;
 
             vm.$render();
         }
     }
 });
-
-app.$methods.updateFoobar();
 
 console.log(app);

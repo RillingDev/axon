@@ -1,12 +1,18 @@
 "use strict";
 
+import retrieveProp from "../controller/retrieveProp";
 
 const renderIf = function (instance, node, propName) {
-    //const nodeValueType = getNodeValueType(node);
-    //const propValue = retrieveProp(instance, propName);
-    //console.log("IF",propName);
-    //node.setAttribute(bindType,propValue);
-    
+    const propValue = retrieveProp(instance, propName);
+    const result = Boolean(propValue);
+
+    if (result) {
+        node.removeAttribute("hidden");
+    } else {
+        node.setAttribute("hidden", result);
+    }
+
+    return result;
 };
 
 export default renderIf;

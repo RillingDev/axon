@@ -21,12 +21,14 @@
             <input type="text" x-model="bar" x-on:input="changeValue('bar')">
         </div>
         <br>
-        <div x-if="foobar">
-            <label>Foo + Bar:</label>
-            <input type="text" x-model="foobar" x-bind:class="foobar">
-        </div>
-        <div>
-            <p x-bind:class="classes.foo">Lorem ipsum</p>
+        <div x-if="dataChanged">
+            <div>
+                <label>Foo + Bar:</label>
+                <input type="text" x-model="foobar" x-bind:class="foobar">
+            </div>
+            <div x-ignore>
+                <p x-bind:class="classes.foo">Lorem ipsum</p>
+            </div>
         </div>
     </div>
     <script src="../../dist/axon.js"></script>
