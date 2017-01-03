@@ -20,7 +20,7 @@ const eachObject = function(object, fn) {
         fn(object[currentKey], currentKey, i);
         i++;
     }
-}
+};
 
 /**
  * iterate over NodeList
@@ -38,7 +38,7 @@ const eachNode = function(nodeList, fn) {
         fn(nodeList[i], i);
         i++;
     }
-}
+};
 
 /**
  * Iterate over NamedNodeMap
@@ -58,7 +58,7 @@ const eachAttribute = function(namedNodeMap, fn) {
         fn(item.name, item.value, i);
         i++;
     }
-}
+};
 
 export {
     eachObject,

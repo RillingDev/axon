@@ -1,5 +1,5 @@
 /**
- * Axon v0.9.0
+ * Axon v0.10.1
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -9,9 +9,12 @@ var Axon = (function () {
 
 var _document = document;
 
-var DEBOUNCE_TIMEOUT = 40; //event timeout in ms
+var TYPE_NAME_UNDEFINED = "undefined";
+var TYPE_NAME_FUNCTION = "function";
+var LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
-var DOM_PREFIX = "x-";
+var DOM_ATTR_PREFIX = "x-";
+var DOM_ATTR_HIDDEN = "hidden";
 
 var crawlNodes = function crawlNodes(entry, fn) {
     var recurseNodes = function recurseNodes(node, fn) {
@@ -40,8 +43,8 @@ var eachDirective = function eachDirective(node, namesList) {
 
     attrArr.forEach(function (attr) {
         //If is Axon attribute
-        if (attr.name.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
-            var splitName = attr.name.replace(DOM_PREFIX, "").split(":");
+        if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
+            var splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
             var nameIndex = names.indexOf(splitName[0]);
 
             //If name is allowed
@@ -76,10 +79,16 @@ var debounce = function debounce(fn, wait, immediate) {
     };
 };
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
 var getNodeValueType = function getNodeValueType(node) {
-    if (typeof node.value !== "undefined") {
+    if (_typeof(node.value) !== TYPE_NAME_UNDEFINED) {
         return "value";
-    } else if (typeof node.textContent !== "undefined") {
+    } else if (_typeof(node.textContent) !== TYPE_NAME_UNDEFINED) {
         return "textContent";
     } else {
         return "innerHTML";
@@ -87,7 +96,7 @@ var getNodeValueType = function getNodeValueType(node) {
 };
 
 var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance) {
-    var debouncedFn = debounce(eventFn, DEBOUNCE_TIMEOUT);
+    var debouncedFn = debounce(eventFn, LIB_DEBOUNCE_TIMEOUT);
     var nodeValueType = getNodeValueType(node);
 
     var eventFnWrapper = function eventFnWrapper(event) {
@@ -100,12 +109,6 @@ var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance
     };
 
     return node.addEventListener(eventType, eventFnWrapper, false);
-};
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
 };
 
 var retrieveProp = function retrieveProp(instance, propName) {
@@ -128,7 +131,7 @@ var retrieveProp = function retrieveProp(instance, propName) {
                 prop = prop[propItem];
             });
 
-            if (typeof prop === "undefined") {
+            if ((typeof prop === "undefined" ? "undefined" : _typeof(prop)) === TYPE_NAME_UNDEFINED) {
                 throw new Error("prop '" + propName + "' not found");
             } else {
                 return {
@@ -152,7 +155,7 @@ var retrieveMethod = function retrieveMethod(instance, methodString) {
 
     var methodFn = instance.$methods[methodName];
 
-    if (typeof methodFn !== "function") {
+    if ((typeof methodFn === "undefined" ? "undefined" : _typeof(methodFn)) !== TYPE_NAME_FUNCTION) {
         throw new Error("method '" + methodName + "' not found");
     } else {
         return {
@@ -191,9 +194,9 @@ var renderIf = function renderIf(instance, node, propName) {
     var result = Boolean(propValue);
 
     if (result) {
-        node.removeAttribute("hidden");
+        node.removeAttribute(DOM_ATTR_HIDDEN);
     } else {
-        node.setAttribute("hidden", result);
+        node.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
     }
 
     return result;

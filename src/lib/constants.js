@@ -1,17 +1,29 @@
 "use strict";
 
-const _window = window;
 const _document = document;
 
-const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
+const TYPE_NAME_UNDEFINED = "undefined";
+const TYPE_NAME_OBJECT = "object";
+const TYPE_NAME_FUNCTION = "function";
+const TYPE_NAME_STRING = "string";
+const TYPE_NAME_NUMBER = "number";
 
-const DOM_PREFIX = "x-";
+const LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
+
+const DOM_ATTR_PREFIX = "x-";
+const DOM_ATTR_HIDDEN = "hidden";
 
 export {
-    _window,
     _document,
 
-    DEBOUNCE_TIMEOUT,
-    
-    DOM_PREFIX
+    TYPE_NAME_UNDEFINED,
+    TYPE_NAME_OBJECT,
+    TYPE_NAME_FUNCTION,
+    TYPE_NAME_STRING,
+    TYPE_NAME_NUMBER,
+
+    LIB_DEBOUNCE_TIMEOUT,
+
+    DOM_ATTR_PREFIX,
+    DOM_ATTR_HIDDEN
 };

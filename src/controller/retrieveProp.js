@@ -1,5 +1,9 @@
 "use strict";
 
+import {
+    TYPE_NAME_UNDEFINED
+} from "../lib/constants";
+
 const retrieveProp = function (instance, propName) {
     const castNumber = Number(propName);
     const stringChars = ["'", "\"", "`"];
@@ -19,7 +23,7 @@ const retrieveProp = function (instance, propName) {
             prop = prop[propItem];
         });
 
-        if (typeof prop === "undefined") {
+        if (typeof prop === TYPE_NAME_UNDEFINED) {
             throw new Error(`prop '${propName}' not found`);
         } else {
             return prop;

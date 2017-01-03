@@ -4,8 +4,9 @@
 <head>
     <meta charset="utf-8">
     <title>AxonJS Demo</title>
-    <meta name="description" content="">
+    <meta name="description" content="AxonJS Demo">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://necolas.github.io/normalize.css/5.0.0/normalize.css" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
@@ -21,13 +22,15 @@
             <input type="text" x-model="bar" x-on:input="changeValue('bar')">
         </div>
         <br>
-        <div x-if="dataChanged">
+        <div x-if="dataLength" x-bind:class="foobar">
             <div>
                 <label>Foo + Bar:</label>
-                <input type="text" x-model="foobar" x-bind:class="foobar">
+                <input type="text" x-model="foobar" x-on:input="updateFoobar()">
+                <p>The current value of foobar is <span x-model="foobar"></span></p>
             </div>
+            <hr>
             <div x-ignore>
-                <p x-bind:class="classes.foo">Lorem ipsum</p>
+                <p x-bind:class="classes.foo">Im being ignored</p>
             </div>
         </div>
     </div>

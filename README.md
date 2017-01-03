@@ -10,7 +10,7 @@ Currently implemented:
 - `x-on:{event}`
 - `x-bind:{attr}`
 - `x-if` 
- - `x-ignore`
+- `x-ignore`
  
 Planned:
 

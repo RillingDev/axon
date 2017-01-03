@@ -1,5 +1,5 @@
 /**
- * Axon v0.9.0
+ * Axon v0.10.1
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -8,9 +8,12 @@
 
 const _document = document;
 
-const DEBOUNCE_TIMEOUT = 40; //event timeout in ms
+const TYPE_NAME_UNDEFINED = "undefined";
+const TYPE_NAME_FUNCTION = "function";
+const LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
-const DOM_PREFIX = "x-";
+const DOM_ATTR_PREFIX = "x-";
+const DOM_ATTR_HIDDEN = "hidden";
 
 const crawlNodes = function (entry, fn) {
     const recurseNodes = function (node, fn) {
@@ -37,8 +40,8 @@ const eachDirective = function (node, namesList) {
 
     attrArr.forEach(attr => {
         //If is Axon attribute
-        if (attr.name.substr(0, DOM_PREFIX.length) === DOM_PREFIX) {
-            const splitName = attr.name.replace(DOM_PREFIX, "").split(":");
+        if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
+            const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
             const nameIndex = names.indexOf(splitName[0]);
 
             //If name is allowed
@@ -73,10 +76,10 @@ const debounce = function(fn, wait, immediate) {
     };
 };
 
-const getNodeValueType = function(node) {
-    if (typeof node.value !== "undefined") {
+const getNodeValueType = function (node) {
+    if (typeof node.value !== TYPE_NAME_UNDEFINED) {
         return "value";
-    } else if (typeof node.textContent !== "undefined") {
+    } else if (typeof node.textContent !== TYPE_NAME_UNDEFINED) {
         return "textContent";
     } else {
         return "innerHTML";
@@ -84,7 +87,7 @@ const getNodeValueType = function(node) {
 };
 
 const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
-    const debouncedFn = debounce(eventFn, DEBOUNCE_TIMEOUT);
+    const debouncedFn = debounce(eventFn, LIB_DEBOUNCE_TIMEOUT);
     const nodeValueType = getNodeValueType(node);
 
     const eventFnWrapper = function(event) {
@@ -118,7 +121,7 @@ const retrieveProp = function (instance, propName) {
             prop = prop[propItem];
         });
 
-        if (typeof prop === "undefined") {
+        if (typeof prop === TYPE_NAME_UNDEFINED) {
             throw new Error(`prop '${propName}' not found`);
         } else {
             return prop;
@@ -133,7 +136,7 @@ const retrieveMethod = function(instance, methodString) {
 
     const methodFn = instance.$methods[methodName];
 
-    if (typeof methodFn !== "function") {
+    if (typeof methodFn !== TYPE_NAME_FUNCTION) {
         throw new Error(`method '${methodName}' not found`);
     } else {
         return {
@@ -174,9 +177,9 @@ const renderIf = function (instance, node, propName) {
     const result = Boolean(propValue);
 
     if (result) {
-        node.removeAttribute("hidden");
+        node.removeAttribute(DOM_ATTR_HIDDEN);
     } else {
-        node.setAttribute("hidden", result);
+        node.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
     }
 
     return result;

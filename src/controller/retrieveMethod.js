@@ -1,5 +1,8 @@
 "use strict";
 
+import {
+    TYPE_NAME_FUNCTION
+} from "../lib/constants";
 import retrieveProp from "./retrieveProp";
 
 const retrieveMethod = function(instance, methodString) {
@@ -9,7 +12,7 @@ const retrieveMethod = function(instance, methodString) {
 
     const methodFn = instance.$methods[methodName];
 
-    if (typeof methodFn !== "function") {
+    if (typeof methodFn !== TYPE_NAME_FUNCTION) {
         throw new Error(`method '${methodName}' not found`);
     } else {
         return {
