@@ -1,7 +1,7 @@
 "use strict";
 
-import crawlNodes from "../dom/crawlNodes";
 import eachDirective from "../dom/eachDirective";
+import crawlNodes from "../dom/crawlNodes";
 
 import renderIf from "./renderIf";
 import renderModel from "./renderModel";

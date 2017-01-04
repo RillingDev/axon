@@ -7,10 +7,6 @@
 var Axon = (function () {
 'use strict';
 
-var _document = document;
-
-var TYPE_NAME_UNDEFINED = "undefined";
-var TYPE_NAME_FUNCTION = "function";
 var LIB_STRING_QUOTES = ["'", "\"", "`"];
 
 var DOM_EVENT_TIMEOUT = 20; //event timeout in ms
@@ -18,23 +14,8 @@ var DOM_ATTR_PREFIX = "x-";
 var DOM_ATTR_HIDDEN = "hidden";
 var DOM_EVENT_MODEL = "input";
 
-var crawlNodes = function crawlNodes(entry, fn) {
-    var recurseNodes = function recurseNodes(node, fn) {
-        var result = fn(node);
-
-        if (result && node.childElementCount) {
-            var childArr = Array.from(node.children);
-
-            childArr.forEach(function (childNode) {
-                result = recurseNodes(childNode, fn);
-            });
-        }
-
-        return result;
-    };
-
-    return recurseNodes(entry, fn);
-};
+var TYPE_NAME_UNDEFINED = "undefined";
+var TYPE_NAME_FUNCTION = "function";
 
 var eachDirective = function eachDirective(node, namesList) {
     var names = namesList.map(function (item) {
@@ -57,6 +38,24 @@ var eachDirective = function eachDirective(node, namesList) {
     });
 
     return result;
+};
+
+var crawlNodes = function crawlNodes(entry, fn) {
+    var recurseNodes = function recurseNodes(node, fn) {
+        var result = fn(node);
+
+        if (result && node.childElementCount) {
+            var childArr = Array.from(node.children);
+
+            childArr.forEach(function (childNode) {
+                result = recurseNodes(childNode, fn);
+            });
+        }
+
+        return result;
+    };
+
+    return recurseNodes(entry, fn);
 };
 
 var debounce = function debounce(fn, wait, immediate) {
@@ -294,7 +293,7 @@ var render = function render() {
 var Axon = function Axon(config) {
     var _this = this;
 
-    _this.$context = _document.querySelector(config.context);
+    _this.$context = document.querySelector(config.context);
     _this.$data = config.data;
     _this.$methods = config.methods;
 

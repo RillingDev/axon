@@ -1,7 +1,7 @@
 "use strict";
 
-import crawlNodes from "../dom/crawlNodes";
 import eachDirective from "../dom/eachDirective";
+import crawlNodes from "../dom/crawlNodes";
 
 import initOn from "./initOn";
 import initModel from "./initModel";

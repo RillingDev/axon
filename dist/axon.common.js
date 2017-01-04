@@ -6,10 +6,6 @@
 
 'use strict';
 
-const _document = document;
-
-const TYPE_NAME_UNDEFINED = "undefined";
-const TYPE_NAME_FUNCTION = "function";
 const LIB_STRING_QUOTES = ["'", "\"", "`"];
 
 const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
@@ -17,23 +13,8 @@ const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_HIDDEN = "hidden";
 const DOM_EVENT_MODEL = "input";
 
-const crawlNodes = function (entry, fn) {
-    const recurseNodes = function (node, fn) {
-        let result = fn(node);
-
-        if (result && node.childElementCount) {
-            const childArr = Array.from(node.children);
-
-            childArr.forEach(childNode => {
-                result = recurseNodes(childNode, fn);
-            });
-        }
-
-        return result;
-    };
-
-    return recurseNodes(entry, fn);
-};
+const TYPE_NAME_UNDEFINED = "undefined";
+const TYPE_NAME_FUNCTION = "function";
 
 const eachDirective = function (node, namesList) {
     const names = namesList.map(item => item.name);
@@ -54,6 +35,24 @@ const eachDirective = function (node, namesList) {
     });
 
     return result;
+};
+
+const crawlNodes = function (entry, fn) {
+    const recurseNodes = function (node, fn) {
+        let result = fn(node);
+
+        if (result && node.childElementCount) {
+            const childArr = Array.from(node.children);
+
+            childArr.forEach(childNode => {
+                result = recurseNodes(childNode, fn);
+            });
+        }
+
+        return result;
+    };
+
+    return recurseNodes(entry, fn);
 };
 
 const debounce = function(fn, wait, immediate) {
@@ -287,7 +286,7 @@ const render = function () {
 const Axon = function (config) {
     const _this = this;
 
-    _this.$context = _document.querySelector(config.context);
+    _this.$context = document.querySelector(config.context);
     _this.$data = config.data;
     _this.$methods = config.methods;
 
