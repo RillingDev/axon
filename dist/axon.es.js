@@ -1,5 +1,5 @@
 /**
- * Axon v0.10.1
+ * Axon v0.11.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -8,6 +8,7 @@ const _document = document;
 
 const TYPE_NAME_UNDEFINED = "undefined";
 const TYPE_NAME_FUNCTION = "function";
+const LIB_STRING_QUOTES = ["'", "\"", "`"];
 const LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
 const DOM_ATTR_PREFIX = "x-";
@@ -100,38 +101,43 @@ const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
     return node.addEventListener(eventType, eventFnWrapper, false);
 };
 
-const retrieveProp = function (instance, propName) {
-    const castNumber = Number(propName);
-    const stringChars = ["'", "\"", "`"];
+const retrieveProp = function (instance, expression) {
+    const splitExpression = expression.split(".");
+    let prop = instance.$data;
 
-    if (!isNaN(castNumber)) {
-        //If number
-        return castNumber;
-    } else if (stringChars.includes(propName[0])) {
-        //If String
-        return propName.substr(1, propName.length - 2);
+    splitExpression.forEach(propPath => {
+        prop = prop[propPath];
+    });
+
+    if (typeof prop === TYPE_NAME_UNDEFINED) {
+        throw new Error(`prop '${expression}' not found`);
     } else {
-        //If Prop
-        const propPath = propName.split(".");
-        let prop = instance.$data;
-
-        propPath.forEach(propItem => {
-            prop = prop[propItem];
-        });
-
-        if (typeof prop === TYPE_NAME_UNDEFINED) {
-            throw new Error(`prop '${propName}' not found`);
-        } else {
-            return prop;
-        }
+        return prop;
     }
 };
 
-const retrieveMethod = function(instance, methodString) {
-    const methodStringSplit = methodString.substr(0, methodString.length - 1).split("(");
-    const methodName = methodStringSplit[0];
-    const methodArgs = methodStringSplit[1].split(",").filter(item => item !== "").map(arg => retrieveProp(instance, arg));
+const evaluateExpression = function (instance, expression) {
+    if (!isNaN(Number(expression))) {
+        //expression is a Number
+        return Number(expression);
+    } else if (LIB_STRING_QUOTES.includes(expression.substr(0, 1))) {
+        //expression is a String
+        return expression.substr(1, expression.length - 2);
+    } else if (expression.substr(expression.length - 1) === ")") {
+        //expression is a Method
+        return retrieveMethod(instance, expression);
+    } else {
+        //expression is a Property
+        return retrieveProp(instance, expression);
+    }
+};
 
+const retrieveMethod = function (instance, expression) {
+    const expressionSplit = expression.substr(0, expression.length - 1).split("(");
+    const methodName = expressionSplit[0];
+    const methodArgs = expressionSplit[1].split(",").filter(item => item !== "").map(arg => {
+        return evaluateExpression(instance, arg);
+    });
     const methodFn = instance.$methods[methodName];
 
     if (typeof methodFn !== TYPE_NAME_FUNCTION) {
@@ -170,8 +176,8 @@ const init = function () {
     console.log("CALLED $init");
 };
 
-const renderIf = function (instance, node, propName) {
-    const propValue = retrieveProp(instance, propName);
+const renderIf = function (instance, node, expression) {
+    const propValue = evaluateExpression(instance, expression);
     const result = Boolean(propValue);
 
     if (result) {
@@ -185,15 +191,15 @@ const renderIf = function (instance, node, propName) {
 
 const renderModel = function(instance, node, propName) {
     const nodeValueType = getNodeValueType(node);
-    const propValue = retrieveProp(instance, propName);
+    const propValue = evaluateExpression(instance, propName);
 
     node[nodeValueType] = propValue;
 
     return true;
 };
 
-const renderBind = function (instance, node, bindType, propName) {
-    const propValue = retrieveProp(instance, propName);
+const renderBind = function (instance, node, bindType, expression) {
+    const propValue = evaluateExpression(instance, expression);
 
     node.setAttribute(bindType,propValue);
 
@@ -205,7 +211,6 @@ const render = function () {
 
     //Render DOM
     crawlNodes(_this.$context, node => {
-        //console.log(node);
         return eachDirective(
             node, [{
                 name: "ignore",
@@ -241,17 +246,15 @@ const render = function () {
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-const Axon = function (config, autoInit = true) {
+const Axon = function (config) {
     const _this = this;
 
     _this.$context = _document.querySelector(config.context);
     _this.$data = config.data;
     _this.$methods = config.methods;
 
-    if (autoInit) {
-        _this.$init();
-        _this.$render();
-    }
+    _this.$init();
+    _this.$render();
 };
 
 /**

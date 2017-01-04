@@ -1,12 +1,12 @@
 "use strict";
 
-import retrieveProp from "../controller/retrieveProp";
+import evaluateExpression from "../controller/evaluateExpression";
 import {
     DOM_ATTR_HIDDEN
 } from "../lib/constants";
 
-const renderIf = function (instance, node, propName) {
-    const propValue = retrieveProp(instance, propName);
+const renderIf = function (instance, node, expression) {
+    const propValue = evaluateExpression(instance, expression);
     const result = Boolean(propValue);
 
     if (result) {

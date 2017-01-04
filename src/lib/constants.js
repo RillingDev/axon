@@ -8,6 +8,7 @@ const TYPE_NAME_FUNCTION = "function";
 const TYPE_NAME_STRING = "string";
 const TYPE_NAME_NUMBER = "number";
 
+const LIB_STRING_QUOTES = ["'", "\"", "`"];
 const LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
 const DOM_ATTR_PREFIX = "x-";
@@ -22,6 +23,7 @@ export {
     TYPE_NAME_STRING,
     TYPE_NAME_NUMBER,
 
+    LIB_STRING_QUOTES,
     LIB_DEBOUNCE_TIMEOUT,
 
     DOM_ATTR_PREFIX,

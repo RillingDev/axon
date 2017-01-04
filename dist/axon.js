@@ -1,5 +1,5 @@
 /**
- * Axon v0.10.1
+ * Axon v0.11.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -11,6 +11,7 @@ var _document = document;
 
 var TYPE_NAME_UNDEFINED = "undefined";
 var TYPE_NAME_FUNCTION = "function";
+var LIB_STRING_QUOTES = ["'", "\"", "`"];
 var LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
 var DOM_ATTR_PREFIX = "x-";
@@ -111,48 +112,45 @@ var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance
     return node.addEventListener(eventType, eventFnWrapper, false);
 };
 
-var retrieveProp = function retrieveProp(instance, propName) {
-    var castNumber = Number(propName);
-    var stringChars = ["'", "\"", "`"];
+var retrieveProp = function retrieveProp(instance, expression) {
+    var splitExpression = expression.split(".");
+    var prop = instance.$data;
 
-    if (!isNaN(castNumber)) {
-        //If number
-        return castNumber;
-    } else if (stringChars.includes(propName[0])) {
-        //If String
-        return propName.substr(1, propName.length - 2);
+    splitExpression.forEach(function (propPath) {
+        prop = prop[propPath];
+    });
+
+    if ((typeof prop === "undefined" ? "undefined" : _typeof(prop)) === TYPE_NAME_UNDEFINED) {
+        throw new Error("prop '" + expression + "' not found");
     } else {
-        var _ret = function () {
-            //If Prop
-            var propPath = propName.split(".");
-            var prop = instance.$data;
-
-            propPath.forEach(function (propItem) {
-                prop = prop[propItem];
-            });
-
-            if ((typeof prop === "undefined" ? "undefined" : _typeof(prop)) === TYPE_NAME_UNDEFINED) {
-                throw new Error("prop '" + propName + "' not found");
-            } else {
-                return {
-                    v: prop
-                };
-            }
-        }();
-
-        if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+        return prop;
     }
 };
 
-var retrieveMethod = function retrieveMethod(instance, methodString) {
-    var methodStringSplit = methodString.substr(0, methodString.length - 1).split("(");
-    var methodName = methodStringSplit[0];
-    var methodArgs = methodStringSplit[1].split(",").filter(function (item) {
+var evaluateExpression = function evaluateExpression(instance, expression) {
+    if (!isNaN(Number(expression))) {
+        //expression is a Number
+        return Number(expression);
+    } else if (LIB_STRING_QUOTES.includes(expression.substr(0, 1))) {
+        //expression is a String
+        return expression.substr(1, expression.length - 2);
+    } else if (expression.substr(expression.length - 1) === ")") {
+        //expression is a Method
+        return retrieveMethod(instance, expression);
+    } else {
+        //expression is a Property
+        return retrieveProp(instance, expression);
+    }
+};
+
+var retrieveMethod = function retrieveMethod(instance, expression) {
+    var expressionSplit = expression.substr(0, expression.length - 1).split("(");
+    var methodName = expressionSplit[0];
+    var methodArgs = expressionSplit[1].split(",").filter(function (item) {
         return item !== "";
     }).map(function (arg) {
-        return retrieveProp(instance, arg);
+        return evaluateExpression(instance, arg);
     });
-
     var methodFn = instance.$methods[methodName];
 
     if ((typeof methodFn === "undefined" ? "undefined" : _typeof(methodFn)) !== TYPE_NAME_FUNCTION) {
@@ -189,8 +187,8 @@ var init = function init() {
     console.log("CALLED $init");
 };
 
-var renderIf = function renderIf(instance, node, propName) {
-    var propValue = retrieveProp(instance, propName);
+var renderIf = function renderIf(instance, node, expression) {
+    var propValue = evaluateExpression(instance, expression);
     var result = Boolean(propValue);
 
     if (result) {
@@ -204,15 +202,15 @@ var renderIf = function renderIf(instance, node, propName) {
 
 var renderModel = function renderModel(instance, node, propName) {
     var nodeValueType = getNodeValueType(node);
-    var propValue = retrieveProp(instance, propName);
+    var propValue = evaluateExpression(instance, propName);
 
     node[nodeValueType] = propValue;
 
     return true;
 };
 
-var renderBind = function renderBind(instance, node, bindType, propName) {
-    var propValue = retrieveProp(instance, propName);
+var renderBind = function renderBind(instance, node, bindType, expression) {
+    var propValue = evaluateExpression(instance, expression);
 
     node.setAttribute(bindType, propValue);
 
@@ -224,7 +222,6 @@ var render = function render() {
 
     //Render DOM
     crawlNodes(_this.$context, function (node) {
-        //console.log(node);
         return eachDirective(node, [{
             name: "ignore",
             fn: function fn() {
@@ -259,18 +256,14 @@ var render = function render() {
  * @returns {Object} Returns Axon instance
  */
 var Axon = function Axon(config) {
-    var autoInit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
     var _this = this;
 
     _this.$context = _document.querySelector(config.context);
     _this.$data = config.data;
     _this.$methods = config.methods;
 
-    if (autoInit) {
-        _this.$init();
-        _this.$render();
-    }
+    _this.$init();
+    _this.$render();
 };
 
 /**

@@ -11,7 +11,7 @@ const app = new Axon({
     methods: {
         changeValue(type, value) {
             const vm = app;
-
+            
             vm.$data[type] = value;
             vm.$methods.updateFoobar();
         },

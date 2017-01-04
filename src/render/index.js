@@ -12,7 +12,6 @@ const render = function () {
 
     //Render DOM
     crawlNodes(_this.$context, node => {
-        //console.log(node);
         return eachDirective(
             node, [{
                 name: "ignore",

@@ -1,9 +1,9 @@
 "use strict";
 
-import retrieveProp from "../controller/retrieveProp";
+import evaluateExpression from "../controller/evaluateExpression";
 
-const renderBind = function (instance, node, bindType, propName) {
-    const propValue = retrieveProp(instance, propName);
+const renderBind = function (instance, node, bindType, expression) {
+    const propValue = evaluateExpression(instance, expression);
 
     node.setAttribute(bindType,propValue);
 
