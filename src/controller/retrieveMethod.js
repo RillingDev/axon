@@ -1,8 +1,5 @@
 "use strict";
 
-import {
-    TYPE_NAME_FUNCTION
-} from "../lib/constants";
 import evaluateExpression from "./evaluateExpression";
 
 const retrieveMethod = function (instance, expression) {
@@ -13,13 +10,13 @@ const retrieveMethod = function (instance, expression) {
     });
     const methodFn = instance.$methods[methodName];
 
-    if (typeof methodFn === TYPE_NAME_FUNCTION) {
+    if (typeof methodFn === "function") {
         return {
             fn: methodFn,
             args: methodArgs
         };
     } else {
-        throw new Error(`method '${methodName}' is not a function`);
+        throw new Error(`Method not found: '${expression}'`);
     }
 };
 

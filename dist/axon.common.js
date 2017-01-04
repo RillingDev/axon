@@ -6,15 +6,13 @@
 
 'use strict';
 
-const LIB_STRING_QUOTES = ["'", "\"", "`"];
-
 const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_HIDDEN = "hidden";
 const DOM_EVENT_MODEL = "input";
+const DOM_NODE_CONTENT = ["value", "textContent", "innerHTML"];
 
-const TYPE_NAME_UNDEFINED = "undefined";
-const TYPE_NAME_FUNCTION = "function";
+const LIB_STRING_QUOTES = ["'", "\"", "`"];
 
 const eachDirective = function (node, namesList) {
     const names = namesList.map(item => item.name);
@@ -77,13 +75,17 @@ const debounce = function(fn, wait, immediate) {
     };
 };
 
+const isDefined = function (val) {
+    return typeof val !== "undefined";
+};
+
 const getNodeValueType = function (node) {
-    if (typeof node.value !== TYPE_NAME_UNDEFINED) {
-        return "value";
-    } else if (typeof node.textContent !== TYPE_NAME_UNDEFINED) {
-        return "textContent";
+    if (isDefined(node[DOM_NODE_CONTENT[0]])) {
+        return DOM_NODE_CONTENT[0];
+    } else if (isDefined(node[DOM_NODE_CONTENT[1]])) {
+        return DOM_NODE_CONTENT[1];
     } else {
-        return "innerHTML";
+        return DOM_NODE_CONTENT[2];
     }
 };
 
@@ -115,7 +117,7 @@ const retrieveProp = function (instance, expression) {
     splitExpression.forEach((propPath, index) => {
         prop = container[propPath];
 
-        if (typeof prop !== TYPE_NAME_UNDEFINED) {
+        if (isDefined("undefined")) {
 
             if (index < splitExpression.length - 1) {
                 container = prop;
@@ -124,7 +126,7 @@ const retrieveProp = function (instance, expression) {
                 result.reference = container;
             }
         } else {
-            throw new Error(`prop '${expression}' not found`);
+            throw new Error(`Property not found: '${expression}'`);
         }
     });
 
@@ -157,13 +159,13 @@ const retrieveMethod = function (instance, expression) {
     });
     const methodFn = instance.$methods[methodName];
 
-    if (typeof methodFn === TYPE_NAME_FUNCTION) {
+    if (typeof methodFn === "function") {
         return {
             fn: methodFn,
             args: methodArgs
         };
     } else {
-        throw new Error(`method '${methodName}' is not a function`);
+        throw new Error(`Method not found: '${expression}'`);
     }
 };
 

@@ -1,8 +1,6 @@
 "use strict";
 
-import {
-    TYPE_NAME_UNDEFINED
-} from "../lib/constants";
+import isDefined from "../lib/isDefined";
 
 const retrieveProp = function (instance, expression) {
     const splitExpression = expression.split(".");
@@ -16,7 +14,7 @@ const retrieveProp = function (instance, expression) {
     splitExpression.forEach((propPath, index) => {
         prop = container[propPath];
 
-        if (typeof prop !== TYPE_NAME_UNDEFINED) {
+        if (isDefined("undefined")) {
 
             if (index < splitExpression.length - 1) {
                 container = prop;
@@ -25,7 +23,7 @@ const retrieveProp = function (instance, expression) {
                 result.reference = container;
             }
         } else {
-            throw new Error(`prop '${expression}' not found`);
+            throw new Error(`Property not found: '${expression}'`);
         }
     });
 
