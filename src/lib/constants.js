@@ -13,6 +13,7 @@ const LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_HIDDEN = "hidden";
+const DOM_EVENT_MODEL = "input";
 
 export {
     _document,
@@ -27,5 +28,6 @@ export {
     LIB_DEBOUNCE_TIMEOUT,
 
     DOM_ATTR_PREFIX,
-    DOM_ATTR_HIDDEN
+    DOM_ATTR_HIDDEN,
+    DOM_EVENT_MODEL
 };

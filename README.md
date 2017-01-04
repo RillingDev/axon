@@ -6,10 +6,10 @@
 
 Currently implemented:
 
-- `x-model`
-- `x-on:{event}`
-- `x-bind:{attr}`
-- `x-if` 
+- `x-model="#prop#"`
+- `x-on:#event#="#method#"`
+- `x-bind:#attr#="#prop|method|string|number#'`
+- `x-if="#prop|method|string|number#"` 
 - `x-ignore`
  
 Planned:

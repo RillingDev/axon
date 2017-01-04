@@ -16,6 +16,7 @@ var LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
 var DOM_ATTR_PREFIX = "x-";
 var DOM_ATTR_HIDDEN = "hidden";
+var DOM_EVENT_MODEL = "input";
 
 var crawlNodes = function crawlNodes(entry, fn) {
     var recurseNodes = function recurseNodes(node, fn) {
@@ -171,6 +172,21 @@ var initOn = function initOn(instance, node, eventType, methodName) {
     return true;
 };
 
+var initModel = function initModel(instance, node, propName) {
+    var targetProp = retrieveProp(instance, propName);
+    var eventFn = function eventFn(prop, value) {
+        console.log("MODEL FN", prop, value);
+        instance.$data[prop] = value;
+        instance.$render(true);
+    };
+
+    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp], instance);
+
+    console.log("MODEL", propName);
+
+    return true;
+};
+
 var init = function init() {
     var _this = this;
 
@@ -180,6 +196,11 @@ var init = function init() {
             name: "on",
             fn: function fn(name, nameSecondary, value) {
                 return initOn(_this, node, nameSecondary, value);
+            }
+        }, {
+            name: "model",
+            fn: function fn(name, nameSecondary, value) {
+                return initModel(_this, node, value);
             }
         }]);
     });
@@ -202,7 +223,7 @@ var renderIf = function renderIf(instance, node, expression) {
 
 var renderModel = function renderModel(instance, node, propName) {
     var nodeValueType = getNodeValueType(node);
-    var propValue = evaluateExpression(instance, propName);
+    var propValue = retrieveProp(instance, propName);
 
     node[nodeValueType] = propValue;
 
@@ -217,7 +238,9 @@ var renderBind = function renderBind(instance, node, bindType, expression) {
     return true;
 };
 
-var render = function render() {
+var render = function skip() {
+    var skipModel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
     var _this = this;
 
     //Render DOM
@@ -235,7 +258,11 @@ var render = function render() {
         }, {
             name: "model",
             fn: function fn(name, nameSecondary, value) {
-                return renderModel(_this, node, value);
+                if (!skipModel) {
+                    return renderModel(_this, node, value);
+                } else {
+                    return true;
+                }
             }
         }, {
             name: "bind",

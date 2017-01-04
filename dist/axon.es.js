@@ -13,6 +13,7 @@ const LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_HIDDEN = "hidden";
+const DOM_EVENT_MODEL = "input";
 
 const crawlNodes = function (entry, fn) {
     const recurseNodes = function (node, fn) {
@@ -158,6 +159,21 @@ const initOn = function (instance, node, eventType, methodName) {
     return true;
 };
 
+const initModel = function (instance, node, propName) {
+    const targetProp = retrieveProp(instance, propName);
+    const eventFn = function (prop, value) {
+        console.log("MODEL FN", prop, value);
+        instance.$data[prop] = value;
+        instance.$render(true);
+    };
+
+    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp], instance);
+
+    console.log("MODEL", propName);
+
+    return true;
+};
+
 const init = function () {
     const _this = this;
 
@@ -168,6 +184,11 @@ const init = function () {
                 name: "on",
                 fn: (name, nameSecondary, value) => {
                     return initOn(_this, node, nameSecondary, value);
+                }
+            }, {
+                name: "model",
+                fn: (name, nameSecondary, value) => {
+                    return initModel(_this, node, value);
                 }
             }]
         );
@@ -191,7 +212,7 @@ const renderIf = function (instance, node, expression) {
 
 const renderModel = function(instance, node, propName) {
     const nodeValueType = getNodeValueType(node);
-    const propValue = evaluateExpression(instance, propName);
+    const propValue = retrieveProp(instance, propName);
 
     node[nodeValueType] = propValue;
 
@@ -206,7 +227,7 @@ const renderBind = function (instance, node, bindType, expression) {
     return true;
 };
 
-const render = function () {
+const render = function skip(skipModel = false) {
     const _this = this;
 
     //Render DOM
@@ -225,7 +246,11 @@ const render = function () {
             }, {
                 name: "model",
                 fn: (name, nameSecondary, value) => {
-                    return renderModel(_this, node, value);
+                    if (!skipModel) {
+                        return renderModel(_this, node, value);
+                    } else {
+                        return true;
+                    }
                 }
             }, {
                 name: "bind",

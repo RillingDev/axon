@@ -1,11 +1,11 @@
 "use strict";
 
-import evaluateExpression from "../controller/evaluateExpression";
+import retrieveProp from "../controller/retrieveProp";
 import getNodeValueType from "../dom/getNodeValueType";
 
 const renderModel = function(instance, node, propName) {
     const nodeValueType = getNodeValueType(node);
-    const propValue = evaluateExpression(instance, propName);
+    const propValue = retrieveProp(instance, propName);
 
     node[nodeValueType] = propValue;
 

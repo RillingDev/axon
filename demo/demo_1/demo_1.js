@@ -20,8 +20,6 @@ const app = new Axon({
 
             vm.$data.foobar = vm.$data.foo + vm.$data.bar;
             vm.$data.dataLength = vm.$data.foobar.length;
-
-            vm.$render();
         }
     }
 });
