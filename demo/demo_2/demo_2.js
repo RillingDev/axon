@@ -6,7 +6,9 @@ const app = new Axon({
         model_1: "foooo"
     },
     methods: {
-
+        getFoobar(foo) {
+            return foo + "bar";
+        }
     }
 });
 

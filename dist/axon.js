@@ -1,5 +1,5 @@
 /**
- * Axon v0.11.0
+ * Axon v0.12.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -12,8 +12,8 @@ var _document = document;
 var TYPE_NAME_UNDEFINED = "undefined";
 var TYPE_NAME_FUNCTION = "function";
 var LIB_STRING_QUOTES = ["'", "\"", "`"];
-var LIB_DEBOUNCE_TIMEOUT = 32; //event timeout in ms
 
+var DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 var DOM_ATTR_PREFIX = "x-";
 var DOM_ATTR_HIDDEN = "hidden";
 var DOM_EVENT_MODEL = "input";
@@ -98,7 +98,7 @@ var getNodeValueType = function getNodeValueType(node) {
 };
 
 var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance) {
-    var debouncedFn = debounce(eventFn, LIB_DEBOUNCE_TIMEOUT);
+    var debouncedFn = debounce(eventFn, DOM_EVENT_TIMEOUT);
     var nodeValueType = getNodeValueType(node);
 
     var eventFnWrapper = function eventFnWrapper(event) {
@@ -115,17 +115,30 @@ var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance
 
 var retrieveProp = function retrieveProp(instance, expression) {
     var splitExpression = expression.split(".");
-    var prop = instance.$data;
+    var result = {
+        val: null,
+        reference: null
+    };
+    var container = instance.$data;
+    var prop = void 0;
 
-    splitExpression.forEach(function (propPath) {
-        prop = prop[propPath];
+    splitExpression.forEach(function (propPath, index) {
+        prop = container[propPath];
+
+        if ((typeof prop === "undefined" ? "undefined" : _typeof(prop)) !== TYPE_NAME_UNDEFINED) {
+
+            if (index < splitExpression.length - 1) {
+                container = prop;
+            } else {
+                result.val = prop;
+                result.reference = container;
+            }
+        } else {
+            throw new Error("prop '" + expression + "' not found");
+        }
     });
 
-    if ((typeof prop === "undefined" ? "undefined" : _typeof(prop)) === TYPE_NAME_UNDEFINED) {
-        throw new Error("prop '" + expression + "' not found");
-    } else {
-        return prop;
-    }
+    return result;
 };
 
 var evaluateExpression = function evaluateExpression(instance, expression) {
@@ -137,10 +150,12 @@ var evaluateExpression = function evaluateExpression(instance, expression) {
         return expression.substr(1, expression.length - 2);
     } else if (expression.substr(expression.length - 1) === ")") {
         //expression is a Method
-        return retrieveMethod(instance, expression);
+        var method = retrieveMethod(instance, expression);
+
+        return method.fn.apply(instance, method.args);
     } else {
         //expression is a Property
-        return retrieveProp(instance, expression);
+        return retrieveProp(instance, expression).val;
     }
 };
 
@@ -154,13 +169,13 @@ var retrieveMethod = function retrieveMethod(instance, expression) {
     });
     var methodFn = instance.$methods[methodName];
 
-    if ((typeof methodFn === "undefined" ? "undefined" : _typeof(methodFn)) !== TYPE_NAME_FUNCTION) {
-        throw new Error("method '" + methodName + "' not found");
-    } else {
+    if ((typeof methodFn === "undefined" ? "undefined" : _typeof(methodFn)) === TYPE_NAME_FUNCTION) {
         return {
             fn: methodFn,
             args: methodArgs
         };
+    } else {
+        throw new Error("method '" + methodName + "' is not a function");
     }
 };
 
@@ -174,15 +189,15 @@ var initOn = function initOn(instance, node, eventType, methodName) {
 
 var initModel = function initModel(instance, node, propName) {
     var targetProp = retrieveProp(instance, propName);
-    var eventFn = function eventFn(prop, value) {
-        console.log("MODEL FN", prop, value);
-        instance.$data[prop] = value;
-        instance.$render(true);
+    var eventFn = function eventFn(currentValue, newValue) {
+        targetProp.reference[propName] = newValue;
+
+        setTimeout(function () {
+            instance.$render();
+        }, DOM_EVENT_TIMEOUT);
     };
 
-    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp], instance);
-
-    console.log("MODEL", propName);
+    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instance);
 
     return true;
 };
@@ -225,7 +240,7 @@ var renderModel = function renderModel(instance, node, propName) {
     var nodeValueType = getNodeValueType(node);
     var propValue = retrieveProp(instance, propName);
 
-    node[nodeValueType] = propValue;
+    node[nodeValueType] = propValue.val;
 
     return true;
 };
@@ -238,9 +253,7 @@ var renderBind = function renderBind(instance, node, bindType, expression) {
     return true;
 };
 
-var render = function skip() {
-    var skipModel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
+var render = function render() {
     var _this = this;
 
     //Render DOM
@@ -258,11 +271,7 @@ var render = function skip() {
         }, {
             name: "model",
             fn: function fn(name, nameSecondary, value) {
-                if (!skipModel) {
-                    return renderModel(_this, node, value);
-                } else {
-                    return true;
-                }
+                return renderModel(_this, node, value);
             }
         }, {
             name: "bind",

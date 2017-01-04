@@ -14,18 +14,18 @@
     <div id="myApp">
         <div>
             <label>Foo:</label>
-            <input type="text" x-model="foo" x-on:input="changeValue('foo')">
+            <input type="text" x-model="foo" x-on:input="updateFoobar()">
         </div>
         <br>
         <div>
             <label>Bar:</label>
-            <input type="text" x-model="bar" x-on:input="changeValue('bar')">
+            <input type="text" x-model="bar" x-on:input="updateFoobar()">
         </div>
         <br>
         <div x-if="dataLength" x-bind:class="foobar">
             <div>
                 <label>Foo + Bar:</label>
-                <input type="text" x-model="foobar" x-on:input="updateFoobar()">
+                <input type="text" x-model="foobar">
                 <p>The current value of foobar is <span x-model="foobar"></span></p>
             </div>
             <hr>

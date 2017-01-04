@@ -15,10 +15,12 @@ const evaluateExpression = function (instance, expression) {
         return expression.substr(1, expression.length - 2);
     } else if (expression.substr(expression.length - 1) === ")") {
         //expression is a Method
-        return retrieveMethod(instance, expression);
+        const method = retrieveMethod(instance, expression);
+
+        return method.fn.apply(instance, method.args);
     } else {
         //expression is a Property
-        return retrieveProp(instance, expression);
+        return retrieveProp(instance, expression).val;
     }
 };
 

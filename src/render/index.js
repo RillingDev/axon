@@ -7,7 +7,7 @@ import renderIf from "./renderIf";
 import renderModel from "./renderModel";
 import renderBind from "./renderBind";
 
-const render = function skip(skipModel = false) {
+const render = function () {
     const _this = this;
 
     //Render DOM
@@ -26,11 +26,7 @@ const render = function skip(skipModel = false) {
             }, {
                 name: "model",
                 fn: (name, nameSecondary, value) => {
-                    if (!skipModel) {
-                        return renderModel(_this, node, value);
-                    } else {
-                        return true;
-                    }
+                    return renderModel(_this, node, value);
                 }
             }, {
                 name: "bind",

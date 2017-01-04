@@ -16,12 +16,27 @@
             <h2>Active</h2>
             <div>
                 <h3>Model</h3>
-                <input x-model="model_1">
+                <input type="text" x-model="model_1">
                 <p x-model="model_1"></p>
             </div>
+            <hr>
+            <div>
+                <h3>Bind:value</h3>
+                <input type="text" x-bind:value="model_1">
+                <input type="text" x-bind:value="'string'">
+                <input type="text" x-bind:value="17">
+                <input type="text" x-bind:value="getFoobar('foo')">
+            </div>
+            <hr>
+            <div>
+                <h3>If</h3>
+                <p x-if="model_1">Im only visible if the model-text ("foo") is longer than 0</p>
+            </div>
         </div>
+        <hr>
         <div x-ignore>
             <h2>Ignored</h2>
+            <input type="text" x-bind:value="getFoobar('foo')">
         </div>
     </div>
     <script src="../../dist/axon.js"></script>

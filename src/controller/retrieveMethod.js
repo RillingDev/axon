@@ -13,13 +13,13 @@ const retrieveMethod = function (instance, expression) {
     });
     const methodFn = instance.$methods[methodName];
 
-    if (typeof methodFn !== TYPE_NAME_FUNCTION) {
-        throw new Error(`method '${methodName}' not found`);
-    } else {
+    if (typeof methodFn === TYPE_NAME_FUNCTION) {
         return {
             fn: methodFn,
             args: methodArgs
         };
+    } else {
+        throw new Error(`method '${methodName}' is not a function`);
     }
 };
 
