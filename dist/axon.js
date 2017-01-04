@@ -7,34 +7,13 @@
 var Axon = (function () {
 'use strict';
 
-var _document = document;
-
-var TYPE_NAME_UNDEFINED = "undefined";
-var TYPE_NAME_FUNCTION = "function";
-var LIB_STRING_QUOTES = ["'", "\"", "`"];
-
 var DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 var DOM_ATTR_PREFIX = "x-";
 var DOM_ATTR_HIDDEN = "hidden";
 var DOM_EVENT_MODEL = "input";
+var DOM_NODE_CONTENT = ["value", "textContent", "innerHTML"];
 
-var crawlNodes = function crawlNodes(entry, fn) {
-    var recurseNodes = function recurseNodes(node, fn) {
-        var result = fn(node);
-
-        if (result && node.childElementCount) {
-            var childArr = Array.from(node.children);
-
-            childArr.forEach(function (childNode) {
-                result = recurseNodes(childNode, fn);
-            });
-        }
-
-        return result;
-    };
-
-    return recurseNodes(entry, fn);
-};
+var LIB_STRING_QUOTES = ["'", "\"", "`"];
 
 var eachDirective = function eachDirective(node, namesList) {
     var names = namesList.map(function (item) {
@@ -59,6 +38,24 @@ var eachDirective = function eachDirective(node, namesList) {
     return result;
 };
 
+var crawlNodes = function crawlNodes(entry, fn) {
+    var recurseNodes = function recurseNodes(node, fn) {
+        var result = fn(node);
+
+        if (result && node.childElementCount) {
+            var childArr = Array.from(node.children);
+
+            childArr.forEach(function (childNode) {
+                result = recurseNodes(childNode, fn);
+            });
+        }
+
+        return result;
+    };
+
+    return recurseNodes(entry, fn);
+};
+
 var debounce = function debounce(fn, wait, immediate) {
     var timeout = void 0;
 
@@ -81,19 +78,17 @@ var debounce = function debounce(fn, wait, immediate) {
     };
 };
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+var isDefined = function isDefined(val) {
+    return typeof val !== "undefined";
 };
 
 var getNodeValueType = function getNodeValueType(node) {
-    if (_typeof(node.value) !== TYPE_NAME_UNDEFINED) {
-        return "value";
-    } else if (_typeof(node.textContent) !== TYPE_NAME_UNDEFINED) {
-        return "textContent";
+    if (isDefined(node[DOM_NODE_CONTENT[0]])) {
+        return DOM_NODE_CONTENT[0];
+    } else if (isDefined(node[DOM_NODE_CONTENT[1]])) {
+        return DOM_NODE_CONTENT[1];
     } else {
-        return "innerHTML";
+        return DOM_NODE_CONTENT[2];
     }
 };
 
@@ -125,7 +120,7 @@ var retrieveProp = function retrieveProp(instance, expression) {
     splitExpression.forEach(function (propPath, index) {
         prop = container[propPath];
 
-        if ((typeof prop === "undefined" ? "undefined" : _typeof(prop)) !== TYPE_NAME_UNDEFINED) {
+        if (isDefined("undefined")) {
 
             if (index < splitExpression.length - 1) {
                 container = prop;
@@ -134,7 +129,7 @@ var retrieveProp = function retrieveProp(instance, expression) {
                 result.reference = container;
             }
         } else {
-            throw new Error("prop '" + expression + "' not found");
+            throw new Error("Property not found: '" + expression + "'");
         }
     });
 
@@ -169,13 +164,13 @@ var retrieveMethod = function retrieveMethod(instance, expression) {
     });
     var methodFn = instance.$methods[methodName];
 
-    if ((typeof methodFn === "undefined" ? "undefined" : _typeof(methodFn)) === TYPE_NAME_FUNCTION) {
+    if (typeof methodFn === "function") {
         return {
             fn: methodFn,
             args: methodArgs
         };
     } else {
-        throw new Error("method '" + methodName + "' is not a function");
+        throw new Error("Method not found: '" + expression + "'");
     }
 };
 
@@ -294,7 +289,7 @@ var render = function render() {
 var Axon = function Axon(config) {
     var _this = this;
 
-    _this.$context = _document.querySelector(config.context);
+    _this.$context = document.querySelector(config.context);
     _this.$data = config.data;
     _this.$methods = config.methods;
 
