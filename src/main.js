@@ -17,7 +17,7 @@ const Axon = function (config) {
     _this.$data = config.data;
     _this.$methods = config.methods;
 
-    _this.$init();
+    _this.$cache = _this.$init();
     _this.$render();
 };
 
