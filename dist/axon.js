@@ -7,29 +7,6 @@
 var Axon = (function () {
 'use strict';
 
-var mapNodes = function mapNodes(entry, fn) {
-    var result = {};
-    var recurseNodes = function recurseNodes(node, depth, container) {
-        container.node = node;
-        container.children = [];
-        fn(container, node, depth);
-
-        if (node.childElementCount) {
-            var childArr = Array.from(node.children);
-
-            childArr.forEach(function (childNode, index) {
-                container.children[index] = {};
-
-                recurseNodes(childNode, depth + 1, container.children[index]);
-            });
-        }
-    };
-
-    recurseNodes(entry, 0, result);
-
-    return result;
-};
-
 var DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 var DOM_EVENT_MODEL = "input";
 
@@ -258,7 +235,7 @@ var directives = {
 };
 
 var execDirectives = function execDirectives(instance, domMap, execMode) {
-    var recurseMap = function recurseMap(mapNode, depth) {
+    var recurseMap = function recurseMap(mapNode) {
         var nodeChildren = mapNode.children;
         var nodeDirectives = mapNode.directives;
         var result = true;
@@ -289,18 +266,41 @@ var execDirectives = function execDirectives(instance, domMap, execMode) {
         //Crawl children
         if (result && nodeChildren.length) {
             nodeChildren.forEach(function (child) {
-                recurseMap(child, depth + 1);
+                recurseMap(child);
             });
         }
     };
 
-    recurseMap(domMap, 0);
+    recurseMap(domMap);
+};
+
+var getDomMap = function getDomMap(entry, fn) {
+    var result = {};
+    var recurseNodes = function recurseNodes(node, container) {
+        container.node = node;
+        container.children = [];
+        fn(container, node);
+
+        if (node.childElementCount) {
+            var childArr = Array.from(node.children);
+
+            childArr.forEach(function (childNode, index) {
+                container.children[index] = {};
+
+                recurseNodes(childNode, container.children[index]);
+            });
+        }
+    };
+
+    recurseNodes(entry, result);
+
+    return result;
 };
 
 var init = function init() {
     var _this = this;
 
-    _this.$cache = mapNodes(_this.$context, function (container, node) {
+    _this.$cache = getDomMap(_this.$context, function (container, node) {
         //Cache all nodes & directives in the context
         var directives = getDirectives(node);
 

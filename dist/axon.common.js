@@ -6,29 +6,6 @@
 
 'use strict';
 
-const mapNodes = function (entry, fn) {
-    const result = {};
-    const recurseNodes = function (node, depth, container) {
-        container.node = node;
-        container.children = [];
-        fn(container, node, depth);
-
-        if (node.childElementCount) {
-            const childArr = Array.from(node.children);
-
-            childArr.forEach((childNode, index) => {
-                container.children[index] = {};
-
-                recurseNodes(childNode, depth + 1, container.children[index]);
-            });
-        }
-    };
-
-    recurseNodes(entry, 0, result);
-
-    return result;
-};
-
 const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 const DOM_EVENT_MODEL = "input";
 
@@ -255,7 +232,7 @@ const directives = {
 };
 
 const execDirectives = function (instance, domMap, execMode) {
-    const recurseMap = function (mapNode, depth) {
+    const recurseMap = function (mapNode) {
         const nodeChildren = mapNode.children;
         const nodeDirectives = mapNode.directives;
         let result = true;
@@ -286,19 +263,42 @@ const execDirectives = function (instance, domMap, execMode) {
         //Crawl children
         if (result && nodeChildren.length) {
             nodeChildren.forEach(child => {
-                recurseMap(child, depth + 1);
+                recurseMap(child);
             });
         }
 
     };
 
-    recurseMap(domMap, 0);
+    recurseMap(domMap);
+};
+
+const getDomMap = function (entry, fn) {
+    const result = {};
+    const recurseNodes = function (node, container) {
+        container.node = node;
+        container.children = [];
+        fn(container, node);
+
+        if (node.childElementCount) {
+            const childArr = Array.from(node.children);
+
+            childArr.forEach((childNode, index) => {
+                container.children[index] = {};
+
+                recurseNodes(childNode, container.children[index]);
+            });
+        }
+    };
+
+    recurseNodes(entry, result);
+
+    return result;
 };
 
 const init = function () {
     const _this = this;
 
-     _this.$cache = mapNodes(_this.$context, (container, node) => {
+     _this.$cache = getDomMap(_this.$context, (container, node) => {
         //Cache all nodes & directives in the context
         const directives = getDirectives(node);
 

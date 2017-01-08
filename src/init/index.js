@@ -1,13 +1,13 @@
 "use strict";
 
-import mapNodes from "../dom/mapNodes";
 import getDirectives from "../dom/getDirectives";
 import execDirectives from "../directives/execDirectives";
+import getDomMap from "../dom/getDomMap";
 
 const init = function () {
     const _this = this;
 
-     _this.$cache = mapNodes(_this.$context, (container, node) => {
+     _this.$cache = getDomMap(_this.$context, (container, node) => {
         //Cache all nodes & directives in the context
         const directives = getDirectives(node);
 

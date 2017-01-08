@@ -3,7 +3,7 @@
 import directiveRefList from "./index";
 
 const execDirectives = function (instance, domMap, execMode) {
-    const recurseMap = function (mapNode, depth) {
+    const recurseMap = function (mapNode) {
         const nodeChildren = mapNode.children;
         const nodeDirectives = mapNode.directives;
         let result = true;
@@ -34,13 +34,13 @@ const execDirectives = function (instance, domMap, execMode) {
         //Crawl children
         if (result && nodeChildren.length) {
             nodeChildren.forEach(child => {
-                recurseMap(child, depth + 1);
+                recurseMap(child);
             });
         }
 
     };
 
-    recurseMap(domMap, 0);
+    recurseMap(domMap);
 };
 
 export default execDirectives;

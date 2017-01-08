@@ -1,11 +1,11 @@
 "use strict";
 
-const mapNodes = function (entry, fn) {
+const getDomMap = function (entry, fn) {
     const result = {};
-    const recurseNodes = function (node, depth, container) {
+    const recurseNodes = function (node, container) {
         container.node = node;
         container.children = [];
-        fn(container, node, depth);
+        fn(container, node);
 
         if (node.childElementCount) {
             const childArr = Array.from(node.children);
@@ -13,14 +13,14 @@ const mapNodes = function (entry, fn) {
             childArr.forEach((childNode, index) => {
                 container.children[index] = {};
 
-                recurseNodes(childNode, depth + 1, container.children[index]);
+                recurseNodes(childNode, container.children[index]);
             });
         }
     };
 
-    recurseNodes(entry, 0, result);
+    recurseNodes(entry, result);
 
     return result;
 };
 
-export default mapNodes;
+export default getDomMap;
