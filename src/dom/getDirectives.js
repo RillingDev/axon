@@ -4,21 +4,20 @@ import {
     DOM_ATTR_PREFIX
 } from "../lib/constants";
 
-const eachDirective = function (node, namesList) {
-    const names = namesList.map(item => item.name);
+const eachDirective = function (node) {
     const attrArr = Array.from(node.attributes);
-    let result = true;
+    const result = [];
 
     attrArr.forEach(attr => {
         //If is Axon attribute
         if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
             const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
-            const nameIndex = names.indexOf(splitName[0]);
 
-            //If name is allowed
-            if (nameIndex !== -1) {
-                result = namesList[nameIndex].fn(splitName[0], splitName[1], attr.value);
-            }
+            result.push({
+                key: splitName[0],
+                opt: splitName[1] || false,
+                value: attr.value
+            });
         }
     });
 
