@@ -1,5 +1,7 @@
 "use strict";
 
+import execDirectives from "../directives/execDirectives";
+
 const render = function () {
     const _this = this;
 
@@ -30,6 +32,7 @@ const render = function () {
         );
     });*/
 
+    execDirectives(_this, _this.$cache, "render");
     console.log("CALLED $render");
 };
 

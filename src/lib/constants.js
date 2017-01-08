@@ -1,5 +1,7 @@
 "use strict";
 
+const DOM_MAP_RECURSION_MAX = 32;
+
 const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 const DOM_EVENT_MODEL = "input";
 
@@ -12,6 +14,8 @@ const DOM_ATTR_HTML = "innerHTML";
 const LIB_STRING_QUOTES = ["'", "\"", "`"];
 
 export {
+    DOM_MAP_RECURSION_MAX,
+
     DOM_EVENT_TIMEOUT,
     DOM_EVENT_MODEL,
 

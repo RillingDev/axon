@@ -4,7 +4,7 @@ import {
     DOM_ATTR_PREFIX
 } from "../lib/constants";
 
-const eachDirective = function (node) {
+const getDirectives = function (node) {
     const attrArr = Array.from(node.attributes);
     const result = [];
 
@@ -16,7 +16,7 @@ const eachDirective = function (node) {
             result.push({
                 key: splitName[0],
                 opt: splitName[1] || false,
-                value: attr.value
+                val: attr.value
             });
         }
     });
@@ -24,4 +24,4 @@ const eachDirective = function (node) {
     return result;
 };
 
-export default eachDirective;
+export default getDirectives;

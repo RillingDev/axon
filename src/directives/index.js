@@ -1,17 +1,40 @@
 "use strict";
 
-import directiveIgnore from "./directiveIgnore";
-import directiveIf from "./directiveIf";
-import directiveOn from "./directiveOn";
-import directiveModel from "./directiveModel";
-import directiveBind from "./directiveBind";
+import {
+    directiveIgnoreBoth
+} from "./modules/directiveIgnore";
+import {
+    directiveIfRender
+} from "./modules/directiveIf";
+import {
+    directiveOnInit
+} from "./modules/directiveOn";
+import {
+    directiveModelInit,
+    directiveModelRender
+} from "./modules/directiveModel";
+import {
+    directiveBindRender
+} from "./modules/directiveBind";
 
 const directives = {
-    ignore: directiveIgnore,
-    if: directiveIf,
-    on: directiveOn,
-    model: directiveModel,
-    bind: directiveBind
+    ignore: {
+        init: directiveIgnoreBoth, //Init function
+        render: directiveIgnoreBoth //Render function
+    },
+    if: {
+        render: directiveIfRender
+    },
+    on: {
+        init: directiveOnInit,
+    },
+    model: {
+        init: directiveModelInit,
+        render: directiveModelRender
+    },
+    bind: {
+        render: directiveBindRender
+    }
 };
 
 export default directives;
