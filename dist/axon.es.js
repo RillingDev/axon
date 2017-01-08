@@ -256,24 +256,33 @@ const execDirectives = function (instance, domMap, execMode) {
     const recurseMap = function (mapNode, depth) {
         const nodeChildren = mapNode.children;
         const nodeDirectives = mapNode.directives;
+        let result = true;
 
         //Exec on node
         if (nodeDirectives.length) {
+             //Only exec if directives on domNode
             mapNode.directives.forEach(directive => {
                 const directiveRef = directives[directive.key];
 
                 if (directiveRef) {
+                     //Only exec if directive exists
                     const directiveRefFn = directiveRef[execMode];
 
                     if (directiveRefFn) {
-                        directiveRefFn(instance, mapNode.node, directive);
+                        //Only exec if directive has fn for current execMode
+                        const directiveResult = directiveRefFn(instance, mapNode.node, directive);
+
+                        if (!directiveResult) {
+                            //Stop crawling on directive return 'false'
+                            result = false; 
+                        }
                     }
                 }
             });
         }
 
         //Crawl children
-        if (nodeChildren.length) {
+        if (result && nodeChildren.length) {
             nodeChildren.forEach(child => {
                 recurseMap(child, depth + 1);
             });
@@ -300,33 +309,6 @@ const init = function () {
 
 const render = function () {
     const _this = this;
-
-    //Render DOM
-    /*crawlNodes(_this.$context, node => {
-        return eachDirective(
-            node, [{
-                name: "ignore",
-                fn: () => {
-                    return false;
-                }
-            }, {
-                name: "if",
-                fn: (name, nameSecondary, value) => {
-                    return renderIf(_this, node, value);
-                }
-            }, {
-                name: "model",
-                fn: (name, nameSecondary, value) => {
-                    return renderModel(_this, node, value);
-                }
-            }, {
-                name: "bind",
-                fn: (name, nameSecondary, value) => {
-                    return renderBind(_this, node, nameSecondary, value);
-                }
-            }]
-        );
-    });*/
 
     execDirectives(_this, _this.$cache, "render");
     console.log("CALLED $render");
