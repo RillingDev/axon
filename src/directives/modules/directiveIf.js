@@ -6,7 +6,6 @@ import {
 } from "../../lib/constants";
 
 const directiveIfRender = function (instance, node, directive) {
-    console.log([instance, node, directive]);
     const propValue = evaluateExpression(instance, directive.val);
     const result = Boolean(propValue);
 

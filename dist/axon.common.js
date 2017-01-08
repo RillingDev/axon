@@ -1,5 +1,5 @@
 /**
- * Axon v0.12.0
+ * Axon v0.13.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -110,7 +110,6 @@ const evaluateExpression = function (instance, expression) {
 };
 
 const directiveIfRender = function (instance, node, directive) {
-    console.log([instance, node, directive]);
     const propValue = evaluateExpression(instance, directive.val);
     const result = Boolean(propValue);
 
