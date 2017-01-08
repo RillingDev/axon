@@ -8,10 +8,13 @@ var Axon = (function () {
 'use strict';
 
 var DOM_EVENT_TIMEOUT = 20; //event timeout in ms
+var DOM_EVENT_MODEL = "input";
+
 var DOM_ATTR_PREFIX = "x-";
 var DOM_ATTR_HIDDEN = "hidden";
-var DOM_EVENT_MODEL = "input";
-var DOM_NODE_CONTENT = ["value", "textContent", "innerHTML"];
+var DOM_ATTR_VALUE = "value";
+var DOM_ATTR_TEXT = "textContent";
+var DOM_ATTR_HTML = "innerHTML";
 
 var LIB_STRING_QUOTES = ["'", "\"", "`"];
 
@@ -83,12 +86,12 @@ var isDefined = function isDefined(val) {
 };
 
 var getNodeValueType = function getNodeValueType(node) {
-    if (isDefined(node[DOM_NODE_CONTENT[0]])) {
-        return DOM_NODE_CONTENT[0];
-    } else if (isDefined(node[DOM_NODE_CONTENT[1]])) {
-        return DOM_NODE_CONTENT[1];
+    if (isDefined(node[DOM_ATTR_VALUE])) {
+        return DOM_ATTR_VALUE;
+    } else if (isDefined(node[DOM_ATTR_TEXT])) {
+        return DOM_ATTR_TEXT;
     } else {
-        return DOM_NODE_CONTENT[2];
+        return DOM_ATTR_HTML;
     }
 };
 

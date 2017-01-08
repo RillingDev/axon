@@ -2,16 +2,18 @@
 
 import isDefined from "../lib/isDefined";
 import {
-    DOM_NODE_CONTENT
+    DOM_ATTR_VALUE,
+    DOM_ATTR_TEXT,
+    DOM_ATTR_HTML
 } from "../lib/constants";
 
 const getNodeValueType = function (node) {
-    if (isDefined(node[DOM_NODE_CONTENT[0]])) {
-        return DOM_NODE_CONTENT[0];
-    } else if (isDefined(node[DOM_NODE_CONTENT[1]])) {
-        return DOM_NODE_CONTENT[1];
+    if (isDefined(node[DOM_ATTR_VALUE])) {
+        return DOM_ATTR_VALUE;
+    } else if (isDefined(node[DOM_ATTR_TEXT])) {
+        return DOM_ATTR_TEXT;
     } else {
-        return DOM_NODE_CONTENT[2];
+        return DOM_ATTR_HTML;
     }
 };
 

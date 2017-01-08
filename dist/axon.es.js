@@ -5,10 +5,13 @@
  */
 
 const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
+const DOM_EVENT_MODEL = "input";
+
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_HIDDEN = "hidden";
-const DOM_EVENT_MODEL = "input";
-const DOM_NODE_CONTENT = ["value", "textContent", "innerHTML"];
+const DOM_ATTR_VALUE = "value";
+const DOM_ATTR_TEXT = "textContent";
+const DOM_ATTR_HTML = "innerHTML";
 
 const LIB_STRING_QUOTES = ["'", "\"", "`"];
 
@@ -78,12 +81,12 @@ const isDefined = function (val) {
 };
 
 const getNodeValueType = function (node) {
-    if (isDefined(node[DOM_NODE_CONTENT[0]])) {
-        return DOM_NODE_CONTENT[0];
-    } else if (isDefined(node[DOM_NODE_CONTENT[1]])) {
-        return DOM_NODE_CONTENT[1];
+    if (isDefined(node[DOM_ATTR_VALUE])) {
+        return DOM_ATTR_VALUE;
+    } else if (isDefined(node[DOM_ATTR_TEXT])) {
+        return DOM_ATTR_TEXT;
     } else {
-        return DOM_NODE_CONTENT[2];
+        return DOM_ATTR_HTML;
     }
 };
 
