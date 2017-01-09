@@ -16,7 +16,7 @@ const retrieveMethod = function (instance, expression) {
             args: methodArgs
         };
     } else {
-        throw new Error(`Method not found: '${expression}'`);
+        throw new Error(`Missing method '${expression}'`);
     }
 };
 

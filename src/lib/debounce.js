@@ -1,11 +1,13 @@
 "use strict";
 
+import arrayFrom from "./arrayFrom";
+
 const debounce = function(fn, wait, immediate) {
     let timeout;
 
     return function() {
         const context = this;
-        const args = Array.from(arguments);
+        const args = arrayFrom(arguments);
         const callNow = immediate && !timeout;
         const later = function() {
             timeout = null;

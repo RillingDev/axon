@@ -1,5 +1,5 @@
 /**
- * Axon v0.14.0
+ * Axon v0.16.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -38,7 +38,7 @@ var retrieveMethod = function retrieveMethod(instance, expression) {
             args: methodArgs
         };
     } else {
-        throw new Error("Method not found: '" + expression + "'");
+        throw new Error("Missing method '" + expression + "'");
     }
 };
 
@@ -50,7 +50,7 @@ var retrieveProp = function retrieveProp(instance, expression) {
     var splitExpression = expression.split(".");
     var result = {
         val: null,
-        reference: null
+        ref: null
     };
     var container = instance.$data;
     var prop = void 0;
@@ -64,10 +64,10 @@ var retrieveProp = function retrieveProp(instance, expression) {
                 container = prop;
             } else {
                 result.val = prop;
-                result.reference = container;
+                result.ref = container;
             }
         } else {
-            throw new Error("Property not found: '" + expression + "'");
+            throw new Error("Missing prop '" + expression + "'");
         }
     });
 
@@ -105,12 +105,16 @@ var directiveIfRender = function directiveIfRender(instance, node, directive) {
     return result;
 };
 
+var arrayFrom = function arrayFrom(arr) {
+    return Array.from(arr);
+};
+
 var debounce = function debounce(fn, wait, immediate) {
     var timeout = void 0;
 
     return function () {
         var context = this;
-        var args = Array.from(arguments);
+        var args = arrayFrom(arguments);
         var callNow = immediate && !timeout;
         var later = function later() {
             timeout = null;
@@ -143,7 +147,7 @@ var bindEvent = function bindEvent(node, eventType, eventFn, eventArgs, instance
 
     var eventFnWrapper = function eventFnWrapper(event) {
         var target = event.target;
-        var args = Array.from(eventArgs);
+        var args = arrayFrom(eventArgs);
 
         args.push(target[nodeValueType], target, event);
 
@@ -164,7 +168,7 @@ var directiveOnInit = function directiveOnInit(instance, node, directive) {
 var directiveModelInit = function directiveModelInit(instance, node, directive) {
     var targetProp = retrieveProp(instance, directive.val);
     var eventFn = function eventFn(currentValue, newValue) {
-        targetProp.reference[directive.val] = newValue;
+        targetProp.ref[directive.val] = newValue;
 
         setTimeout(function () {
             instance.$render();
@@ -254,7 +258,7 @@ var execDirectives = function execDirectives(instance, domMap, execMode) {
 };
 
 var getDirectives = function getDirectives(node) {
-    var attrArr = Array.from(node.attributes);
+    var attrArr = arrayFrom(node.attributes);
     var result = [];
 
     attrArr.forEach(function (attr) {
@@ -281,23 +285,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var getDomMap = function getDomMap(entry) {
     var recurseNodes = function recurseNodes(node) {
-        var directives = getDirectives(node);
+        var nodeDirectives = getDirectives(node);
+        var nodeChildren = node.children;
 
-        if (directives.length || node.childElementCount) {
+        if (nodeDirectives.length || nodeChildren.length) {
             var _ret = function () {
-                var result = {};
-                var childArr = Array.from(node.children);
-
-                result.node = node;
-                result.children = [];
-                result.directives = directives;
-
-                //console.log(result);
+                var result = {
+                    node: node,
+                    directives: nodeDirectives,
+                    children: []
+                };
+                var childArr = arrayFrom(nodeChildren);
 
                 childArr.forEach(function (childNode) {
                     var childResult = recurseNodes(childNode);
 
-                    if (childResult.node) {
+                    if (isDefined(childResult)) {
                         result.children.push(childResult);
                     }
                 });
@@ -308,19 +311,16 @@ var getDomMap = function getDomMap(entry) {
             }();
 
             if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
-        } else {
-            return false;
         }
     };
 
-    return recurseNodes(entry, {});
+    return recurseNodes(entry);
 };
 
 var init = function init() {
   var _this = this;
 
   _this.$cache = getDomMap(_this.$context);
-
   execDirectives(_this, _this.$cache, "init");
   console.log("CALLED $init");
 };

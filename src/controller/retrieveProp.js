@@ -6,7 +6,7 @@ const retrieveProp = function (instance, expression) {
     const splitExpression = expression.split(".");
     const result = {
         val: null,
-        reference: null
+        ref: null
     };
     let container = instance.$data;
     let prop;
@@ -20,10 +20,10 @@ const retrieveProp = function (instance, expression) {
                 container = prop;
             } else {
                 result.val = prop;
-                result.reference = container;
+                result.ref = container;
             }
         } else {
-            throw new Error(`Property not found: '${expression}'`);
+            throw new Error(`Missing prop '${expression}'`);
         }
     });
 

@@ -3,9 +3,10 @@
 import {
     DOM_ATTR_PREFIX
 } from "../lib/constants";
+import arrayFrom from "../lib/arrayFrom";
 
 const getDirectives = function (node) {
-    const attrArr = Array.from(node.attributes);
+    const attrArr = arrayFrom(node.attributes);
     const result = [];
 
     attrArr.forEach(attr => {

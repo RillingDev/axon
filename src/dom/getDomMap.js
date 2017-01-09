@@ -1,40 +1,35 @@
 "use strict";
 
 import getDirectives from "./getDirectives";
+import isDefined from "../lib/isDefined";
+import arrayFrom from "../lib/arrayFrom";
 
 const getDomMap = function (entry) {
     const recurseNodes = function (node) {
-        const directives = getDirectives(node);
+        const nodeDirectives = getDirectives(node);
+        const nodeChildren = node.children;
 
-        if (directives.length || node.childElementCount) {
-            const result = {};
-            const childArr = Array.from(node.children);
+        if (nodeDirectives.length || nodeChildren.length) {
+            let result = {
+                node,
+                directives: nodeDirectives,
+                children: []
+            };
+            const childArr = arrayFrom(nodeChildren);
 
-            result.node = node;
-            result.children = [];
-            result.directives = directives;
-
-            //console.log(result);
-
-            childArr.forEach((childNode) => {
+            childArr.forEach(childNode => {
                 const childResult = recurseNodes(childNode);
 
-                if (childResult.node) {
+                if (isDefined(childResult)) {
                     result.children.push(childResult);
                 }
-
             });
 
             return result;
-        } else {
-            return false;
         }
-
-
     };
 
-
-    return recurseNodes(entry, {});
+    return recurseNodes(entry);
 };
 
 export default getDomMap;

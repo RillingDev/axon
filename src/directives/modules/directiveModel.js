@@ -11,7 +11,7 @@ import {
 const directiveModelInit = function (instance, node, directive) {
     const targetProp = retrieveProp(instance, directive.val);
     const eventFn = function (currentValue, newValue) {
-        targetProp.reference[directive.val] = newValue;
+        targetProp.ref[directive.val] = newValue;
 
         setTimeout(() => {
             instance.$render();

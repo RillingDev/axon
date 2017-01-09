@@ -1,5 +1,5 @@
 /**
- * Axon v0.14.0
+ * Axon v0.16.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
@@ -33,7 +33,7 @@ const retrieveMethod = function (instance, expression) {
             args: methodArgs
         };
     } else {
-        throw new Error(`Method not found: '${expression}'`);
+        throw new Error(`Missing method '${expression}'`);
     }
 };
 
@@ -45,7 +45,7 @@ const retrieveProp = function (instance, expression) {
     const splitExpression = expression.split(".");
     const result = {
         val: null,
-        reference: null
+        ref: null
     };
     let container = instance.$data;
     let prop;
@@ -59,10 +59,10 @@ const retrieveProp = function (instance, expression) {
                 container = prop;
             } else {
                 result.val = prop;
-                result.reference = container;
+                result.ref = container;
             }
         } else {
-            throw new Error(`Property not found: '${expression}'`);
+            throw new Error(`Missing prop '${expression}'`);
         }
     });
 
@@ -100,12 +100,16 @@ const directiveIfRender = function (instance, node, directive) {
     return result;
 };
 
+const arrayFrom = function (arr) {
+    return Array.from(arr);
+};
+
 const debounce = function(fn, wait, immediate) {
     let timeout;
 
     return function() {
         const context = this;
-        const args = Array.from(arguments);
+        const args = arrayFrom(arguments);
         const callNow = immediate && !timeout;
         const later = function() {
             timeout = null;
@@ -138,7 +142,7 @@ const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
 
     const eventFnWrapper = function(event) {
         const target = event.target;
-        const args = Array.from(eventArgs);
+        const args = arrayFrom(eventArgs);
 
         args.push(target[nodeValueType], target, event);
 
@@ -159,7 +163,7 @@ const directiveOnInit = function (instance, node, directive) {
 const directiveModelInit = function (instance, node, directive) {
     const targetProp = retrieveProp(instance, directive.val);
     const eventFn = function (currentValue, newValue) {
-        targetProp.reference[directive.val] = newValue;
+        targetProp.ref[directive.val] = newValue;
 
         setTimeout(() => {
             instance.$render();
@@ -250,7 +254,7 @@ const execDirectives = function (instance, domMap, execMode) {
 };
 
 const getDirectives = function (node) {
-    const attrArr = Array.from(node.attributes);
+    const attrArr = arrayFrom(node.attributes);
     const result = [];
 
     attrArr.forEach(attr => {
@@ -271,44 +275,36 @@ const getDirectives = function (node) {
 
 const getDomMap = function (entry) {
     const recurseNodes = function (node) {
-        const directives = getDirectives(node);
+        const nodeDirectives = getDirectives(node);
+        const nodeChildren = node.children;
 
-        if (directives.length || node.childElementCount) {
-            const result = {};
-            const childArr = Array.from(node.children);
+        if (nodeDirectives.length || nodeChildren.length) {
+            let result = {
+                node,
+                directives: nodeDirectives,
+                children: []
+            };
+            const childArr = arrayFrom(nodeChildren);
 
-            result.node = node;
-            result.children = [];
-            result.directives = directives;
-
-            //console.log(result);
-
-            childArr.forEach((childNode) => {
+            childArr.forEach(childNode => {
                 const childResult = recurseNodes(childNode);
 
-                if (childResult.node) {
+                if (isDefined(childResult)) {
                     result.children.push(childResult);
                 }
-
             });
 
             return result;
-        } else {
-            return false;
         }
-
-
     };
 
-
-    return recurseNodes(entry, {});
+    return recurseNodes(entry);
 };
 
 const init = function () {
     const _this = this;
 
      _this.$cache = getDomMap(_this.$context);
-
     execDirectives(_this, _this.$cache, "init");
     console.log("CALLED $init");
 };
