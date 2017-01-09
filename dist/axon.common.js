@@ -1,10 +1,14 @@
 /**
- * Axon v0.13.0
+ * Axon v0.14.0
  * Author: Felix Rilling
  * Repository: git+https://github.com/FelixRilling/axonjs.git
  */
 
 'use strict';
+
+const directiveIgnoreBoth = function () {
+    return false;
+};
 
 const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 const DOM_EVENT_MODEL = "input";
@@ -16,30 +20,6 @@ const DOM_ATTR_TEXT = "textContent";
 const DOM_ATTR_HTML = "innerHTML";
 
 const LIB_STRING_QUOTES = ["'", "\"", "`"];
-
-const getDirectives = function (node) {
-    const attrArr = Array.from(node.attributes);
-    const result = [];
-
-    attrArr.forEach(attr => {
-        //If is Axon attribute
-        if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
-            const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
-
-            result.push({
-                key: splitName[0],
-                opt: splitName[1] || false,
-                val: attr.value
-            });
-        }
-    });
-
-    return result;
-};
-
-const directiveIgnoreBoth = function () {
-    return false;
-};
 
 const retrieveMethod = function (instance, expression) {
     const expressionSplit = expression.substr(0, expression.length - 1).split("(");
@@ -271,38 +251,65 @@ const execDirectives = function (instance, domMap, execMode) {
     recurseMap(domMap);
 };
 
-const getDomMap = function (entry, fn) {
-    const result = {};
-    const recurseNodes = function (node, container) {
-        container.node = node;
-        container.children = [];
-        fn(container, node);
+const getDirectives = function (node) {
+    const attrArr = Array.from(node.attributes);
+    const result = [];
 
-        if (node.childElementCount) {
-            const childArr = Array.from(node.children);
+    attrArr.forEach(attr => {
+        //If is Axon attribute
+        if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
+            const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
 
-            childArr.forEach((childNode, index) => {
-                container.children[index] = {};
-
-                recurseNodes(childNode, container.children[index]);
+            result.push({
+                key: splitName[0],
+                opt: splitName[1] || false,
+                val: attr.value
             });
         }
-    };
-
-    recurseNodes(entry, result);
+    });
 
     return result;
+};
+
+const getDomMap = function (entry) {
+    const recurseNodes = function (node) {
+        const directives = getDirectives(node);
+
+        if (directives.length || node.childElementCount) {
+            const result = {};
+            const childArr = Array.from(node.children);
+
+            result.node = node;
+            result.children = [];
+            result.directives = directives;
+
+            //console.log(result);
+
+            childArr.forEach((childNode) => {
+                const childResult = recurseNodes(childNode);
+
+                if (childResult.node) {
+                    result.children.push(childResult);
+                }
+
+            });
+
+            return result;
+        } else {
+            return false;
+        }
+
+
+    };
+
+
+    return recurseNodes(entry, {});
 };
 
 const init = function () {
     const _this = this;
 
-     _this.$cache = getDomMap(_this.$context, (container, node) => {
-        //Cache all nodes & directives in the context
-        const directives = getDirectives(node);
-
-        container.directives = directives;
-    });
+     _this.$cache = getDomMap(_this.$context);
 
     execDirectives(_this, _this.$cache, "init");
     console.log("CALLED $init");

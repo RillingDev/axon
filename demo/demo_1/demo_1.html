@@ -13,25 +13,11 @@
     <h1>Demo 1</h1>
     <div id="myApp">
         <div>
-            <label>Foo:</label>
-            <input type="text" x-model="foo" x-on:input="updateFoobar()">
+            <label>Name:</label>
+            <input type="text" x-model="name">
         </div>
-        <br>
-        <div>
-            <label>Bar:</label>
-            <input type="text" x-model="bar" x-on:input="updateFoobar()">
-        </div>
-        <br>
-        <div x-if="dataLength" x-bind:class="foobar">
-            <div>
-                <label>Foo + Bar:</label>
-                <input type="text" x-model="foobar">
-                <p>The current value of foobar is <span x-model="foobar"></span></p>
-            </div>
-            <hr>
-            <div x-ignore>
-                <p x-bind:class="classes.foo">Im being ignored</p>
-            </div>
+        <div x-if="name">
+            <p>Hello <span x-model="name"></span>!</p>
         </div>
     </div>
     <script src="../../dist/axon.js"></script>

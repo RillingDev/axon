@@ -1,26 +1,40 @@
 "use strict";
 
-const getDomMap = function (entry, fn) {
-    const result = {};
-    const recurseNodes = function (node, container) {
-        container.node = node;
-        container.children = [];
-        fn(container, node);
+import getDirectives from "./getDirectives";
 
-        if (node.childElementCount) {
+const getDomMap = function (entry) {
+    const recurseNodes = function (node) {
+        const directives = getDirectives(node);
+
+        if (directives.length || node.childElementCount) {
+            const result = {};
             const childArr = Array.from(node.children);
 
-            childArr.forEach((childNode, index) => {
-                container.children[index] = {};
+            result.node = node;
+            result.children = [];
+            result.directives = directives;
 
-                recurseNodes(childNode, container.children[index]);
+            //console.log(result);
+
+            childArr.forEach((childNode) => {
+                const childResult = recurseNodes(childNode);
+
+                if (childResult.node) {
+                    result.children.push(childResult);
+                }
+
             });
+
+            return result;
+        } else {
+            return false;
         }
+
+
     };
 
-    recurseNodes(entry, result);
 
-    return result;
+    return recurseNodes(entry, {});
 };
 
 export default getDomMap;
