@@ -1,6 +1,6 @@
 "use strict";
 
-const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
+const DOM_EVENT_TIMEOUT = 21; //event timeout in ms
 const DOM_EVENT_MODEL = "input";
 
 const DOM_ATTR_PREFIX = "x-";

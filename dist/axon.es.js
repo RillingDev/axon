@@ -8,7 +8,7 @@ const directiveIgnoreBoth = function () {
     return false;
 };
 
-const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
+const DOM_EVENT_TIMEOUT = 21; //event timeout in ms
 const DOM_EVENT_MODEL = "input";
 
 const DOM_ATTR_PREFIX = "x-";
@@ -192,6 +192,18 @@ const directiveBindRender = function (instance, node, directive) {
     return true;
 };
 
+const directiveLoopRender = function (instance, node, directive) {
+    const propValue = evaluateExpression(instance, directive.val);
+
+    if (propValue) {
+       console.log('loop plz');
+    } else {
+        console.log('loop plz');
+    }
+
+    return propValue
+};
+
 const directives = {
     ignore: {
         init: directiveIgnoreBoth, //Init function
@@ -209,6 +221,9 @@ const directives = {
     },
     bind: {
         render: directiveBindRender
+    },
+    for: {
+        render: directiveLoopRender
     }
 };
 

@@ -16,6 +16,9 @@ import {
 import {
     directiveBindRender
 } from "./modules/directiveBind";
+import {
+    directiveLoopRender
+} from "./modules/directiveLoopRender";
 
 const directives = {
     ignore: {
@@ -34,6 +37,9 @@ const directives = {
     },
     bind: {
         render: directiveBindRender
+    },
+    for: {
+        render: directiveLoopRender
     }
 };
 
