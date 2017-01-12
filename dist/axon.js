@@ -200,6 +200,11 @@ var directiveBindRender = function directiveBindRender(instance, node, directive
     return true;
 };
 
+/*import {
+    directiveForInit,
+    directiveForRender
+} from "./modules/directiveFor";*/
+
 var directives = {
     ignore: {
         init: directiveIgnoreBoth, //Init function

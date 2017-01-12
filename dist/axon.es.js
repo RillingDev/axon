@@ -195,6 +195,11 @@ const directiveBindRender = function (instance, node, directive) {
     return true;
 };
 
+/*import {
+    directiveForInit,
+    directiveForRender
+} from "./modules/directiveFor";*/
+
 const directives = {
     ignore: {
         init: directiveIgnoreBoth, //Init function
@@ -212,7 +217,11 @@ const directives = {
     },
     bind: {
         render: directiveBindRender
-    }
+    },
+    /*for: {
+        init: directiveForInit,
+        render: directiveForRender
+    }*/
 };
 
 const execDirectives = function (instance, domMap, execMode) {
