@@ -7,6 +7,7 @@ import retrieveMethod from "./retrieveMethod";
 import retrieveProp from "./retrieveProp";
 
 const evaluateExpression = function (instance, expression) {
+ 
     if (!isNaN(Number(expression))) {
         //expression is a Number
         return Number(expression);

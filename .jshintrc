@@ -71,9 +71,6 @@
     "yui": false,
 
     "globals": {
-        "element": false,
-        "angular": false,
-        "_": false,
-        "$": false
+        "Axon":true
     }
 }

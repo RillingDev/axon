@@ -3,7 +3,9 @@
 const app = new Axon({
     context: "#myApp",
     data: {
-        model_1: "foooo"
+        model_1: "foooo",
+        randomNumbers: [1, 3, 15, 124, 2144],
+        i:999
     },
     methods: {
         getFoobar(foo) {

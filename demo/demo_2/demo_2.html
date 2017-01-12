@@ -29,6 +29,15 @@
             </div>
             <hr>
             <div>
+                <h3>For</h3>
+                <ul>
+                    <li x-for="i in randomNumbers">
+                        <span x-model="i"></span>
+                    </li>
+                </ul>
+            </div>
+            <hr>
+            <div>
                 <h3>If</h3>
                 <p x-if="model_1">Im only visible if the model-text ("foo") is longer than 0</p>
             </div>

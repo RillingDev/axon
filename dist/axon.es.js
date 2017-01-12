@@ -53,7 +53,7 @@ const retrieveProp = function (instance, expression) {
     splitExpression.forEach((propPath, index) => {
         prop = container[propPath];
 
-        if (isDefined("undefined")) {
+        if (isDefined(prop)) {
 
             if (index < splitExpression.length - 1) {
                 container = prop;
@@ -66,10 +66,13 @@ const retrieveProp = function (instance, expression) {
         }
     });
 
+       //console.log(expression,result);
+
     return result;
 };
 
 const evaluateExpression = function (instance, expression) {
+ 
     if (!isNaN(Number(expression))) {
         //expression is a Number
         return Number(expression);
