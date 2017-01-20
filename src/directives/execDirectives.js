@@ -10,7 +10,6 @@ import directiveRefList from "./index";
  * @param {String} execMode mode to run in ("init" or "render")
  */
 const execDirectives = function (instance, domMap, execMode) {
-    console.log([instance, domMap, execMode]);
     const instanceContent = {
         $data: instance.$data,
         $methods: instance.$methods
@@ -37,7 +36,7 @@ const execDirectives = function (instance, domMap, execMode) {
                     if (directiveRefFn) {
                         //Only exec if directive has fn for current execMode
                         //@TODO restructure args
-                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods, mapNode);
+                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods);
 
                         if (!directiveResult) {
                             //Stop crawling on directive return 'false'
