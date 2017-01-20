@@ -23,6 +23,7 @@ const Axon = class {
         _this.$cache = {};
 
         _this.$init();
+        _this.$render();
 
         return _this;
     }

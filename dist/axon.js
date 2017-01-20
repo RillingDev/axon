@@ -359,6 +359,7 @@ var Axon = function () {
             _this.$cache = {};
 
             _this.$init();
+            _this.$render();
 
             return _this;
         }

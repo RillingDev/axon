@@ -44,7 +44,6 @@ const execDirectives = function (instance, domMap, execMode) {
                 recurseMap(child);
             });
         }
-
     };
 
     recurseMap(domMap);

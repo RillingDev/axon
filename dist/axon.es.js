@@ -335,7 +335,6 @@ const execDirectives = function (instance, domMap, execMode) {
                 recurseMap(child);
             });
         }
-
     };
 
     recurseMap(domMap);
@@ -361,6 +360,7 @@ const Axon = class {
         _this.$cache = {};
 
         _this.$init();
+        _this.$render();
 
         return _this;
     }
