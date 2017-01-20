@@ -14,12 +14,11 @@ const directiveForInit = function (node, directive, instanceContent) {
     };
 
     directive.data = data;
-    console.log("FOR INIT", data);
 
     return true;
 };
 
-const directiveForRender = function (node, directive, instanceContent, instanceMethods, mapNode) {
+const directiveForRender = function (node, directive, instanceContent, instanceMethods) {
     const attr_clone = DOM_ATTR_PREFIX + "clone";
     const iterable = directive.data.in;
     const parent = node.parentNode;
@@ -44,15 +43,10 @@ const directiveForRender = function (node, directive, instanceContent, instanceM
             parent.appendChild(clone);
             currentNode = clone;
         }
-
-        //instanceMethods.init(currentNodeMap);
-        //instanceMethods.render(currentNodeMap);
-
-        console.log([index,currentNode]);
     });
 
 
-    console.log("FOR RENDER", node);
+    //console.log("FOR RENDER", node);
 
     return true;
 };

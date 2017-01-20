@@ -16,10 +16,10 @@ import {
 import {
     directiveBindRender
 } from "./modules/directiveBind";
-/*import {
+import {
     directiveForInit,
     directiveForRender
-} from "./modules/directiveFor";*/
+} from "./modules/directiveFor";
 
 const directives = [{
         name: "ignore",
@@ -42,11 +42,11 @@ const directives = [{
         name: "bind",
         render: directiveBindRender
     },
-    /*{
-        name:"for",
+    {
+        name: "for",
         init: directiveForInit,
         render: directiveForRender
-}*/
+    }
 ];
 
 export default directives;
