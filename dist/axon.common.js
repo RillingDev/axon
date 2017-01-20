@@ -1,14 +1,4 @@
-/**
- * Axon v0.17.0
- * Author: Felix Rilling
- * Repository: git+https://github.com/FelixRilling/axonjs.git
- */
-
 'use strict';
-
-const directiveIgnoreBoth = function () {
-    return false;
-};
 
 const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 const DOM_EVENT_MODEL = "input";
@@ -20,6 +10,66 @@ const DOM_ATTR_TEXT = "textContent";
 const DOM_ATTR_HTML = "innerHTML";
 
 const LIB_STRING_QUOTES = ["'", "\"", "`"];
+
+const arrayFrom = function (arr) {
+    return Array.from(arr);
+};
+
+const getDirectives = function (node) {
+    const attrArr = arrayFrom(node.attributes);
+    const result = [];
+
+    attrArr.forEach(attr => {
+        //If is Axon attribute
+        if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
+            const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
+
+            result.push({
+                key: splitName[0],
+                opt: splitName[1] || false,
+                val: attr.value
+            });
+        }
+    });
+
+    return result;
+};
+
+const isDefined = function (val) {
+    return typeof val !== "undefined";
+};
+
+const getDomMap = function (entry) {
+    const recurseNodes = function (node) {
+        const nodeDirectives = getDirectives(node);
+        const nodeChildren = node.children;
+
+        if (nodeDirectives.length || nodeChildren.length) {
+            let result = {
+                node,
+                directives: nodeDirectives,
+                children: []
+            };
+            const childArr = arrayFrom(nodeChildren);
+
+            childArr.forEach(childNode => {
+                const childResult = recurseNodes(childNode);
+
+                if (isDefined(childResult)) {
+                    result.children.push(childResult);
+                }
+            });
+
+            return result;
+        }
+    };
+
+    return recurseNodes(entry);
+};
+
+const directiveIgnoreBoth = function () {
+    return false;
+};
 
 const retrieveMethod = function (instance, expression) {
     const expressionSplit = expression.substr(0, expression.length - 1).split("(");
@@ -37,10 +87,6 @@ const retrieveMethod = function (instance, expression) {
     } else {
         throw new Error(`Missing method '${expression}'`);
     }
-};
-
-const isDefined = function (val) {
-    return typeof val !== "undefined";
 };
 
 const retrieveProp = function (instance, expression) {
@@ -103,10 +149,6 @@ const directiveIfRender = function (instance, node, directive) {
     }
 
     return result;
-};
-
-const arrayFrom = function (arr) {
-    return Array.from(arr);
 };
 
 const debounce = function(fn, wait, immediate) {
@@ -267,69 +309,6 @@ const execDirectives = function (instance, domMap, execMode) {
     recurseMap(domMap);
 };
 
-const getDirectives = function (node) {
-    const attrArr = arrayFrom(node.attributes);
-    const result = [];
-
-    attrArr.forEach(attr => {
-        //If is Axon attribute
-        if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
-            const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
-
-            result.push({
-                key: splitName[0],
-                opt: splitName[1] || false,
-                val: attr.value
-            });
-        }
-    });
-
-    return result;
-};
-
-const getDomMap = function (entry) {
-    const recurseNodes = function (node) {
-        const nodeDirectives = getDirectives(node);
-        const nodeChildren = node.children;
-
-        if (nodeDirectives.length || nodeChildren.length) {
-            let result = {
-                node,
-                directives: nodeDirectives,
-                children: []
-            };
-            const childArr = arrayFrom(nodeChildren);
-
-            childArr.forEach(childNode => {
-                const childResult = recurseNodes(childNode);
-
-                if (isDefined(childResult)) {
-                    result.children.push(childResult);
-                }
-            });
-
-            return result;
-        }
-    };
-
-    return recurseNodes(entry);
-};
-
-const init = function () {
-    const _this = this;
-
-     _this.$cache = getDomMap(_this.$context);
-    execDirectives(_this, _this.$cache, "init");
-    console.log("CALLED $init");
-};
-
-const render = function () {
-    const _this = this;
-
-    execDirectives(_this, _this.$cache, "render");
-    console.log("CALLED $render");
-};
-
 /**
  * Basic Axon Constructor
  *
@@ -337,25 +316,29 @@ const render = function () {
  * @param {String} id To identify the instance
  * @returns {Object} Returns Axon instance
  */
-const Axon = function (config) {
-    const _this = this;
+const Axon = class {
+    constructor(config) {
+        const _this = this;
 
-    _this.$context = document.querySelector(config.context);
-    _this.$data = config.data;
-    _this.$methods = config.methods;
-    _this.$cache = {};
-    
-    _this.$init();
-    _this.$render();
-};
+        _this.$context = document.querySelector(config.context);
+        _this.$data = config.data;
+        _this.$methods = config.methods;
+        _this.$cache = {};
 
-/**
- * Expose Axon methods
- */
-Axon.prototype = {
-    $init: init,
-    $render: render,
-    constructor: Axon,
+        _this.$init();
+        _this.$render();
+    }
+    $init() {
+        const _this = this;
+
+        _this.$cache = getDomMap(_this.$context);
+        execDirectives(_this, _this.$cache, "init");
+    }
+    $render() {
+        const _this = this;
+
+        execDirectives(_this, _this.$cache, "render");
+    }
 };
 
 module.exports = Axon;
