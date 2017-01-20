@@ -39,10 +39,10 @@ const directives = {
     bind: {
         render: directiveBindRender
     },
-    for: {
+    /*for: {
         init: directiveForInit,
         render: directiveForRender
-    }
+}*/
 };
 
 export default directives;

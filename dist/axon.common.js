@@ -75,17 +75,17 @@ const directiveIgnoreBoth = function () {
 /**
  * Gets method from Axon instance
  * @private
- * @param {Axon} instance Axon instance
+ * @param {Object} methods Axon instance methods container
  * @param {String} expression Directive expression
  * @returns {Function} method of instance
  */
-const retrieveMethod = function (instance, expression) {
+const retrieveMethod = function (methods, expression) {
     const expressionSplit = expression.substr(0, expression.length - 1).split("(");
     const methodName = expressionSplit[0];
     const methodArgs = expressionSplit[1].split(",").filter(item => item !== "").map(arg => {
-        return evaluateExpression(instance, arg);
+        return evaluateExpression(methods, arg);
     });
-    const methodFn = instance.$methods[methodName];
+    const methodFn = methods[methodName];
 
     if (typeof methodFn === "function") {
         return {
@@ -100,17 +100,17 @@ const retrieveMethod = function (instance, expression) {
 /**
  * Gets property from Axon instance
  * @private
- * @param {Axon} instance Axon instance
+ * @param {Object} data Axon instance data container
  * @param {String} expression Directive expression
  * @returns {Mixed} property of instance
  */
-const retrieveProp = function (instance, expression) {
+const retrieveProp = function (data, expression) {
     const splitExpression = expression.split(".");
     const result = {
         val: null,
         ref: null
     };
-    let container = instance.$data;
+    let container = data;
     let prop;
 
     splitExpression.forEach((propPath, index) => {
@@ -135,11 +135,11 @@ const retrieveProp = function (instance, expression) {
 /**
  * evaluates expression from Axon instance
  * @private
- * @param {Axon} instance Axon instance
+ * @param {Axon} instanceData Axon instance
  * @param {String} expression Directive expression
  * @returns {Mixed} value of expression
  */
-const evaluateExpression = function (instance, expression) {
+const evaluateExpression = function (instanceData, expression) {
 
     if (!isNaN(Number(expression))) {
         //expression is a Number
@@ -149,17 +149,17 @@ const evaluateExpression = function (instance, expression) {
         return expression.substr(1, expression.length - 2);
     } else if (expression.substr(expression.length - 1) === ")") {
         //expression is a Method
-        const method = retrieveMethod(instance, expression);
+        const method = retrieveMethod(instanceData.$methods, expression);
 
-        return method.fn.apply(instance, method.args);
+        return method.fn.apply(instanceData, method.args);
     } else {
         //expression is a Property
-        return retrieveProp(instance, expression).val;
+        return retrieveProp(instanceData.$data, expression).val;
     }
 };
 
-const directiveIfRender = function (instance, node, directive) {
-    const propValue = evaluateExpression(instance, directive.val);
+const directiveIfRender = function (node, directive,instanceData) {
+    const propValue = evaluateExpression(instanceData, directive.val);
     const result = Boolean(propValue);
 
     if (result) {
@@ -210,7 +210,7 @@ const getNodeValueType = function (node) {
     }
 };
 
-const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
+const bindEvent = function(node, eventType, eventFn, eventArgs, instanceData) {
     const debouncedFn = debounce(eventFn, DOM_EVENT_TIMEOUT);
     const nodeValueType = getNodeValueType(node);
 
@@ -220,88 +220,48 @@ const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
 
         args.push(target[nodeValueType], target, event);
 
-        return debouncedFn.apply(instance, args);
+        return debouncedFn.apply(instanceData, args);
     };
 
     return node.addEventListener(eventType, eventFnWrapper, false);
 };
 
-const directiveOnInit = function (instance, node, directive) {
-    const targetMethod = retrieveMethod(instance, directive.val);
+const directiveOnInit = function (node, directive, instanceData) {
+    const targetMethod = retrieveMethod(instanceData.$methods, directive.val);
 
-    bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instance);
+    bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instanceData);
 
     return true;
 };
 
-const directiveModelInit = function (instance, node, directive) {
-    const targetProp = retrieveProp(instance, directive.val);
+const directiveModelInit = function (node, directive, instanceData, instanceMethods) {
+    const targetProp = retrieveProp(instanceData.$data, directive.val);
     const eventFn = function (currentValue, newValue) {
         targetProp.ref[directive.val] = newValue;
 
         setTimeout(() => {
-            instance.$render();
+            instanceMethods.$render();
         }, DOM_EVENT_TIMEOUT);
     };
 
-    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instance);
+    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instanceData);
 
     return true;
 };
 
-const directiveModelRender = function (instance, node, directive) {
+const directiveModelRender = function (node, directive, instanceData) {
     const nodeValueType = getNodeValueType(node);
-    const propValue = retrieveProp(instance, directive.val);
+    const propValue = retrieveProp(instanceData.$data, directive.val);
 
     node[nodeValueType] = propValue.val;
 
     return true;
 };
 
-const directiveBindRender = function (instance, node, directive) {
-    const propValue = evaluateExpression(instance, directive.val);
+const directiveBindRender = function (node, directive,instanceData) {
+    const propValue = evaluateExpression(instanceData, directive.val);
 
     node.setAttribute(directive.opt, propValue);
-
-    return true;
-};
-
-const directiveForInit = function (instance, node, directive) {
-    const splitExpression = directive.val.split(" ");
-    const data = {
-        val: splitExpression[0],
-        in: evaluateExpression(instance, splitExpression[2])
-    };
-
-    directive.data = data;
-    console.log("FOR INIT", data);
-
-    return true;
-};
-
-const directiveForRender = function (instance, node, directive) {
-    const attr_clone = DOM_ATTR_PREFIX + "clone";
-    const iterable = directive.data.in;
-    const parent = node.parentNode;
-    const parentChildren = Array.from(parent.children);
-
-    //Clear old clones
-    parentChildren.forEach(child => {
-        if (child.hasAttribute(attr_clone)) {
-            child.remove();
-        }
-    });
-    //Add new clones
-    iterable.forEach((item, index) => {
-        if (index > 0) {
-            const clone = node.cloneNode(true);
-
-            clone.setAttribute(attr_clone, true);
-            parent.appendChild(clone);
-        }
-    });
-
-    console.log("FOR RENDER", node);
 
     return true;
 };
@@ -324,10 +284,10 @@ const directives = {
     bind: {
         render: directiveBindRender
     },
-    for: {
+    /*for: {
         init: directiveForInit,
         render: directiveForRender
-    }
+}*/
 };
 
 /**
@@ -338,24 +298,33 @@ const directives = {
  * @param {String} execMode mode to run in ("init" or "render")
  */
 const execDirectives = function (instance, domMap, execMode) {
+    const instanceData = {
+        $data: instance.$data,
+        $methods: instance.$methods
+    };
+    const instanceMethods = {
+        $render: instance.$render.bind(instance),
+        $init: instance.$init.bind(instance)
+    };
     const recurseMap = function (mapNode) {
+
         const nodeChildren = mapNode.children;
         const nodeDirectives = mapNode.directives;
         let result = true;
 
         //Exec on node
         if (nodeDirectives.length) {
-             //Only exec if directives on domNode
+            //Only exec if directives on domNode
             mapNode.directives.forEach(directive => {
                 const directiveRef = directives[directive.key];
 
                 if (directiveRef) {
-                     //Only exec if directive exists
+                    //Only exec if directive exists
                     const directiveRefFn = directiveRef[execMode];
 
                     if (directiveRefFn) {
                         //Only exec if directive has fn for current execMode
-                        const directiveResult = directiveRefFn(instance, mapNode.node, directive);
+                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceData,instanceMethods);
 
                         if (!directiveResult) {
                             //Stop crawling on directive return 'false'

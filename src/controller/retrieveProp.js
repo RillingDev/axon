@@ -5,17 +5,17 @@ import isDefined from "../lib/isDefined";
 /**
  * Gets property from Axon instance
  * @private
- * @param {Axon} instance Axon instance
+ * @param {Object} data Axon instance data container
  * @param {String} expression Directive expression
  * @returns {Mixed} property of instance
  */
-const retrieveProp = function (instance, expression) {
+const retrieveProp = function (data, expression) {
     const splitExpression = expression.split(".");
     const result = {
         val: null,
         ref: null
     };
-    let container = instance.$data;
+    let container = data;
     let prop;
 
     splitExpression.forEach((propPath, index) => {

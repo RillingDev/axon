@@ -9,11 +9,11 @@ import retrieveProp from "./retrieveProp";
 /**
  * evaluates expression from Axon instance
  * @private
- * @param {Axon} instance Axon instance
+ * @param {Axon} instanceData Axon instance
  * @param {String} expression Directive expression
  * @returns {Mixed} value of expression
  */
-const evaluateExpression = function (instance, expression) {
+const evaluateExpression = function (instanceData, expression) {
 
     if (!isNaN(Number(expression))) {
         //expression is a Number
@@ -23,12 +23,12 @@ const evaluateExpression = function (instance, expression) {
         return expression.substr(1, expression.length - 2);
     } else if (expression.substr(expression.length - 1) === ")") {
         //expression is a Method
-        const method = retrieveMethod(instance, expression);
+        const method = retrieveMethod(instanceData.$methods, expression);
 
-        return method.fn.apply(instance, method.args);
+        return method.fn.apply(instanceData, method.args);
     } else {
         //expression is a Property
-        return retrieveProp(instance, expression).val;
+        return retrieveProp(instanceData.$data, expression).val;
     }
 };
 

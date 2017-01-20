@@ -2,8 +2,8 @@
 
 import evaluateExpression from "../../controller/evaluateExpression";
 
-const directiveBindRender = function (instance, node, directive) {
-    const propValue = evaluateExpression(instance, directive.val);
+const directiveBindRender = function (node, directive,instanceData) {
+    const propValue = evaluateExpression(instanceData, directive.val);
 
     node.setAttribute(directive.opt, propValue);
 

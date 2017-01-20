@@ -8,24 +8,24 @@ import {
     DOM_EVENT_TIMEOUT
 } from "../../lib/constants";
 
-const directiveModelInit = function (instance, node, directive) {
-    const targetProp = retrieveProp(instance, directive.val);
+const directiveModelInit = function (node, directive, instanceData, instanceMethods) {
+    const targetProp = retrieveProp(instanceData.$data, directive.val);
     const eventFn = function (currentValue, newValue) {
         targetProp.ref[directive.val] = newValue;
 
         setTimeout(() => {
-            instance.$render();
+            instanceMethods.$render();
         }, DOM_EVENT_TIMEOUT);
     };
 
-    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instance);
+    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instanceData);
 
     return true;
 };
 
-const directiveModelRender = function (instance, node, directive) {
+const directiveModelRender = function (node, directive, instanceData) {
     const nodeValueType = getNodeValueType(node);
-    const propValue = retrieveProp(instance, directive.val);
+    const propValue = retrieveProp(instanceData.$data, directive.val);
 
     node[nodeValueType] = propValue.val;
 
