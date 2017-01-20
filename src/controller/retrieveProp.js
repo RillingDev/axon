@@ -2,6 +2,13 @@
 
 import isDefined from "../lib/isDefined";
 
+/**
+ * Gets property from Axon instance
+ * @private
+ * @param {Axon} instance Axon instance
+ * @param {String} expression Directive expression
+ * @returns {Mixed} property of instance
+ */
 const retrieveProp = function (instance, expression) {
     const splitExpression = expression.split(".");
     const result = {
@@ -26,8 +33,6 @@ const retrieveProp = function (instance, expression) {
             throw new Error(`Missing prop '${expression}'`);
         }
     });
-
-       //console.log(expression,result);
 
     return result;
 };

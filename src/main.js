@@ -4,13 +4,16 @@ import getDomMap from "./dom/getDomMap";
 import execDirectives from "./directives/execDirectives";
 
 /**
- * Basic Axon Constructor
- *
- * @constructor
- * @param {String} id To identify the instance
- * @returns {Object} Returns Axon instance
+ * Axon Class
+ * @class
  */
 const Axon = class {
+    /**
+     * Basic Axon Constructor
+     * @constructor
+     * @param {Object} config Config data for the Axon instance
+     * @returns {Axon} Returns Axon instance
+     */
     constructor(config) {
         const _this = this;
 
@@ -20,14 +23,21 @@ const Axon = class {
         _this.$cache = {};
 
         _this.$init();
-        _this.$render();
+
+        return _this;
     }
+    /**
+     * Init directives
+     */
     $init() {
         const _this = this;
 
         _this.$cache = getDomMap(_this.$context);
         execDirectives(_this, _this.$cache, "init");
     }
+    /**
+     * Renders controller changes
+     */
     $render() {
         const _this = this;
 

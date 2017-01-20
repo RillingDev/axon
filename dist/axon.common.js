@@ -31,6 +31,11 @@ const getDirectives = function (node) {
     return result;
 };
 
+/**
+ * @private
+ * @param {Mixed} val Value to check
+ * @returns {Boolean} if the value is defined
+ */
 const isDefined = function (val) {
     return typeof val !== "undefined";
 };
@@ -67,6 +72,13 @@ const directiveIgnoreBoth = function () {
     return false;
 };
 
+/**
+ * Gets method from Axon instance
+ * @private
+ * @param {Axon} instance Axon instance
+ * @param {String} expression Directive expression
+ * @returns {Function} method of instance
+ */
 const retrieveMethod = function (instance, expression) {
     const expressionSplit = expression.substr(0, expression.length - 1).split("(");
     const methodName = expressionSplit[0];
@@ -85,6 +97,13 @@ const retrieveMethod = function (instance, expression) {
     }
 };
 
+/**
+ * Gets property from Axon instance
+ * @private
+ * @param {Axon} instance Axon instance
+ * @param {String} expression Directive expression
+ * @returns {Mixed} property of instance
+ */
 const retrieveProp = function (instance, expression) {
     const splitExpression = expression.split(".");
     const result = {
@@ -110,13 +129,18 @@ const retrieveProp = function (instance, expression) {
         }
     });
 
-       //console.log(expression,result);
-
     return result;
 };
 
+/**
+ * evaluates expression from Axon instance
+ * @private
+ * @param {Axon} instance Axon instance
+ * @param {String} expression Directive expression
+ * @returns {Mixed} value of expression
+ */
 const evaluateExpression = function (instance, expression) {
- 
+
     if (!isNaN(Number(expression))) {
         //expression is a Number
         return Number(expression);
@@ -147,6 +171,13 @@ const directiveIfRender = function (instance, node, directive) {
     return result;
 };
 
+/**
+ * @private
+ * @param {Function} fn function to debounce
+ * @param {Number} wait timeout in ms
+ * @param {Boolean} immediate if the debounc should be ignored
+ * @returns {Function} debounced function
+ */
 const debounce = function(fn, wait, immediate) {
     let timeout;
 
@@ -264,6 +295,13 @@ const directives = {
     }*/
 };
 
+/**
+ * Runs all directives from the domMap
+ * @private
+ * @param {Axon} instance Axon instance
+ * @param {Object} domMap domMap to run directives
+ * @param {String} execMode mode to run in ("init" or "render")
+ */
 const execDirectives = function (instance, domMap, execMode) {
     const recurseMap = function (mapNode) {
         const nodeChildren = mapNode.children;
@@ -286,7 +324,7 @@ const execDirectives = function (instance, domMap, execMode) {
 
                         if (!directiveResult) {
                             //Stop crawling on directive return 'false'
-                            result = false; 
+                            result = false;
                         }
                     }
                 }
@@ -306,13 +344,16 @@ const execDirectives = function (instance, domMap, execMode) {
 };
 
 /**
- * Basic Axon Constructor
- *
- * @constructor
- * @param {String} id To identify the instance
- * @returns {Object} Returns Axon instance
+ * Axon Class
+ * @class
  */
 const Axon = class {
+    /**
+     * Basic Axon Constructor
+     * @constructor
+     * @param {Object} config Config data for the Axon instance
+     * @returns {Axon} Returns Axon instance
+     */
     constructor(config) {
         const _this = this;
 
@@ -322,14 +363,21 @@ const Axon = class {
         _this.$cache = {};
 
         _this.$init();
-        _this.$render();
+
+        return _this;
     }
+    /**
+     * Init directives
+     */
     $init() {
         const _this = this;
 
         _this.$cache = getDomMap(_this.$context);
         execDirectives(_this, _this.$cache, "init");
     }
+    /**
+     * Renders controller changes
+     */
     $render() {
         const _this = this;
 

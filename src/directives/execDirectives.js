@@ -2,6 +2,13 @@
 
 import directiveRefList from "./index";
 
+/**
+ * Runs all directives from the domMap
+ * @private
+ * @param {Axon} instance Axon instance
+ * @param {Object} domMap domMap to run directives
+ * @param {String} execMode mode to run in ("init" or "render")
+ */
 const execDirectives = function (instance, domMap, execMode) {
     const recurseMap = function (mapNode) {
         const nodeChildren = mapNode.children;
@@ -24,7 +31,7 @@ const execDirectives = function (instance, domMap, execMode) {
 
                         if (!directiveResult) {
                             //Stop crawling on directive return 'false'
-                            result = false; 
+                            result = false;
                         }
                     }
                 }

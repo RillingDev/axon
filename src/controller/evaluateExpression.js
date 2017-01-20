@@ -6,8 +6,15 @@ import {
 import retrieveMethod from "./retrieveMethod";
 import retrieveProp from "./retrieveProp";
 
+/**
+ * evaluates expression from Axon instance
+ * @private
+ * @param {Axon} instance Axon instance
+ * @param {String} expression Directive expression
+ * @returns {Mixed} value of expression
+ */
 const evaluateExpression = function (instance, expression) {
- 
+
     if (!isNaN(Number(expression))) {
         //expression is a Number
         return Number(expression);
