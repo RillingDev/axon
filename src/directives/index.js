@@ -16,33 +16,37 @@ import {
 import {
     directiveBindRender
 } from "./modules/directiveBind";
-import {
+/*import {
     directiveForInit,
     directiveForRender
-} from "./modules/directiveFor";
+} from "./modules/directiveFor";*/
 
-const directives = {
-    ignore: {
+const directives = [{
+        name: "ignore",
         init: directiveIgnoreBoth, //Init function
         render: directiveIgnoreBoth //Render function
-    },
-    if: {
+    }, {
+        name: "if",
         render: directiveIfRender
     },
-    on: {
+    {
+        name: "on",
         init: directiveOnInit,
     },
-    model: {
+    {
+        name: "model",
         init: directiveModelInit,
         render: directiveModelRender
     },
-    bind: {
+    {
+        name: "bind",
         render: directiveBindRender
     },
-    for: {
+    /*{
+        name:"for",
         init: directiveForInit,
         render: directiveForRender
-    }
-};
+}*/
+];
 
 export default directives;

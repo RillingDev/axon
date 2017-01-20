@@ -28,7 +28,7 @@ const execDirectives = function (instance, domMap, execMode) {
         if (nodeDirectives.length) {
             //Only exec if directives on domNode
             mapNode.directives.forEach(directive => {
-                const directiveRef = directiveRefList[directive.key];
+                const directiveRef = directiveRefList.find(item => item.name === directive.name);
 
                 if (directiveRef) {
                     //Only exec if directive exists
@@ -37,7 +37,7 @@ const execDirectives = function (instance, domMap, execMode) {
                     if (directiveRefFn) {
                         //Only exec if directive has fn for current execMode
                         //@TODO restructure args
-                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods,mapNode);
+                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods, mapNode);
 
                         if (!directiveResult) {
                             //Stop crawling on directive return 'false'

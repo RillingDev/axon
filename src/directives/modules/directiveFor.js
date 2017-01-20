@@ -33,25 +33,24 @@ const directiveForRender = function (node, directive, instanceContent, instanceM
     });
     //Add new clones
     iterable.forEach((item, index) => {
-        //let currentNodeMap;
+        let currentNode;
 
         if (index === 0) {
-            //currentNodeMap = getDomMap(item);
+            currentNode = node;
         } else {
             const clone = node.cloneNode(true);
 
             clone.setAttribute(attr_clone, true);
             parent.appendChild(clone);
-            //currentNodeMap = getDomMap(clone);
+            currentNode = clone;
         }
 
         //instanceMethods.init(currentNodeMap);
         //instanceMethods.render(currentNodeMap);
 
-        console.log([item, index]);
+        console.log([index,currentNode]);
     });
 
-    mapNode = getDomMap(parent);
 
     console.log("FOR RENDER", node);
 

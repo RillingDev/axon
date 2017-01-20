@@ -1,6 +1,10 @@
 var Axon = function () {
     'use strict';
 
+    const directiveIgnoreBoth = function () {
+        return false;
+    };
+
     const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
     const DOM_EVENT_MODEL = "input";
 
@@ -11,67 +15,6 @@ var Axon = function () {
     const DOM_ATTR_HTML = "innerHTML";
 
     const LIB_STRING_QUOTES = ["'", "\"", "`"];
-
-    const getDirectives = function (node) {
-        const attrArr = Array.from(node.attributes);
-        const result = [];
-
-        attrArr.forEach(attr => {
-            //If is Axon attribute
-            if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
-                const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
-
-                result.push({
-                    key: splitName[0],
-                    opt: splitName[1] || false,
-                    val: attr.value
-                });
-            }
-        });
-
-        return result;
-    };
-
-    /**
-     * @private
-     * @param {Mixed} val Value to check
-     * @returns {Boolean} if the value is defined
-     */
-    const isDefined = function (val) {
-        return typeof val !== "undefined";
-    };
-
-    const getDomMap = function (entry) {
-        const recurseNodes = function (node) {
-            const nodeDirectives = getDirectives(node);
-            const nodeChildren = node.children;
-
-            if (nodeDirectives.length || nodeChildren.length) {
-                let result = {
-                    node,
-                    directives: nodeDirectives,
-                    children: []
-                };
-                const childArr = Array.from(nodeChildren);
-
-                childArr.forEach(childNode => {
-                    const childResult = recurseNodes(childNode);
-
-                    if (isDefined(childResult)) {
-                        result.children.push(childResult);
-                    }
-                });
-
-                return result;
-            }
-        };
-
-        return recurseNodes(entry);
-    };
-
-    const directiveIgnoreBoth = function () {
-        return false;
-    };
 
     /**
      * Gets method from Axon instance
@@ -96,6 +39,15 @@ var Axon = function () {
         } else {
             throw new Error(`Missing method '${expression}'`);
         }
+    };
+
+    /**
+     * @private
+     * @param {Mixed} val Value to check
+     * @returns {Boolean} if the value is defined
+     */
+    const isDefined = function (val) {
+        return typeof val !== "undefined";
     };
 
     /**
@@ -267,80 +219,82 @@ var Axon = function () {
         return true;
     };
 
-    const directiveForInit = function (node, directive, instanceContent) {
-        const splitExpression = directive.val.split(" ");
-        const data = {
-            val: splitExpression[0],
-            in: evaluateExpression(instanceContent, splitExpression[2])
+    /*import {
+        directiveForInit,
+        directiveForRender
+    } from "./modules/directiveFor";*/
+
+    const directives = [{
+        name: "ignore",
+        init: directiveIgnoreBoth, //Init function
+        render: directiveIgnoreBoth //Render function
+    }, {
+        name: "if",
+        render: directiveIfRender
+    }, {
+        name: "on",
+        init: directiveOnInit
+    }, {
+        name: "model",
+        init: directiveModelInit,
+        render: directiveModelRender
+    }, {
+        name: "bind",
+        render: directiveBindRender
+    }];
+
+    const getDirectives = function (node) {
+        const attrArr = Array.from(node.attributes);
+        const result = [];
+
+        attrArr.forEach(attr => {
+            //If is Axon attribute
+            if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
+                const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
+
+                result.push({
+                    name: splitName[0],
+                    opt: splitName[1],
+                    val: attr.value
+                });
+            }
+        });
+
+        return result.sort((a, b) => {
+            //sort by proccessing order
+            const indexA = directives.findIndex(item => item.name === a.name);
+            const indexB = directives.findIndex(item => item.name === b.name);
+
+            return indexA >= indexB;
+        });
+    };
+
+    const getDomMap = function (entry) {
+        const recurseNodes = function (node) {
+            const nodeDirectives = getDirectives(node);
+            const nodeChildren = node.children;
+
+            if (nodeDirectives.length || nodeChildren.length) {
+                let result = {
+                    node,
+                    directives: nodeDirectives,
+                    children: []
+                };
+                const childArr = Array.from(nodeChildren);
+
+                childArr.forEach(childNode => {
+                    const childResult = recurseNodes(childNode);
+
+                    if (isDefined(childResult)) {
+                        result.children.push(childResult);
+                    }
+                });
+
+                return result;
+            }
         };
 
-        directive.data = data;
-        console.log("FOR INIT", data);
-
-        return true;
-    };
-
-    const directiveForRender = function (node, directive, instanceContent, instanceMethods, mapNode) {
-        const attr_clone = DOM_ATTR_PREFIX + "clone";
-        const iterable = directive.data.in;
-        const parent = node.parentNode;
-        const parentChildren = Array.from(parent.children);
-
-        //Clear old clones
-        parentChildren.forEach(child => {
-            if (child.hasAttribute(attr_clone)) {
-                child.remove();
-            }
-        });
-        //Add new clones
-        iterable.forEach((item, index) => {
-            //let currentNodeMap;
-
-            if (index === 0) {
-                //currentNodeMap = getDomMap(item);
-            } else {
-                const clone = node.cloneNode(true);
-
-                clone.setAttribute(attr_clone, true);
-                parent.appendChild(clone);
-                //currentNodeMap = getDomMap(clone);
-            }
-
-            //instanceMethods.init(currentNodeMap);
-            //instanceMethods.render(currentNodeMap);
-
-            console.log([item, index]);
-        });
-
-        mapNode = getDomMap(parent);
-
-        console.log("FOR RENDER", node);
-
-        return true;
-    };
-
-    const directives = {
-        ignore: {
-            init: directiveIgnoreBoth, //Init function
-            render: directiveIgnoreBoth //Render function
-        },
-        if: {
-            render: directiveIfRender
-        },
-        on: {
-            init: directiveOnInit
-        },
-        model: {
-            init: directiveModelInit,
-            render: directiveModelRender
-        },
-        bind: {
-            render: directiveBindRender
-        },
-        for: {
-            init: directiveForInit,
-            render: directiveForRender
-        }
+        return recurseNodes(entry);
     };
 
     /**
@@ -369,7 +323,7 @@ var Axon = function () {
             if (nodeDirectives.length) {
                 //Only exec if directives on domNode
                 mapNode.directives.forEach(directive => {
-                    const directiveRef = directives[directive.key];
+                    const directiveRef = directives.find(item => item.name === directive.name);
 
                     if (directiveRef) {
                         //Only exec if directive exists
