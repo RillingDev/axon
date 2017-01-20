@@ -1,7 +1,9 @@
 "use strict";
 
 import evaluateExpression from "../../controller/evaluateExpression";
-import arrayFrom from "../../lib/arrayFrom";
+import {
+    DOM_ATTR_PREFIX
+} from "../../lib/constants";
 
 const directiveForInit = function (instance, node, directive) {
     const splitExpression = directive.val.split(" ");
@@ -17,19 +19,26 @@ const directiveForInit = function (instance, node, directive) {
 };
 
 const directiveForRender = function (instance, node, directive) {
-    const iterable=directive.data.in;
-    const clone=node.cloneNode();
+    const attr_clone = DOM_ATTR_PREFIX + "clone";
+    const iterable = directive.data.in;
     const parent = node.parentNode;
-    const nodeChildren = arrayFrom(parent.children);
-    
-    nodeChildren.forEach(node=>{
-        parent.removeChild(node);
-    });
-    iterable.forEach(node=>{
-        parent.appendChild(clone);
-    });
+    const parentChildren = Array.from(parent.children);
 
-    node=parent.children[0];
+    //Clear old clones
+    parentChildren.forEach(child => {
+        if (child.hasAttribute(attr_clone)) {
+            child.remove();
+        }
+    });
+    //Add new clones
+    iterable.forEach((item, index) => {
+        if (index > 0) {
+            const clone = node.cloneNode(true);
+
+            clone.setAttribute(attr_clone, true);
+            parent.appendChild(clone);
+        }
+    });
 
     console.log("FOR RENDER", node);
 

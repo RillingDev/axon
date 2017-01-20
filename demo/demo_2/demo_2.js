@@ -5,7 +5,7 @@ const app = new Axon({
     data: {
         model_1: "foooo",
         randomNumbers: [1, 3, 15, 124, 2144],
-        i:999
+        i: "bar"
     },
     methods: {
         getFoobar(foo) {

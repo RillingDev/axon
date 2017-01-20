@@ -264,10 +264,45 @@ const directiveBindRender = function (instance, node, directive) {
     return true;
 };
 
-/*import {
-    directiveForInit,
-    directiveForRender
-} from "./modules/directiveFor";*/
+const directiveForInit = function (instance, node, directive) {
+    const splitExpression = directive.val.split(" ");
+    const data = {
+        val: splitExpression[0],
+        in: evaluateExpression(instance, splitExpression[2])
+    };
+
+    directive.data = data;
+    console.log("FOR INIT", data);
+
+    return true;
+};
+
+const directiveForRender = function (instance, node, directive) {
+    const attr_clone = DOM_ATTR_PREFIX + "clone";
+    const iterable = directive.data.in;
+    const parent = node.parentNode;
+    const parentChildren = Array.from(parent.children);
+
+    //Clear old clones
+    parentChildren.forEach(child => {
+        if (child.hasAttribute(attr_clone)) {
+            child.remove();
+        }
+    });
+    //Add new clones
+    iterable.forEach((item, index) => {
+        if (index > 0) {
+            const clone = node.cloneNode(true);
+
+            clone.setAttribute(attr_clone, true);
+            parent.appendChild(clone);
+        }
+    });
+
+    console.log("FOR RENDER", node);
+
+    return true;
+};
 
 const directives = {
     ignore: {
@@ -287,10 +322,10 @@ const directives = {
     bind: {
         render: directiveBindRender
     },
-    /*for: {
+    for: {
         init: directiveForInit,
         render: directiveForRender
-    }*/
+    }
 };
 
 /**

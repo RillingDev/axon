@@ -16,10 +16,10 @@ import {
 import {
     directiveBindRender
 } from "./modules/directiveBind";
-/*import {
+import {
     directiveForInit,
     directiveForRender
-} from "./modules/directiveFor";*/
+} from "./modules/directiveFor";
 
 const directives = {
     ignore: {
@@ -39,10 +39,10 @@ const directives = {
     bind: {
         render: directiveBindRender
     },
-    /*for: {
+    for: {
         init: directiveForInit,
         render: directiveForRender
-    }*/
+    }
 };
 
 export default directives;
