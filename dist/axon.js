@@ -5,7 +5,7 @@ var Axon = function () {
         return false;
     };
 
-    const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
+    const DOM_EVENT_TIMEOUT = 22; //event timeout in ms
     const DOM_EVENT_MODEL = "input";
 
     const DOM_ATTR_PREFIX = "x-";
@@ -218,11 +218,6 @@ var Axon = function () {
 
         return true;
     };
-
-    /*import {
-        directiveForInit,
-        directiveForRender
-    } from "./modules/directiveFor";*/
 
     const directives = [{
         name: "ignore",
