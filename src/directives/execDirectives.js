@@ -10,7 +10,7 @@ import directiveRefList from "./index";
  * @param {String} execMode mode to run in ("init" or "render")
  */
 const execDirectives = function (instance, domMap, execMode) {
-    const instanceData = {
+    const instanceContent = {
         $data: instance.$data,
         $methods: instance.$methods
     };
@@ -19,7 +19,6 @@ const execDirectives = function (instance, domMap, execMode) {
         $init: instance.$init.bind(instance)
     };
     const recurseMap = function (mapNode) {
-
         const nodeChildren = mapNode.children;
         const nodeDirectives = mapNode.directives;
         let result = true;
@@ -36,7 +35,7 @@ const execDirectives = function (instance, domMap, execMode) {
 
                     if (directiveRefFn) {
                         //Only exec if directive has fn for current execMode
-                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceData,instanceMethods);
+                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods);
 
                         if (!directiveResult) {
                             //Stop crawling on directive return 'false'

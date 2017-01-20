@@ -3,10 +3,10 @@
 import bindEvent from "../../dom/bindEvent";
 import retrieveMethod from "../../controller/retrieveMethod";
 
-const directiveOnInit = function (node, directive, instanceData) {
-    const targetMethod = retrieveMethod(instanceData.$methods, directive.val);
+const directiveOnInit = function (node, directive, instanceContent) {
+    const targetMethod = retrieveMethod(instanceContent.$methods, directive.val);
 
-    bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instanceData);
+    bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instanceContent);
 
     return true;
 };

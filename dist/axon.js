@@ -76,17 +76,17 @@ var Axon = function () {
     /**
      * Gets method from Axon instance
      * @private
-     * @param {Object} methods Axon instance methods container
+     * @param {Object} instanceContentMethods Axon instance methods container
      * @param {String} expression Directive expression
      * @returns {Function} method of instance
      */
-    const retrieveMethod = function (methods, expression) {
+    const retrieveMethod = function (instanceContentMethods, expression) {
         const expressionSplit = expression.substr(0, expression.length - 1).split("(");
         const methodName = expressionSplit[0];
         const methodArgs = expressionSplit[1].split(",").filter(item => item !== "").map(arg => {
-            return evaluateExpression(methods, arg);
+            return evaluateExpression(instanceContentMethods, arg);
         });
-        const methodFn = methods[methodName];
+        const methodFn = instanceContentMethods[methodName];
 
         if (typeof methodFn === "function") {
             return {
@@ -101,17 +101,17 @@ var Axon = function () {
     /**
      * Gets property from Axon instance
      * @private
-     * @param {Object} data Axon instance data container
+     * @param {Object} instanceContentMethods Axon instance data container
      * @param {String} expression Directive expression
      * @returns {Mixed} property of instance
      */
-    const retrieveProp = function (data, expression) {
+    const retrieveProp = function (instanceContentMethods, expression) {
         const splitExpression = expression.split(".");
         const result = {
             val: null,
             ref: null
         };
-        let container = data;
+        let container = instanceContentMethods;
         let prop;
 
         splitExpression.forEach((propPath, index) => {
@@ -136,11 +136,11 @@ var Axon = function () {
     /**
      * evaluates expression from Axon instance
      * @private
-     * @param {Axon} instanceData Axon instance
+     * @param {Axon} instanceContent Axon instance
      * @param {String} expression Directive expression
      * @returns {Mixed} value of expression
      */
-    const evaluateExpression = function (instanceData, expression) {
+    const evaluateExpression = function (instanceContent, expression) {
 
         if (!isNaN(Number(expression))) {
             //expression is a Number
@@ -150,17 +150,17 @@ var Axon = function () {
             return expression.substr(1, expression.length - 2);
         } else if (expression.substr(expression.length - 1) === ")") {
             //expression is a Method
-            const method = retrieveMethod(instanceData.$methods, expression);
+            const method = retrieveMethod(instanceContent.$methods, expression);
 
-            return method.fn.apply(instanceData, method.args);
+            return method.fn.apply(instanceContent, method.args);
         } else {
             //expression is a Property
-            return retrieveProp(instanceData.$data, expression).val;
+            return retrieveProp(instanceContent.$data, expression).val;
         }
     };
 
-    const directiveIfRender = function (node, directive, instanceData) {
-        const propValue = evaluateExpression(instanceData, directive.val);
+    const directiveIfRender = function (node, directive, instanceContent) {
+        const propValue = evaluateExpression(instanceContent, directive.val);
         const result = Boolean(propValue);
 
         if (result) {
@@ -227,16 +227,16 @@ var Axon = function () {
         return node.addEventListener(eventType, eventFnWrapper, false);
     };
 
-    const directiveOnInit = function (node, directive, instanceData) {
-        const targetMethod = retrieveMethod(instanceData.$methods, directive.val);
+    const directiveOnInit = function (node, directive, instanceContent) {
+        const targetMethod = retrieveMethod(instanceContent.$methods, directive.val);
 
-        bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instanceData);
+        bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instanceContent);
 
         return true;
     };
 
-    const directiveModelInit = function (node, directive, instanceData, instanceMethods) {
-        const targetProp = retrieveProp(instanceData.$data, directive.val);
+    const directiveModelInit = function (node, directive, instanceContent, instanceMethods) {
+        const targetProp = retrieveProp(instanceContent.$data, directive.val);
         const eventFn = function (currentValue, newValue) {
             targetProp.ref[directive.val] = newValue;
 
@@ -245,22 +245,22 @@ var Axon = function () {
             }, DOM_EVENT_TIMEOUT);
         };
 
-        bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instanceData);
+        bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instanceContent);
 
         return true;
     };
 
-    const directiveModelRender = function (node, directive, instanceData) {
+    const directiveModelRender = function (node, directive, instanceContent) {
         const nodeValueType = getNodeValueType(node);
-        const propValue = retrieveProp(instanceData.$data, directive.val);
+        const propValue = retrieveProp(instanceContent.$data, directive.val);
 
         node[nodeValueType] = propValue.val;
 
         return true;
     };
 
-    const directiveBindRender = function (node, directive, instanceData) {
-        const propValue = evaluateExpression(instanceData, directive.val);
+    const directiveBindRender = function (node, directive, instanceContent) {
+        const propValue = evaluateExpression(instanceContent, directive.val);
 
         node.setAttribute(directive.opt, propValue);
 
@@ -295,7 +295,7 @@ var Axon = function () {
      * @param {String} execMode mode to run in ("init" or "render")
      */
     const execDirectives = function (instance, domMap, execMode) {
-        const instanceData = {
+        const instanceContent = {
             $data: instance.$data,
             $methods: instance.$methods
         };
@@ -304,7 +304,6 @@ var Axon = function () {
             $init: instance.$init.bind(instance)
         };
         const recurseMap = function (mapNode) {
-
             const nodeChildren = mapNode.children;
             const nodeDirectives = mapNode.directives;
             let result = true;
@@ -321,7 +320,7 @@ var Axon = function () {
 
                         if (directiveRefFn) {
                             //Only exec if directive has fn for current execMode
-                            const directiveResult = directiveRefFn(mapNode.node, directive, instanceData, instanceMethods);
+                            const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods);
 
                             if (!directiveResult) {
                                 //Stop crawling on directive return 'false'

@@ -5,11 +5,11 @@ import {
     DOM_ATTR_PREFIX
 } from "../../lib/constants";
 
-const directiveForInit = function (node, directive,instanceData) {
+const directiveForInit = function (node, directive, instanceContent) {
     const splitExpression = directive.val.split(" ");
     const data = {
         val: splitExpression[0],
-        in: evaluateExpression(instanceData, splitExpression[2])
+        in: evaluateExpression(instanceContent, splitExpression[2])
     };
 
     directive.data = data;
@@ -18,7 +18,7 @@ const directiveForInit = function (node, directive,instanceData) {
     return true;
 };
 
-const directiveForRender = function (node, directive,instanceData) {
+const directiveForRender = function (node, directive, instanceContent) {
     const attr_clone = DOM_ATTR_PREFIX + "clone";
     const iterable = directive.data.in;
     const parent = node.parentNode;
