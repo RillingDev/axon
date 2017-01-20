@@ -2,7 +2,6 @@
 
 import getDirectives from "./getDirectives";
 import isDefined from "../lib/isDefined";
-import arrayFrom from "../lib/arrayFrom";
 
 const getDomMap = function (entry) {
     const recurseNodes = function (node) {
@@ -15,7 +14,7 @@ const getDomMap = function (entry) {
                 directives: nodeDirectives,
                 children: []
             };
-            const childArr = arrayFrom(nodeChildren);
+            const childArr = Array.from(nodeChildren);
 
             childArr.forEach(childNode => {
                 const childResult = recurseNodes(childNode);

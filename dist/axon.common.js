@@ -11,12 +11,8 @@ const DOM_ATTR_HTML = "innerHTML";
 
 const LIB_STRING_QUOTES = ["'", "\"", "`"];
 
-const arrayFrom = function (arr) {
-    return Array.from(arr);
-};
-
 const getDirectives = function (node) {
-    const attrArr = arrayFrom(node.attributes);
+    const attrArr = Array.from(node.attributes);
     const result = [];
 
     attrArr.forEach(attr => {
@@ -50,7 +46,7 @@ const getDomMap = function (entry) {
                 directives: nodeDirectives,
                 children: []
             };
-            const childArr = arrayFrom(nodeChildren);
+            const childArr = Array.from(nodeChildren);
 
             childArr.forEach(childNode => {
                 const childResult = recurseNodes(childNode);
@@ -156,7 +152,7 @@ const debounce = function(fn, wait, immediate) {
 
     return function() {
         const context = this;
-        const args = arrayFrom(arguments);
+        const args = Array.from(arguments);
         const callNow = immediate && !timeout;
         const later = function() {
             timeout = null;
@@ -189,7 +185,7 @@ const bindEvent = function(node, eventType, eventFn, eventArgs, instance) {
 
     const eventFnWrapper = function(event) {
         const target = event.target;
-        const args = arrayFrom(eventArgs);
+        const args = Array.from(eventArgs);
 
         args.push(target[nodeValueType], target, event);
 
