@@ -1,6 +1,7 @@
 "use strict";
 
 import evaluateExpression from "../../controller/evaluateExpression";
+import getDomMap from "../../dom/getDomMap";
 import {
     DOM_ATTR_PREFIX
 } from "../../lib/constants";
@@ -18,7 +19,7 @@ const directiveForInit = function (node, directive, instanceContent) {
     return true;
 };
 
-const directiveForRender = function (node, directive, instanceContent) {
+const directiveForRender = function (node, directive, instanceContent, instanceMethods, mapNode) {
     const attr_clone = DOM_ATTR_PREFIX + "clone";
     const iterable = directive.data.in;
     const parent = node.parentNode;
@@ -32,13 +33,25 @@ const directiveForRender = function (node, directive, instanceContent) {
     });
     //Add new clones
     iterable.forEach((item, index) => {
-        if (index > 0) {
+        //let currentNodeMap;
+
+        if (index === 0) {
+            //currentNodeMap = getDomMap(item);
+        } else {
             const clone = node.cloneNode(true);
 
             clone.setAttribute(attr_clone, true);
             parent.appendChild(clone);
+            //currentNodeMap = getDomMap(clone);
         }
+
+        //instanceMethods.init(currentNodeMap);
+        //instanceMethods.render(currentNodeMap);
+
+        console.log([item, index]);
     });
+
+    mapNode = getDomMap(parent);
 
     console.log("FOR RENDER", node);
 

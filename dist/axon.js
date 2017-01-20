@@ -267,6 +267,58 @@ var Axon = function () {
         return true;
     };
 
+    const directiveForInit = function (node, directive, instanceContent) {
+        const splitExpression = directive.val.split(" ");
+        const data = {
+            val: splitExpression[0],
+            in: evaluateExpression(instanceContent, splitExpression[2])
+        };
+
+        directive.data = data;
+        console.log("FOR INIT", data);
+
+        return true;
+    };
+
+    const directiveForRender = function (node, directive, instanceContent, instanceMethods, mapNode) {
+        const attr_clone = DOM_ATTR_PREFIX + "clone";
+        const iterable = directive.data.in;
+        const parent = node.parentNode;
+        const parentChildren = Array.from(parent.children);
+
+        //Clear old clones
+        parentChildren.forEach(child => {
+            if (child.hasAttribute(attr_clone)) {
+                child.remove();
+            }
+        });
+        //Add new clones
+        iterable.forEach((item, index) => {
+            //let currentNodeMap;
+
+            if (index === 0) {
+                //currentNodeMap = getDomMap(item);
+            } else {
+                const clone = node.cloneNode(true);
+
+                clone.setAttribute(attr_clone, true);
+                parent.appendChild(clone);
+                //currentNodeMap = getDomMap(clone);
+            }
+
+            //instanceMethods.init(currentNodeMap);
+            //instanceMethods.render(currentNodeMap);
+
+            console.log([item, index]);
+        });
+
+        mapNode = getDomMap(parent);
+
+        console.log("FOR RENDER", node);
+
+        return true;
+    };
+
     const directives = {
         ignore: {
             init: directiveIgnoreBoth, //Init function
@@ -284,6 +336,10 @@ var Axon = function () {
         },
         bind: {
             render: directiveBindRender
+        },
+        for: {
+            init: directiveForInit,
+            render: directiveForRender
         }
     };
 
@@ -295,6 +351,7 @@ var Axon = function () {
      * @param {String} execMode mode to run in ("init" or "render")
      */
     const execDirectives = function (instance, domMap, execMode) {
+        console.log([instance, domMap, execMode]);
         const instanceContent = {
             $data: instance.$data,
             $methods: instance.$methods
@@ -320,7 +377,8 @@ var Axon = function () {
 
                         if (directiveRefFn) {
                             //Only exec if directive has fn for current execMode
-                            const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods);
+                            //@TODO restructure args
+                            const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods, mapNode);
 
                             if (!directiveResult) {
                                 //Stop crawling on directive return 'false'
@@ -369,19 +427,22 @@ var Axon = function () {
         /**
          * Init directives
          */
-        $init() {
+        $init(mapNode) {
             const _this = this;
+            let entry;
 
             _this.$cache = getDomMap(_this.$context);
-            execDirectives(_this, _this.$cache, "init");
+            entry = isDefined(mapNode) ? mapNode : _this.$cache;
+            execDirectives(_this, entry, "init");
         }
         /**
          * Renders controller changes
          */
-        $render() {
+        $render(mapNode) {
             const _this = this;
+            const entry = isDefined(mapNode) ? mapNode : _this.$cache;
 
-            execDirectives(_this, _this.$cache, "render");
+            execDirectives(_this, entry, "render");
         }
     };
 

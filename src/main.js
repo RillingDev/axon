@@ -2,6 +2,7 @@
 
 import getDomMap from "./dom/getDomMap";
 import execDirectives from "./directives/execDirectives";
+import isDefined from "./lib/isDefined";
 
 /**
  * Axon Class
@@ -30,19 +31,22 @@ const Axon = class {
     /**
      * Init directives
      */
-    $init() {
+    $init(mapNode) {
         const _this = this;
+        let entry;
 
         _this.$cache = getDomMap(_this.$context);
-        execDirectives(_this, _this.$cache, "init");
+        entry = isDefined(mapNode) ? mapNode : _this.$cache;
+        execDirectives(_this, entry, "init");
     }
     /**
      * Renders controller changes
      */
-    $render() {
+    $render(mapNode) {
         const _this = this;
+        const entry = isDefined(mapNode) ? mapNode : _this.$cache;
 
-        execDirectives(_this, _this.$cache, "render");
+        execDirectives(_this, entry, "render");
     }
 };
 
