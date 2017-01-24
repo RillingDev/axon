@@ -5,6 +5,7 @@ import isDefined from "../lib/isDefined";
 
 const getDomMap = function (entry) {
     const recurseNodes = function (node) {
+        console.log([node]);
         const nodeDirectives = getDirectives(node);
         const nodeChildren = node.children;
 
@@ -26,6 +27,7 @@ const getDomMap = function (entry) {
 
             return result;
         }
+
     };
 
     return recurseNodes(entry);

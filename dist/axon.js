@@ -244,6 +244,7 @@ var Axon = function () {
     }];
 
     const getDirectives = function (node) {
+        console.log(node);
         const attrArr = Array.from(node.attributes);
         const result = [];
 
@@ -271,6 +272,7 @@ var Axon = function () {
 
     const getDomMap = function (entry) {
         const recurseNodes = function (node) {
+            console.log([node]);
             const nodeDirectives = getDirectives(node);
             const nodeChildren = node.children;
 
@@ -372,10 +374,12 @@ var Axon = function () {
         constructor(config) {
             const _this = this;
 
-            _this.$context = document.querySelector(config.context);
+            _this.$context = document.querySelector(config.el);
             _this.$data = config.data;
             _this.$methods = config.methods;
             _this.$cache = {};
+
+            console.log(_this);
 
             _this.$init();
             _this.$render();

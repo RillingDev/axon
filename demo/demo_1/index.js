@@ -1,7 +1,7 @@
 "use strict";
 
 const app = new Axon({
-    context: "#myApp",
+    el: "#myApp",
     data: {
         name: "",
     },

@@ -6,6 +6,7 @@ import {
 } from "../lib/constants";
 
 const getDirectives = function (node) {
+    console.log(node);
     const attrArr = Array.from(node.attributes);
     const result = [];
 

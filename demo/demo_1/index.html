@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>AxonJS Demo</title>
+    <meta name="description" content="AxonJS Demo">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://necolas.github.io/normalize.css/5.0.0/normalize.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+    <h1>Demo 1</h1>
+    <div id="myApp">
+        <div>
+            <label>Name:</label>
+            <input type="text" x-model="name">
+        </div>
+        <div x-if="name">
+            <p>Hello <span x-model="name"></span>!</p>
+        </div>
+    </div>
+    <script src="../../dist/axon.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>

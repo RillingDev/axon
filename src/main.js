@@ -18,13 +18,17 @@ const Axon = class {
     constructor(config) {
         const _this = this;
 
-        _this.$context = document.querySelector(config.context);
+        _this.$context = document.querySelector(config.el);
         _this.$data = config.data;
         _this.$methods = config.methods;
         _this.$cache = {};
 
+        console.log(_this);
+
         _this.$init();
         _this.$render();
+
+
 
         return _this;
     }
