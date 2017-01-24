@@ -218,6 +218,11 @@ const directiveBindRender = function (node, directive,instanceContent) {
     return true;
 };
 
+/*import {
+    directiveForInit,
+    directiveForRender
+} from "./modules/directiveFor";*/
+
 const directives = [{
         name: "ignore",
         init: directiveIgnoreBoth, //Init function
@@ -317,7 +322,12 @@ const execDirectives = function (instance, domMap, execMode) {
         $render: instance.$render.bind(instance),
         $init: instance.$init.bind(instance)
     };
-    const recurseMap = function (mapNode) {
+    const recurseMap = function (mapNode, mapNodeParent) {
+        const mapNodes = {
+            current: mapNode,
+            parent: mapNodeParent,
+            entry: domMap
+        };
         const nodeChildren = mapNode.children;
         const nodeDirectives = mapNode.directives;
         let result = true;
@@ -335,7 +345,7 @@ const execDirectives = function (instance, domMap, execMode) {
                     if (directiveRefFn) {
                         //Only exec if directive has fn for current execMode
                         //@TODO restructure args
-                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods);
+                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods, mapNodes);
 
                         if (!directiveResult) {
                             //Stop crawling on directive return 'false'
@@ -349,12 +359,12 @@ const execDirectives = function (instance, domMap, execMode) {
         //Crawl children
         if (result && nodeChildren.length) {
             nodeChildren.forEach(child => {
-                recurseMap(child);
+                recurseMap(child, mapNode);
             });
         }
     };
 
-    recurseMap(domMap);
+    recurseMap(domMap, null);
 };
 
 /**

@@ -18,11 +18,16 @@ const directiveForInit = function (node, directive, instanceContent) {
     return true;
 };
 
-const directiveForRender = function (node, directive, instanceContent, instanceMethods) {
+const directiveForRender = function (node, directive, instanceContent, instanceMethods,mapNodes) {
     const attr_clone = DOM_ATTR_PREFIX + "clone";
     const iterable = directive.data.in;
     const parent = node.parentNode;
     const parentChildren = Array.from(parent.children);
+    const newMap=Object.assign({},mapNodes.parent);
+    let nodeMap;
+
+
+console.log("nm",newMap);
 
     //Clear old clones
     parentChildren.forEach(child => {
@@ -45,8 +50,8 @@ const directiveForRender = function (node, directive, instanceContent, instanceM
         }
     });
 
-
-    //console.log("FOR RENDER", node);
+   // nodeMap = getDomMap(parent);
+    //instanceMethods.$render(nodeMap);
 
     return true;
 };

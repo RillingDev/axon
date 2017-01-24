@@ -2,6 +2,7 @@
 .tmp/
 test/
 spec/
+demo/
 node_modules/
 bower_components/
 .DS_Store

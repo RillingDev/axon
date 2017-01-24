@@ -219,6 +219,11 @@ var Axon = function () {
         return true;
     };
 
+    /*import {
+        directiveForInit,
+        directiveForRender
+    } from "./modules/directiveFor";*/
+
     const directives = [{
         name: "ignore",
         init: directiveIgnoreBoth, //Init function
@@ -308,7 +313,12 @@ var Axon = function () {
             $render: instance.$render.bind(instance),
             $init: instance.$init.bind(instance)
         };
-        const recurseMap = function (mapNode) {
+        const recurseMap = function (mapNode, mapNodeParent) {
+            const mapNodes = {
+                current: mapNode,
+                parent: mapNodeParent,
+                entry: domMap
+            };
             const nodeChildren = mapNode.children;
             const nodeDirectives = mapNode.directives;
             let result = true;
@@ -326,7 +336,7 @@ var Axon = function () {
                         if (directiveRefFn) {
                             //Only exec if directive has fn for current execMode
                             //@TODO restructure args
-                            const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods);
+                            const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods, mapNodes);
 
                             if (!directiveResult) {
                                 //Stop crawling on directive return 'false'
@@ -340,12 +350,12 @@ var Axon = function () {
             //Crawl children
             if (result && nodeChildren.length) {
                 nodeChildren.forEach(child => {
-                    recurseMap(child);
+                    recurseMap(child, mapNode);
                 });
             }
         };
 
-        recurseMap(domMap);
+        recurseMap(domMap, null);
     };
 
     /**
