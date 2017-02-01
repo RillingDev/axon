@@ -243,12 +243,7 @@ const directives = [{
     {
         name: "bind",
         render: directiveBindRender
-    },
-    /*{
-        name: "for",
-        init: directiveForInit,
-        render: directiveForRender
-    }*/
+    }
 ];
 
 const getDirectives = function (node) {
