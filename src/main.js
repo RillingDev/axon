@@ -21,26 +21,18 @@ const Axon = class {
         _this.$context = document.querySelector(config.el);
         _this.$data = config.data;
         _this.$methods = config.methods;
-        _this.$cache = {};
-
-        console.log(_this);
+        _this.$cache = getDomMap(_this.$context);
 
         _this.$init();
         _this.$render();
-
-
-
-        return _this;
     }
     /**
      * Init directives
      */
     $init(mapNode) {
         const _this = this;
-        let entry;
+        const entry = isDefined(mapNode) ? mapNode : _this.$cache;
 
-        _this.$cache = getDomMap(_this.$context);
-        entry = isDefined(mapNode) ? mapNode : _this.$cache;
         execDirectives(_this, entry, "init");
     }
     /**

@@ -247,7 +247,6 @@ const directives = [{
 ];
 
 const getDirectives = function (node) {
-    console.log(node);
     const attrArr = Array.from(node.attributes);
     const result = [];
 
@@ -276,17 +275,17 @@ const getDirectives = function (node) {
 
 const getDomMap = function (entry) {
     const recurseNodes = function (node) {
-        console.log([node]);
         const nodeDirectives = getDirectives(node);
         const nodeChildren = node.children;
 
         if (nodeDirectives.length || nodeChildren.length) {
-            let result = {
+            const childArr = Array.from(nodeChildren);
+            const result = {
                 node,
                 directives: nodeDirectives,
                 children: []
             };
-            const childArr = Array.from(nodeChildren);
+
 
             childArr.forEach(childNode => {
                 const childResult = recurseNodes(childNode);
@@ -295,10 +294,8 @@ const getDomMap = function (entry) {
                     result.children.push(childResult);
                 }
             });
-
             return result;
         }
-
     };
 
     return recurseNodes(entry);
@@ -382,26 +379,18 @@ const Axon = class {
         _this.$context = document.querySelector(config.el);
         _this.$data = config.data;
         _this.$methods = config.methods;
-        _this.$cache = {};
-
-        console.log(_this);
+        _this.$cache = getDomMap(_this.$context);
 
         _this.$init();
         _this.$render();
-
-
-
-        return _this;
     }
     /**
      * Init directives
      */
     $init(mapNode) {
         const _this = this;
-        let entry;
+        const entry = isDefined(mapNode) ? mapNode : _this.$cache;
 
-        _this.$cache = getDomMap(_this.$context);
-        entry = isDefined(mapNode) ? mapNode : _this.$cache;
         execDirectives(_this, entry, "init");
     }
     /**

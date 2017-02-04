@@ -5,17 +5,17 @@ import isDefined from "../lib/isDefined";
 
 const getDomMap = function (entry) {
     const recurseNodes = function (node) {
-        console.log([node]);
         const nodeDirectives = getDirectives(node);
         const nodeChildren = node.children;
 
         if (nodeDirectives.length || nodeChildren.length) {
-            let result = {
+            const childArr = Array.from(nodeChildren);
+            const result = {
                 node,
                 directives: nodeDirectives,
                 children: []
             };
-            const childArr = Array.from(nodeChildren);
+
 
             childArr.forEach(childNode => {
                 const childResult = recurseNodes(childNode);
@@ -24,10 +24,8 @@ const getDomMap = function (entry) {
                     result.children.push(childResult);
                 }
             });
-
             return result;
         }
-
     };
 
     return recurseNodes(entry);
