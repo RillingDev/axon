@@ -12,15 +12,16 @@ const Axon = class {
     /**
      * Basic Axon Constructor
      * @constructor
-     * @param {Object} config Config data for the Axon instance
+     * @param {Object} cfg Config data for the Axon instance
      * @returns {Axon} Returns Axon instance
      */
-    constructor(config) {
+    constructor(cfg) {
         const _this = this;
 
-        _this.$context = document.querySelector(config.el);
-        _this.$data = config.data;
-        _this.$methods = config.methods;
+        _this.$data = cfg.data;
+        _this.$methods = cfg.methods;
+
+        _this.$context = document.querySelector(cfg.el);
         _this.$cache = getDomMap(_this.$context);
 
         _this.$init();
