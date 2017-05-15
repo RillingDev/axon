@@ -2,16 +2,16 @@
     "env": {
         "browser": true,
         "node": true,
-        "es6": true,
         "jasmine": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaVersion": 8
     },
     "rules": {
         "no-console": [
-            "warn"
+            "off"
         ],
         "indent": [
             "warn",

@@ -16,10 +16,6 @@ import {
 import {
     directiveBindRender
 } from "./modules/directiveBind";
-/*import {
-    directiveForInit,
-    directiveForRender
-} from "./modules/directiveFor";*/
 
 const directives = [{
         name: "ignore",

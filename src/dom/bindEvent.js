@@ -6,11 +6,11 @@ import {
 } from "../lib/constants";
 import getNodeValueType from "./getNodeValueType";
 
-const bindEvent = function(node, eventType, eventFn, eventArgs, instanceData) {
+const bindEvent = function (node, eventType, eventFn, eventArgs, instanceData) {
     const debouncedFn = debounce(eventFn, DOM_EVENT_TIMEOUT);
     const nodeValueType = getNodeValueType(node);
 
-    const eventFnWrapper = function(event) {
+    const eventFnWrapper = function (event) {
         const target = event.target;
         const args = Array.from(eventArgs);
 

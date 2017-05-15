@@ -1,9 +1,7 @@
 var Axon = function () {
     'use strict';
 
-    const directiveIgnoreBoth = function () {
-        return false;
-    };
+    const directiveIgnoreBoth = () => false;
 
     const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
     const DOM_EVENT_MODEL = "input";
@@ -46,9 +44,7 @@ var Axon = function () {
      * @param {Mixed} val Value to check
      * @returns {Boolean} if the value is defined
      */
-    const isDefined = function (val) {
-        return typeof val !== "undefined";
-    };
+    const isDefined = val => typeof val !== "undefined";
 
     /**
      * Gets property from Axon instance
@@ -218,11 +214,6 @@ var Axon = function () {
 
         return true;
     };
-
-    /*import {
-        directiveForInit,
-        directiveForRender
-    } from "./modules/directiveFor";*/
 
     const directives = [{
         name: "ignore",

@@ -1,8 +1,6 @@
 "use strict";
 
-const directiveIgnoreBoth = function () {
-    return false;
-};
+const directiveIgnoreBoth = () => false;
 
 export {
     directiveIgnoreBoth

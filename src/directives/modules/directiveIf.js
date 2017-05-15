@@ -5,7 +5,7 @@ import {
     DOM_ATTR_HIDDEN
 } from "../../lib/constants";
 
-const directiveIfRender = function (node, directive,instanceContent) {
+const directiveIfRender = function (node, directive, instanceContent) {
     const propValue = evaluateExpression(instanceContent, directive.val);
     const result = Boolean(propValue);
 

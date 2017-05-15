@@ -1,6 +1,4 @@
-const directiveIgnoreBoth = function () {
-    return false;
-};
+const directiveIgnoreBoth = () => false;
 
 const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 const DOM_EVENT_MODEL = "input";
@@ -43,9 +41,7 @@ const retrieveMethod = function (instanceContentMethods, expression) {
  * @param {Mixed} val Value to check
  * @returns {Boolean} if the value is defined
  */
-const isDefined = function (val) {
-    return typeof val !== "undefined";
-};
+const isDefined = val => typeof val !== "undefined";
 
 /**
  * Gets property from Axon instance
@@ -108,7 +104,7 @@ const evaluateExpression = function (instanceContent, expression) {
     }
 };
 
-const directiveIfRender = function (node, directive,instanceContent) {
+const directiveIfRender = function (node, directive, instanceContent) {
     const propValue = evaluateExpression(instanceContent, directive.val);
     const result = Boolean(propValue);
 
@@ -160,11 +156,11 @@ const getNodeValueType = function (node) {
     }
 };
 
-const bindEvent = function(node, eventType, eventFn, eventArgs, instanceData) {
+const bindEvent = function (node, eventType, eventFn, eventArgs, instanceData) {
     const debouncedFn = debounce(eventFn, DOM_EVENT_TIMEOUT);
     const nodeValueType = getNodeValueType(node);
 
-    const eventFnWrapper = function(event) {
+    const eventFnWrapper = function (event) {
         const target = event.target;
         const args = Array.from(eventArgs);
 
@@ -215,11 +211,6 @@ const directiveBindRender = function (node, directive,instanceContent) {
 
     return true;
 };
-
-/*import {
-    directiveForInit,
-    directiveForRender
-} from "./modules/directiveFor";*/
 
 const directives = [{
         name: "ignore",
