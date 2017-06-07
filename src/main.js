@@ -1,14 +1,36 @@
 "use strict";
 
-import getDomMap from "./dom/getDomMap";
-import execDirectives from "./directives/execDirectives";
-import isDefined from "./lib/isDefined";
+import query from "./dom/query";
+import {
+    getSubNodes
+} from "./dom/node";
 
 /**
- * Axon Class
+ * Axon Node
  * @class
  */
-const Axon = class {
+const AxonNode = class {
+    /**
+     * Axon Element Node Constructor
+     * @param {Element} element
+     * @param {Element|false} parent
+     */
+    constructor(element, parent) {
+        this.element = element;
+        this.parent = parent;
+        this.children = getSubNodes(element, AxonNode);
+
+        //this.directives = [];
+
+        //this.$data = {};
+    }
+};
+
+/**
+ * Axon Root Node
+ * @class
+ */
+const AxonNodeRoot = class extends AxonNode {
     /**
      * Basic Axon Constructor
      * @constructor
@@ -16,36 +38,28 @@ const Axon = class {
      * @returns {Axon} Returns Axon instance
      */
     constructor(cfg) {
-        const _this = this;
+        super(query(cfg.el), false);
 
-        _this.$data = cfg.data;
-        _this.$methods = cfg.methods;
+        //this.$data = cfg.data || {};
+        //this.$computed = cfg.computed || {};
+        //this.$methods = cfg.methods || {};
 
-        _this.$context = document.querySelector(cfg.el);
-        _this.$cache = getDomMap(_this.$context);
-
-        _this.$init();
-        _this.$render();
+        this.init();
+        this.render();
     }
     /**
-     * Init directives
+     * Initializes directives
      */
-    $init(mapNode) {
-        const _this = this;
-        const entry = isDefined(mapNode) ? mapNode : _this.$cache;
+    init() {
 
-        execDirectives(_this, entry, "init");
     }
     /**
-     * Renders controller changes
+     * Renders directives
      */
-    $render(mapNode) {
-        const _this = this;
-        const entry = isDefined(mapNode) ? mapNode : _this.$cache;
+    render() {
 
-        execDirectives(_this, entry, "render");
     }
 };
 
 
-export default Axon;
+export default AxonNodeRoot;

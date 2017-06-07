@@ -1,354 +1,87 @@
-const directiveIgnoreBoth = () => false;
+/**
+ *
+ * @param {String} selector
+ * @param {Node} [context=document]
+ * @param {Boolean} [context=false]
+ * @returns {Node|Array}
+ */
+const query = function (selector, context = document, all = false) {
+    return all ? Array.from(context.querySelectorAll(selector)) : context.querySelector(selector);
+};
 
-const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
-const DOM_EVENT_MODEL = "input";
+//const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
+//const DOM_EVENT_MODEL = "input";
 
 const DOM_ATTR_PREFIX = "x-";
-const DOM_ATTR_HIDDEN = "hidden";
-const DOM_ATTR_VALUE = "value";
-const DOM_ATTR_TEXT = "textContent";
-const DOM_ATTR_HTML = "innerHTML";
-
-const LIB_STRING_QUOTES = ["'", "\"", "`"];
 
 /**
- * Gets method from Axon instance
- * @private
- * @param {Object} instanceContentMethods Axon instance methods container
- * @param {String} expression Directive expression
- * @returns {Function} method of instance
+ * Create a new array with the same contents
+ * @param {Array} arr
+ * @returns {Array}
  */
-const retrieveMethod = function (instanceContentMethods, expression) {
-    const expressionSplit = expression.substr(0, expression.length - 1).split("(");
-    const methodName = expressionSplit[0];
-    const methodArgs = expressionSplit[1].split(",").filter(item => item !== "").map(arg => {
-        return evaluateExpression(instanceContentMethods, arg);
-    });
-    const methodFn = instanceContentMethods[methodName];
-
-    if (typeof methodFn === "function") {
-        return {
-            fn: methodFn,
-            args: methodArgs
-        };
-    } else {
-        throw new Error(`Missing method '${expression}'`);
-    }
-};
+const cloneArray = arr => Array.from(arr);
 
 /**
- * @private
- * @param {Mixed} val Value to check
- * @returns {Boolean} if the value is defined
+ * Checks if the element has any directives
+ * @param {Element} element
+ * @returns {Boolean}
  */
-const isDefined = val => typeof val !== "undefined";
+const hasDirectives = element => cloneArray(element.attributes).some(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
 
 /**
- * Gets property from Axon instance
- * @private
- * @param {Object} instanceContentMethods Axon instance data container
- * @param {String} expression Directive expression
- * @returns {Mixed} property of instance
+ * maps trough nodelist and filters output
+ * @param {NodeList} nodelist
+ * @param {Function} fn
+ * @returns {Array}
  */
-const retrieveProp = function (instanceContentMethods, expression) {
-    const splitExpression = expression.split(".");
-    const result = {
-        val: null,
-        ref: null
-    };
-    let container = instanceContentMethods;
-    let prop;
+const mapFilterNodeList = (nodelist, fn) => cloneArray(nodelist).map(fn).filter(val => val !== null);
 
-    splitExpression.forEach((propPath, index) => {
-        prop = container[propPath];
-
-        if (isDefined(prop)) {
-
-            if (index < splitExpression.length - 1) {
-                container = prop;
-            } else {
-                result.val = prop;
-                result.ref = container;
-            }
+/**
+ * Returns deep-children
+ * @param {Element} element
+ * @returns {AxonNode}
+ */
+const getSubNodes = function (element) {
+    /**
+     * Recurse and map subNodes
+     * @param {Element} child
+     * @returns {Mixed}
+     */
+    const recurseSubNodes = child => {
+        //console.log([child]);
+        if (hasDirectives(child)) {
+            return new AxonNode(child, element);
+        } else if (child.children.length > 0) {
+            return mapFilterNodeList(child.children, recurseSubNodes);
         } else {
-            throw new Error(`Missing prop '${expression}'`);
+            return null;
         }
-    });
+    };
 
-    return result;
+    return mapFilterNodeList(element.children, recurseSubNodes);
 };
 
 /**
- * evaluates expression from Axon instance
- * @private
- * @param {Axon} instanceContent Axon instance
- * @param {String} expression Directive expression
- * @returns {Mixed} value of expression
+ * Axon Element Node
+ * @class
  */
-const evaluateExpression = function (instanceContent, expression) {
+const AxonNode = class {
+    /**
+     * Axon Element Node Constructor
+     * @param {Element} element
+     * @param {Element} parent
+     */
+    constructor(element, parent) {
+        this.element = element;
+        this.parent = parent;
+        this.children = getSubNodes(element);
 
-    if (!isNaN(Number(expression))) {
-        //expression is a Number
-        return Number(expression);
-    } else if (LIB_STRING_QUOTES.includes(expression.substr(0, 1))) {
-        //expression is a String
-        return expression.substr(1, expression.length - 2);
-    } else if (expression.substr(expression.length - 1) === ")") {
-        //expression is a Method
-        const method = retrieveMethod(instanceContent.$methods, expression);
+        this.data = {};
 
-        return method.fn.apply(instanceContent, method.args);
-    } else {
-        //expression is a Property
-        return retrieveProp(instanceContent.$data, expression).val;
+        //this.directives = [];
+
+        console.log(this);
     }
-};
-
-const directiveIfRender = function (node, directive, instanceContent) {
-    const propValue = evaluateExpression(instanceContent, directive.val);
-    const result = Boolean(propValue);
-
-    if (result) {
-        node.removeAttribute(DOM_ATTR_HIDDEN);
-    } else {
-        node.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
-    }
-
-    return result;
-};
-
-/**
- * @private
- * @param {Function} fn function to debounce
- * @param {Number} wait timeout in ms
- * @param {Boolean} immediate if the debounc should be ignored
- * @returns {Function} debounced function
- */
-const debounce = function (fn, wait, immediate) {
-    let timeout;
-
-    return function () {
-        const context = this;
-        const args = Array.from(arguments);
-        const callNow = immediate && !timeout;
-        const later = function () {
-            timeout = null;
-            if (!immediate) {
-                fn.apply(context, args);
-            }
-        };
-
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) {
-            fn.apply(context, args);
-        }
-    };
-};
-
-const getNodeValueType = function (node) {
-    if (isDefined(node[DOM_ATTR_VALUE])) {
-        return DOM_ATTR_VALUE;
-    } else if (isDefined(node[DOM_ATTR_TEXT])) {
-        return DOM_ATTR_TEXT;
-    } else {
-        return DOM_ATTR_HTML;
-    }
-};
-
-const bindEvent = function (node, eventType, eventFn, eventArgs, instanceData) {
-    const debouncedFn = debounce(eventFn, DOM_EVENT_TIMEOUT);
-    const nodeValueType = getNodeValueType(node);
-
-    const eventFnWrapper = function (event) {
-        const target = event.target;
-        const args = Array.from(eventArgs);
-
-        args.push(target[nodeValueType], target, event);
-
-        return debouncedFn.apply(instanceData, args);
-    };
-
-    return node.addEventListener(eventType, eventFnWrapper, false);
-};
-
-const directiveOnInit = function (node, directive, instanceContent) {
-    const targetMethod = retrieveMethod(instanceContent.$methods, directive.val);
-
-    bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instanceContent);
-
-    return true;
-};
-
-const directiveModelInit = function (node, directive, instanceContent, instanceMethods) {
-    const targetProp = retrieveProp(instanceContent.$data, directive.val);
-    const eventFn = function (currentValue, newValue) {
-        targetProp.ref[directive.val] = newValue;
-
-        setTimeout(() => {
-            instanceMethods.$render();
-        }, DOM_EVENT_TIMEOUT);
-    };
-
-    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instanceContent);
-
-    return true;
-};
-
-const directiveModelRender = function (node, directive, instanceContent) {
-    const nodeValueType = getNodeValueType(node);
-    const propValue = retrieveProp(instanceContent.$data, directive.val);
-
-    node[nodeValueType] = propValue.val;
-
-    return true;
-};
-
-const directiveBindRender = function (node, directive,instanceContent) {
-    const propValue = evaluateExpression(instanceContent, directive.val);
-
-    node.setAttribute(directive.opt, propValue);
-
-    return true;
-};
-
-const directives = [{
-        name: "ignore",
-        init: directiveIgnoreBoth, //Init function
-        render: directiveIgnoreBoth //Render function
-    }, {
-        name: "if",
-        render: directiveIfRender
-    },
-    {
-        name: "on",
-        init: directiveOnInit,
-    },
-    {
-        name: "model",
-        init: directiveModelInit,
-        render: directiveModelRender
-    },
-    {
-        name: "bind",
-        render: directiveBindRender
-    }
-];
-
-const getDirectives = function (node) {
-    const attrArr = Array.from(node.attributes);
-    const result = [];
-
-    attrArr.forEach(attr => {
-        //If is Axon attribute
-        if (attr.name.substr(0, DOM_ATTR_PREFIX.length) === DOM_ATTR_PREFIX) {
-            const splitName = attr.name.replace(DOM_ATTR_PREFIX, "").split(":");
-
-            result.push({
-                name: splitName[0],
-                opt: splitName[1],
-                val: attr.value
-            });
-        }
-    });
-
-
-    return result.sort((a, b) => {
-        //sort by proccessing order
-        const indexA = directives.findIndex(item => item.name === a.name);
-        const indexB = directives.findIndex(item => item.name === b.name);
-
-        return indexA >= indexB;
-    });
-};
-
-const getDomMap = function (entry) {
-    const recurseNodes = function (node) {
-        const nodeDirectives = getDirectives(node);
-        const nodeChildren = node.children;
-
-        if (nodeDirectives.length || nodeChildren.length) {
-            const childArr = Array.from(nodeChildren);
-            const result = {
-                node,
-                directives: nodeDirectives,
-                children: []
-            };
-
-
-            childArr.forEach(childNode => {
-                const childResult = recurseNodes(childNode);
-
-                if (isDefined(childResult)) {
-                    result.children.push(childResult);
-                }
-            });
-            return result;
-        }
-    };
-
-    return recurseNodes(entry);
-};
-
-/**
- * Runs all directives from the domMap
- * @private
- * @param {Axon} instance Axon instance
- * @param {Object} domMap domMap to run directives
- * @param {String} execMode mode to run in ("init" or "render")
- */
-const execDirectives = function (instance, domMap, execMode) {
-    const instanceContent = {
-        $data: instance.$data,
-        $methods: instance.$methods
-    };
-    const instanceMethods = {
-        $render: instance.$render.bind(instance),
-        $init: instance.$init.bind(instance)
-    };
-    const recurseMap = function (mapNode, mapNodeParent) {
-        const mapNodes = {
-            current: mapNode,
-            parent: mapNodeParent,
-            entry: domMap
-        };
-        const nodeChildren = mapNode.children;
-        const nodeDirectives = mapNode.directives;
-        let result = true;
-
-        //Exec on node
-        if (nodeDirectives.length) {
-            //Only exec if directives on domNode
-            mapNode.directives.forEach(directive => {
-                const directiveRef = directives.find(item => item.name === directive.name);
-
-                if (directiveRef) {
-                    //Only exec if directive exists
-                    const directiveRefFn = directiveRef[execMode];
-
-                    if (directiveRefFn) {
-                        //Only exec if directive has fn for current execMode
-                        //@TODO restructure args
-                        const directiveResult = directiveRefFn(mapNode.node, directive, instanceContent, instanceMethods, mapNodes);
-
-                        if (!directiveResult) {
-                            //Stop crawling on directive return 'false'
-                            result = false;
-                        }
-                    }
-                }
-            });
-        }
-
-        //Crawl children
-        if (result && nodeChildren.length) {
-            nodeChildren.forEach(child => {
-                recurseMap(child, mapNode);
-            });
-        }
-    };
-
-    recurseMap(domMap, null);
 };
 
 /**
@@ -363,34 +96,29 @@ const Axon = class {
      * @returns {Axon} Returns Axon instance
      */
     constructor(cfg) {
-        const _this = this;
+        const element = query(cfg.el);
 
-        _this.$data = cfg.data;
-        _this.$methods = cfg.methods;
+        this.data = cfg.data;
+        this.methods = cfg.methods;
 
-        _this.$context = document.querySelector(cfg.el);
-        _this.$cache = getDomMap(_this.$context);
+        this.entry = new AxonNode(element, null);
 
-        _this.$init();
-        _this.$render();
+        this.init();
+        this.render();
     }
     /**
-     * Init directives
+     * Initializes directives
+     * @param {Element} [element=this.context]
      */
-    $init(mapNode) {
-        const _this = this;
-        const entry = isDefined(mapNode) ? mapNode : _this.$cache;
+    init(element = this.context) {
 
-        execDirectives(_this, entry, "init");
     }
     /**
-     * Renders controller changes
+     * Renders directives
+     * @param {Element} [element=this.context]
      */
-    $render(mapNode) {
-        const _this = this;
-        const entry = isDefined(mapNode) ? mapNode : _this.$cache;
+    render(element = this.context) {
 
-        execDirectives(_this, entry, "render");
     }
 };
 

@@ -9,8 +9,8 @@
     },
     "scripts": {
         "start": "npm-run-all lint build test",
-        "build": "node build.js",
-        "lint": "eslint ./src/",
+        "build": "node tasks/build.js",
+        "lint": "eslint src/",
         "test": "jasmine"
     },
     "repository": {
@@ -28,13 +28,13 @@
     },
     "homepage": "https://github.com/FelixRilling/axonjs#readme",
     "devDependencies": {
-        "babel-core": "v7.0.0-alpha.7",
-        "babel-preset-latest": "v7.0.0-alpha.7",
+        "babel-core": "7.0.0-alpha.11",
+        "babel-preset-latest": "7.0.0-alpha.11",
         "eslint": "^3.19.0",
         "jasmine": "^2.6.0",
         "npm-run-all": "^4.0.2",
         "rollup": "^0.41.6",
-        "uglify-es": "^3.0.4"
+        "uglify-es": "^3.0.15"
     },
     "dependencies": {}
 }

@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  *
  * @param {String} selector
@@ -145,4 +143,4 @@ const AxonNodeRoot = class extends AxonNode {
     }
 };
 
-module.exports = AxonNodeRoot;
+export default AxonNodeRoot;

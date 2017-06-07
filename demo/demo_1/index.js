@@ -3,7 +3,7 @@
 const app = new Axon({
     el: "#myApp",
     data: {
-        name: "",
+        name: "Foo",
     },
     methods: {}
 });
