@@ -11,11 +11,6 @@ const query = function (selector, context = document, all = false) {
     return all ? Array.from(context.querySelectorAll(selector)) : context.querySelector(selector);
 };
 
-//const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
-//const DOM_EVENT_MODEL = "input";
-
-const DOM_ATTR_PREFIX = "x-";
-
 /**
  * Create a new array with the same contents
  * @param {Array} arr
@@ -49,6 +44,12 @@ const flattenArray = function (arr) {
     return result;
 };
 
+//const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
+//const DOM_EVENT_MODEL = "input";
+
+const DOM_ATTR_PREFIX = "x-";
+const DOM_ATTR_DELIMITER = ":";
+
 /**
  * Checks if the element has any directives
  * @param {Element} element
@@ -57,12 +58,32 @@ const flattenArray = function (arr) {
 const hasDirectives = element => cloneArray(element.attributes).some(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
 
 /**
- * maps trough nodelist and filters output
+ * Returns directives on node
+ * @param {Element} element
+ * @returns {Array}
+ */
+const getDirectives = function (element) {
+    const attributes = cloneArray(element.attributes).filter(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
+
+    return attributes.map(attr => {
+        const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
+        const val = attr.value;
+
+        return {
+            val,
+            name: nameFull[0],
+            secondary: nameFull[1],
+        };
+    });
+};
+
+/**
+ * Maps trough nodelist and filters output
  * @param {NodeList} nodelist
  * @param {Function} fn
  * @returns {Array}
  */
-const mapFilterNodeList = (nodelist, fn) => cloneArray(nodelist).map(item => fn(item)).filter(val => val !== null);
+const mapFilterNodeList = (nodelist, fn) => cloneArray(nodelist).map(fn).filter(val => val !== null);
 
 /**
  * Returns deep-children
@@ -76,12 +97,14 @@ const getSubNodes = function (element, AxonNode) {
      * @returns {Mixed}
      */
     const recurseSubNodes = child => {
-        //console.log([child]);
         if (hasDirectives(child)) {
+            //-> Recurse
             return new AxonNode(child, element);
         } else if (child.children.length > 0) {
+            //-> Enter Children
             return mapFilterNodeList(child.children, recurseSubNodes);
         } else {
+            //-> Exit dead-end
             return null;
         }
     };
@@ -104,9 +127,21 @@ const AxonNode = class {
         this.parent = parent;
         this.children = getSubNodes(element, AxonNode);
 
-        //this.directives = [];
+        this.directives = getDirectives(element);
 
         //this.$data = {};
+    }
+    /**
+     * Initializes directives
+     */
+    init() {
+
+    }
+    /**
+     * Renders directives
+     */
+    render() {
+
     }
 };
 
@@ -125,23 +160,10 @@ const AxonNodeRoot = class extends AxonNode {
         super(query(cfg.el), false);
 
         //this.$data = cfg.data || {};
-        //this.$computed = cfg.computed || {};
         //this.$methods = cfg.methods || {};
 
         this.init();
         this.render();
-    }
-    /**
-     * Initializes directives
-     */
-    init() {
-
-    }
-    /**
-     * Renders directives
-     */
-    render() {
-
     }
 };
 

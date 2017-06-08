@@ -4,6 +4,9 @@ import query from "./dom/query";
 import {
     getSubNodes
 } from "./dom/node";
+import {
+    getDirectives
+} from "./dom/directive";
 
 /**
  * Axon Node
@@ -20,9 +23,21 @@ const AxonNode = class {
         this.parent = parent;
         this.children = getSubNodes(element, AxonNode);
 
-        //this.directives = [];
+        this.directives = getDirectives(element);
 
         //this.$data = {};
+    }
+    /**
+     * Initializes directives
+     */
+    init() {
+
+    }
+    /**
+     * Renders directives
+     */
+    render() {
+
     }
 };
 
@@ -41,23 +56,10 @@ const AxonNodeRoot = class extends AxonNode {
         super(query(cfg.el), false);
 
         //this.$data = cfg.data || {};
-        //this.$computed = cfg.computed || {};
         //this.$methods = cfg.methods || {};
 
         this.init();
         this.render();
-    }
-    /**
-     * Initializes directives
-     */
-    init() {
-
-    }
-    /**
-     * Renders directives
-     */
-    render() {
-
     }
 };
 

@@ -1,27 +1,20 @@
 "use strict";
 
 import {
-    DOM_ATTR_PREFIX
-} from "../constants";
-import {
     cloneArray,
     flattenArray
 } from "../util";
+import {
+    hasDirectives,
+} from "./directive";
 
 /**
- * Checks if the element has any directives
- * @param {Element} element
- * @returns {Boolean}
- */
-const hasDirectives = element => cloneArray(element.attributes).some(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
-
-/**
- * maps trough nodelist and filters output
+ * Maps trough nodelist and filters output
  * @param {NodeList} nodelist
  * @param {Function} fn
  * @returns {Array}
  */
-const mapFilterNodeList = (nodelist, fn) => cloneArray(nodelist).map(item => fn(item)).filter(val => val !== null);
+const mapFilterNodeList = (nodelist, fn) => cloneArray(nodelist).map(fn).filter(val => val !== null);
 
 /**
  * Returns deep-children
@@ -35,12 +28,14 @@ const getSubNodes = function (element, AxonNode) {
      * @returns {Mixed}
      */
     const recurseSubNodes = child => {
-        //console.log([child]);
         if (hasDirectives(child)) {
+            //-> Recurse
             return new AxonNode(child, element);
         } else if (child.children.length > 0) {
+            //-> Enter Children
             return mapFilterNodeList(child.children, recurseSubNodes);
         } else {
+            //-> Exit dead-end
             return null;
         }
     };
@@ -49,7 +44,6 @@ const getSubNodes = function (element, AxonNode) {
 };
 
 export {
-    hasDirectives,
     mapFilterNodeList,
     getSubNodes
 };
