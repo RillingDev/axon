@@ -9,11 +9,18 @@ import {
 } from "../util";
 
 /**
+ * Checks if an attribute is an axon directive
+ * @param {Attribute} attr
+ * @returns {Boolean}
+ */
+const isAttrDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
+
+/**
  * Checks if the element has any directives
  * @param {Element} element
  * @returns {Boolean}
  */
-const hasDirectives = element => cloneArray(element.attributes).some(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
+const hasDirectives = element => cloneArray(element.attributes).some(isAttrDirective);
 
 /**
  * Returns directives on node
@@ -21,7 +28,7 @@ const hasDirectives = element => cloneArray(element.attributes).some(attr => att
  * @returns {Array}
  */
 const getDirectives = function (element) {
-    const attributes = cloneArray(element.attributes).filter(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
+    const attributes = cloneArray(element.attributes).filter(isAttrDirective);
 
     return attributes.map(attr => {
         /**

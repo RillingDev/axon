@@ -36,14 +36,6 @@ var Axon = function () {
     };
 
     /**
-     * Maps an Array and removes null-elements
-     * @param {Array} arr
-     * @param {Function} fn
-     * @returns {Array}
-     */
-    const mapFilter = (arr, fn) => arr.map(fn).filter(val => val !== null);
-
-    /**
      *
      * @param {String} selector
      * @param {Node} [context=document]
@@ -61,11 +53,18 @@ var Axon = function () {
     const DOM_ATTR_DELIMITER = ":";
 
     /**
+     * Checks if an attribute is an axon directive
+     * @param {Attribute} attr
+     * @returns {Boolean}
+     */
+    const isAttrDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
+
+    /**
      * Checks if the element has any directives
      * @param {Element} element
      * @returns {Boolean}
      */
-    const hasDirectives = element => cloneArray(element.attributes).some(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
+    const hasDirectives = element => cloneArray(element.attributes).some(isAttrDirective);
 
     /**
      * Returns directives on node
@@ -73,7 +72,7 @@ var Axon = function () {
      * @returns {Array}
      */
     const getDirectives = function (element) {
-        const attributes = cloneArray(element.attributes).filter(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
+        const attributes = cloneArray(element.attributes).filter(isAttrDirective);
 
         return attributes.map(attr => {
             /**
@@ -98,13 +97,13 @@ var Axon = function () {
         /**
          * Axon Element Node Constructor
          * @param {Element} element
-         * @param {Element|false} parent
+         * @param {Element|true} _root
          */
-        constructor(element, parent, _root) {
+        constructor(element, _root) {
             const recurseSubNodes = function (child) {
                 if (hasDirectives(child)) {
                     //-> Recurse
-                    return new AxonNode(child, element, _root);
+                    return new AxonNode(child, _root);
                 } else if (child.children.length > 0) {
                     //-> Enter Children
                     return getSubNodes(child.children);
@@ -113,14 +112,13 @@ var Axon = function () {
                     return null;
                 }
             };
-            const getSubNodes = children => flattenArray(mapFilter(cloneArray(children), recurseSubNodes));
+            const getSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
 
             this.data = {};
             this.directives = getDirectives(element);
 
-            this._element = element;
-            this._parent = parent;
             this._root = _root; //is either a reference to the root or true if the node is the root
+            this._element = element;
             //Flatten Array as we only care about the relative position
             this._children = getSubNodes(element.children);
         }
@@ -148,7 +146,7 @@ var Axon = function () {
         constructor(cfg) {
             const element = query(cfg.el);
 
-            super(element, false, true);
+            super(element, true);
 
             this.data = cfg.data || {};
             this.methods = cfg.methods || {};

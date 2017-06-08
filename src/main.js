@@ -7,8 +7,7 @@ import {
 } from "./dom/directive";
 import {
     cloneArray,
-    flattenArray,
-    mapFilter
+    flattenArray
 } from "./util";
 
 /**
@@ -19,13 +18,13 @@ const AxonNode = class {
     /**
      * Axon Element Node Constructor
      * @param {Element} element
-     * @param {Element|false} parent
+     * @param {Element|true} _root
      */
-    constructor(element, parent, _root) {
+    constructor(element, _root) {
         const recurseSubNodes = function (child) {
             if (hasDirectives(child)) {
                 //-> Recurse
-                return new AxonNode(child, element, _root);
+                return new AxonNode(child, _root);
             } else if (child.children.length > 0) {
                 //-> Enter Children
                 return getSubNodes(child.children);
@@ -34,14 +33,13 @@ const AxonNode = class {
                 return null;
             }
         };
-        const getSubNodes = children => flattenArray(mapFilter(cloneArray(children), recurseSubNodes));
+        const getSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
 
         this.data = {};
         this.directives = getDirectives(element);
 
-        this._element = element;
-        this._parent = parent;
         this._root = _root; //is either a reference to the root or true if the node is the root
+        this._element = element;
         //Flatten Array as we only care about the relative position
         this._children = getSubNodes(element.children);
     }
@@ -73,7 +71,7 @@ const AxonNodeRoot = class extends AxonNode {
     constructor(cfg) {
         const element = query(cfg.el);
 
-        super(element, false, true);
+        super(element, true);
 
         this.data = cfg.data || {};
         this.methods = cfg.methods || {};
