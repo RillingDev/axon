@@ -35,6 +35,7 @@ const retrieveProp = function (instanceContentMethods, expression) {
     });
 
     return result;*/
+    return "bar";
 };
 
 export default retrieveProp;

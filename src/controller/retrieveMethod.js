@@ -9,7 +9,8 @@
  * @param {String} expression Directive expression
  * @returns {Function} method of instance
  */
-const retrieveMethod = function (instanceContentMethods, expression) {
+const retrieveMethod = function (expression, node) {
+    //const methodsDict = node._root.methods;
     /*const expressionSplit = expression.substr(0, expression.length - 1).split("(");
     const methodName = expressionSplit[0];
     const methodArgs = expressionSplit[1].split(",").filter(item => item !== "").map(arg => {
@@ -25,6 +26,8 @@ const retrieveMethod = function (instanceContentMethods, expression) {
     } else {
         throw new Error(`Missing method '${expression}'`);
     }*/
+
+    return () => "foo";
 };
 
 export default retrieveMethod;

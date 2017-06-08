@@ -19,13 +19,14 @@ const AxonNode = class {
     /**
      * Axon Element Node Constructor
      * @param {Element} element
+     * @param {Element} _parent
      * @param {Element|true} _root
      */
-    constructor(element, _root) {
+    constructor(element, _parent, _root) {
         const recurseSubNodes = function (child) {
             if (hasDirectives(child)) {
                 //-> Recurse
-                return new AxonNode(child, _root);
+                return new AxonNode(child, element, _root);
             } else if (child.children.length > 0) {
                 //-> Enter Children
                 return getSubNodes(child.children);
@@ -36,13 +37,14 @@ const AxonNode = class {
         };
         const getSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
 
-        this.data = {};
+        this.data = {}; //@TODO attach proxy
+
         this.directives = getDirectives(element);
 
-        this._root = _root; //is either a reference to the root or true if the node is the root
         this._element = element;
-        //Flatten Array as we only care about the relative position
-        this._children = getSubNodes(element.children);
+        this._parent = _parent;
+        this._root = _root; //is either a reference to the root or true if the node is the root
+        this._children = getSubNodes(element.children); //Flatten Array as we only care about the relative position
     }
     /**
      * Runs directive over node, returns false when this node shouldnt be recursed
@@ -104,12 +106,11 @@ const AxonNodeRoot = class extends AxonNode {
      * Basic Axon Constructor
      * @constructor
      * @param {Object} cfg Config data for the Axon instance
-     * @returns {Axon} Returns Axon instance
      */
     constructor(cfg) {
         const element = query(cfg.el);
 
-        super(element, true);
+        super(element, false, true);
 
         this.data = cfg.data || {};
         this.methods = cfg.methods || {};
