@@ -1,15 +1,4 @@
 /**
- *
- * @param {String} selector
- * @param {Node} [context=document]
- * @param {Boolean} [context=false]
- * @returns {Node|Array}
- */
-const query = function (selector, context = document, all = false) {
-    return all ? Array.from(context.querySelectorAll(selector)) : context.querySelector(selector);
-};
-
-/**
  * Create a new array with the same contents
  * @param {Array} arr
  * @returns {Array}
@@ -42,6 +31,25 @@ const flattenArray = function (arr) {
     return result;
 };
 
+/**
+ * Maps an Array and removes null-elements
+ * @param {Array} arr
+ * @param {Function} fn
+ * @returns {Array}
+ */
+const mapFilter = (arr, fn) => arr.map(fn).filter(val => val !== null);
+
+/**
+ *
+ * @param {String} selector
+ * @param {Node} [context=document]
+ * @param {Boolean} [context=false]
+ * @returns {Node|Array}
+ */
+const query = function (selector, context = document, all = false) {
+    return all ? cloneArray(context.querySelectorAll(selector)) : context.querySelector(selector);
+};
+
 //const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
 //const DOM_EVENT_MODEL = "input";
 
@@ -64,50 +72,18 @@ const getDirectives = function (element) {
     const attributes = cloneArray(element.attributes).filter(attr => attr.name.startsWith(DOM_ATTR_PREFIX));
 
     return attributes.map(attr => {
+        /**
+         * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
+         */
         const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
         const val = attr.value;
 
         return {
             val,
             name: nameFull[0],
-            secondary: nameFull[1],
+            secondary: nameFull[1] || false,
         };
     });
-};
-
-/**
- * Maps trough nodelist and filters output
- * @param {NodeList} nodelist
- * @param {Function} fn
- * @returns {Array}
- */
-const mapFilterNodeList = (nodelist, fn) => cloneArray(nodelist).map(fn).filter(val => val !== null);
-
-/**
- * Returns deep-children
- * @param {Element} element
- * @returns {AxonNode}
- */
-const getSubNodes = function (element, AxonNode) {
-    /**
-     * Recurse and map subNodes
-     * @param {Element} child
-     * @returns {Mixed}
-     */
-    const recurseSubNodes = child => {
-        if (hasDirectives(child)) {
-            //-> Recurse
-            return new AxonNode(child, element);
-        } else if (child.children.length > 0) {
-            //-> Enter Children
-            return mapFilterNodeList(child.children, recurseSubNodes);
-        } else {
-            //-> Exit dead-end
-            return null;
-        }
-    };
-
-    return flattenArray(mapFilterNodeList(element.children, recurseSubNodes));
 };
 
 /**
@@ -120,14 +96,29 @@ const AxonNode = class {
      * @param {Element} element
      * @param {Element|false} parent
      */
-    constructor(element, parent) {
-        this.element = element;
-        this.parent = parent;
-        this.children = getSubNodes(element, AxonNode);
+    constructor(element, parent, _root) {
+        const recurseSubNodes = function (child) {
+            if (hasDirectives(child)) {
+                //-> Recurse
+                return new AxonNode(child, element, _root);
+            } else if (child.children.length > 0) {
+                //-> Enter Children
+                return getSubNodes(child.children);
+            } else {
+                //-> Exit dead-end
+                return null;
+            }
+        };
+        const getSubNodes = children => flattenArray(mapFilter(cloneArray(children), recurseSubNodes));
 
+        this.data = {};
         this.directives = getDirectives(element);
 
-        //this.$data = {};
+        this._element = element;
+        this._parent = parent;
+        this._root = _root; //is either a reference to the root or true if the node is the root
+        //Flatten Array as we only care about the relative position
+        this._children = getSubNodes(element.children);
     }
     /**
      * Initializes directives
@@ -155,10 +146,12 @@ const AxonNodeRoot = class extends AxonNode {
      * @returns {Axon} Returns Axon instance
      */
     constructor(cfg) {
-        super(query(cfg.el), false);
+        const element = query(cfg.el);
 
-        //this.$data = cfg.data || {};
-        //this.$methods = cfg.methods || {};
+        super(element, false, true);
+
+        this.data = cfg.data || {};
+        this.methods = cfg.methods || {};
 
         this.init();
         this.render();

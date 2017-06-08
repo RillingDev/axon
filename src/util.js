@@ -33,8 +33,17 @@ const flattenArray = function (arr) {
     return result;
 };
 
+/**
+ * Maps an Array and removes null-elements
+ * @param {Array} arr
+ * @param {Function} fn
+ * @returns {Array}
+ */
+const mapFilter = (arr, fn) => arr.map(fn).filter(val => val !== null);
+
 export {
     cloneArray,
     isArray,
-    flattenArray
+    flattenArray,
+    mapFilter
 };

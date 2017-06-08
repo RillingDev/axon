@@ -2,11 +2,14 @@
 
 import query from "./dom/query";
 import {
-    getSubNodes
-} from "./dom/node";
-import {
+    hasDirectives,
     getDirectives
 } from "./dom/directive";
+import {
+    cloneArray,
+    flattenArray,
+    mapFilter
+} from "./util";
 
 /**
  * Axon Node
@@ -18,14 +21,29 @@ const AxonNode = class {
      * @param {Element} element
      * @param {Element|false} parent
      */
-    constructor(element, parent) {
-        this.element = element;
-        this.parent = parent;
-        this.children = getSubNodes(element, AxonNode);
+    constructor(element, parent, _root) {
+        const recurseSubNodes = function (child) {
+            if (hasDirectives(child)) {
+                //-> Recurse
+                return new AxonNode(child, element, _root);
+            } else if (child.children.length > 0) {
+                //-> Enter Children
+                return getSubNodes(child.children);
+            } else {
+                //-> Exit dead-end
+                return null;
+            }
+        };
+        const getSubNodes = children => flattenArray(mapFilter(cloneArray(children), recurseSubNodes));
 
+        this.data = {};
         this.directives = getDirectives(element);
 
-        //this.$data = {};
+        this._element = element;
+        this._parent = parent;
+        this._root = _root; //is either a reference to the root or true if the node is the root
+        //Flatten Array as we only care about the relative position
+        this._children = getSubNodes(element.children);
     }
     /**
      * Initializes directives
@@ -53,10 +71,12 @@ const AxonNodeRoot = class extends AxonNode {
      * @returns {Axon} Returns Axon instance
      */
     constructor(cfg) {
-        super(query(cfg.el), false);
+        const element = query(cfg.el);
 
-        //this.$data = cfg.data || {};
-        //this.$methods = cfg.methods || {};
+        super(element, false, true);
+
+        this.data = cfg.data || {};
+        this.methods = cfg.methods || {};
 
         this.init();
         this.render();

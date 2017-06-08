@@ -1,5 +1,9 @@
 "use strict";
 
+import {
+    cloneArray
+} from "../util";
+
 /**
  *
  * @param {String} selector
@@ -8,7 +12,7 @@
  * @returns {Node|Array}
  */
 const query = function (selector, context = document, all = false) {
-    return all ? Array.from(context.querySelectorAll(selector)) : context.querySelector(selector);
+    return all ? cloneArray(context.querySelectorAll(selector)) : context.querySelector(selector);
 };
 
 export default query;
