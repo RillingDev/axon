@@ -17,28 +17,25 @@ import {
     directiveBindRender
 } from "./modules/directiveBind";
 
-const directives = [{
-        name: "ignore",
-        init: directiveIgnoreBoth, //Init function
-        render: directiveIgnoreBoth //Render function
-    }, {
-        name: "if",
+const directives = {
+    "ignore": {
+        init: directiveIgnoreBoth,
+        render: directiveIgnoreBoth
+    },
+    "if": {
         render: directiveIfRender
     },
-    {
-        name: "on",
+    "on": {
         init: directiveOnInit,
     },
-    {
-        name: "model",
+    model: {
         init: directiveModelInit,
         render: directiveModelRender
     },
-    {
-        name: "bind",
+    "bind": {
         render: directiveBindRender
     }
-];
+};
 
 
 export default directives;

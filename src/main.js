@@ -9,6 +9,7 @@ import {
     cloneArray,
     flattenArray
 } from "./util";
+import directivesDict from "./directives/index";
 
 /**
  * Axon Node
@@ -44,16 +45,53 @@ const AxonNode = class {
         this._children = getSubNodes(element.children);
     }
     /**
+     * Runs directive over node, returns false when this node shouldnt be recursed
+     * @param {"init"|"render"} type
+     * @returns {Boolean}
+     */
+    execDirectives(type) {
+        return this.directives.map(directive => {
+            const directivesDictEntry = directivesDict[directive.name];
+
+            if (!directivesDictEntry) {
+                console.log(`directive '${directive.name}' not found`);
+                return true;
+            } else {
+                if (!directivesDictEntry[type]) {
+                    console.log(`directive has no type '${type}'`);
+                    return true;
+                } else {
+                    return directivesDictEntry[type](directive, this);
+                }
+            }
+        }).every(val => val !== false);
+    }
+    /**
+     * Runs execDirectives against the node and all subnodes
+     * @param {"init"|"render"} type
+     */
+    execDirectivesRecursive(type) {
+        const result = this.execDirectives(type);
+
+        if (result) {
+            this._children.forEach(child => {
+                child.execDirectives(type);
+            });
+        }
+
+        return result;
+    }
+    /**
      * Initializes directives
      */
     init() {
-
+        return this.execDirectivesRecursive("init");
     }
     /**
      * Renders directives
      */
     render() {
-
+        return this.execDirectivesRecursive("render");
     }
 };
 

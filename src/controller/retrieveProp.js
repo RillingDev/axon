@@ -1,6 +1,6 @@
 "use strict";
 
-import isDefined from "../lib/isDefined";
+//import isDefined from "../lib/isDefined";
 
 /**
  * Gets property from Axon instance
@@ -10,7 +10,7 @@ import isDefined from "../lib/isDefined";
  * @returns {Mixed} property of instance
  */
 const retrieveProp = function (instanceContentMethods, expression) {
-    const splitExpression = expression.split(".");
+    /*const splitExpression = expression.split(".");
     const result = {
         val: null,
         ref: null
@@ -34,7 +34,7 @@ const retrieveProp = function (instanceContentMethods, expression) {
         }
     });
 
-    return result;
+    return result;*/
 };
 
 export default retrieveProp;

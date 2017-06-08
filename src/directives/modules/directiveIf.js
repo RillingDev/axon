@@ -1,12 +1,12 @@
 "use strict";
 
-import evaluateExpression from "../../controller/evaluateExpression";
+/*import evaluateExpression from "../../controller/evaluateExpression";
 import {
     DOM_ATTR_HIDDEN
-} from "../../lib/constants";
+} from "../../lib/constants";*/
 
 const directiveIfRender = function (node, directive, instanceContent) {
-    const propValue = evaluateExpression(instanceContent, directive.val);
+    /*const propValue = evaluateExpression(instanceContent, directive.val);
     const result = Boolean(propValue);
 
     if (result) {
@@ -15,7 +15,8 @@ const directiveIfRender = function (node, directive, instanceContent) {
         node.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
     }
 
-    return result;
+    return result;*/
+    return true;
 };
 
 export {

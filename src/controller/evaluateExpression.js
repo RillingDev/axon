@@ -1,10 +1,10 @@
 "use strict";
 
-import {
+/*import {
     LIB_STRING_QUOTES
 } from "../lib/constants";
 import retrieveMethod from "./retrieveMethod";
-import retrieveProp from "./retrieveProp";
+import retrieveProp from "./retrieveProp";*/
 
 /**
  * evaluates expression from Axon instance
@@ -15,7 +15,7 @@ import retrieveProp from "./retrieveProp";
  */
 const evaluateExpression = function (instanceContent, expression) {
 
-    if (!isNaN(Number(expression))) {
+    /*if (!isNaN(Number(expression))) {
         //expression is a Number
         return Number(expression);
     } else if (LIB_STRING_QUOTES.includes(expression.substr(0, 1))) {
@@ -29,7 +29,7 @@ const evaluateExpression = function (instanceContent, expression) {
     } else {
         //expression is a Property
         return retrieveProp(instanceContent.$data, expression).val;
-    }
+    }*/
 };
 
 export default evaluateExpression;

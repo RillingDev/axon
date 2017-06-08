@@ -1,15 +1,13 @@
 "use strict";
 
-import bindEvent from "../../dom/bindEvent";
+/*import {
+    bindEvent
+} from "../../dom/event";
 import retrieveProp from "../../controller/retrieveProp";
-import getNodeValueType from "../../dom/getNodeValueType";
-import {
-    DOM_EVENT_MODEL,
-    DOM_EVENT_TIMEOUT
-} from "../../lib/constants";
+import getNodeValueType from "../../dom/getNodeValueType";*/
 
-const directiveModelInit = function (node, directive, instanceContent, instanceMethods) {
-    const targetProp = retrieveProp(instanceContent.$data, directive.val);
+const directiveModelInit = function (directive, node) {
+    /*const targetProp = retrieveProp(instanceContent.$data, directive.val);
     const eventFn = function (currentValue, newValue) {
         targetProp.ref[directive.val] = newValue;
 
@@ -20,15 +18,18 @@ const directiveModelInit = function (node, directive, instanceContent, instanceM
 
     bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instanceContent);
 
+    return true;*/
+    console.log("MODEL",[directive, node]);
     return true;
 };
 
-const directiveModelRender = function (node, directive, instanceContent) {
-    const nodeValueType = getNodeValueType(node);
+const directiveModelRender = function (directive, node) {
+    /*const nodeValueType = getNodeValueType(node);
     const propValue = retrieveProp(instanceContent.$data, directive.val);
 
-    node[nodeValueType] = propValue.val;
+    node[nodeValueType] = propValue.val;*/
 
+    console.log("MODEL",[directive, node]);
     return true;
 };
 

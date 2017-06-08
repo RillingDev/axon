@@ -87,6 +87,103 @@ const getDirectives = function (element) {
     });
 };
 
+const directiveIgnoreBoth = () => false;
+
+/*import evaluateExpression from "../../controller/evaluateExpression";
+import {
+    DOM_ATTR_HIDDEN
+} from "../../lib/constants";*/
+
+const directiveIfRender = function (node, directive, instanceContent) {
+    /*const propValue = evaluateExpression(instanceContent, directive.val);
+    const result = Boolean(propValue);
+
+    if (result) {
+        node.removeAttribute(DOM_ATTR_HIDDEN);
+    } else {
+        node.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
+    }
+
+    return result;*/
+    return true;
+};
+
+/*import bindEvent from "../../dom/bindEvent";
+import retrieveMethod from "../../controller/retrieveMethod";*/
+
+const directiveOnInit = function (node, directive, instanceContent) {
+    /*const targetMethod = retrieveMethod(instanceContent.$methods, directive.val);
+
+    bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instanceContent);
+
+    return true;*/
+    return true;
+};
+
+/*import {
+    bindEvent
+} from "../../dom/event";
+import retrieveProp from "../../controller/retrieveProp";
+import getNodeValueType from "../../dom/getNodeValueType";*/
+
+const directiveModelInit = function (directive, node) {
+    /*const targetProp = retrieveProp(instanceContent.$data, directive.val);
+    const eventFn = function (currentValue, newValue) {
+        targetProp.ref[directive.val] = newValue;
+
+        setTimeout(() => {
+            instanceMethods.$render();
+        }, DOM_EVENT_TIMEOUT);
+    };
+
+    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instanceContent);
+
+    return true;*/
+    console.log("MODEL",[directive, node]);
+    return true;
+};
+
+const directiveModelRender = function (directive, node) {
+    /*const nodeValueType = getNodeValueType(node);
+    const propValue = retrieveProp(instanceContent.$data, directive.val);
+
+    node[nodeValueType] = propValue.val;*/
+
+    console.log("MODEL",[directive, node]);
+    return true;
+};
+
+//import evaluateExpression from "../../controller/evaluateExpression";
+
+const directiveBindRender = function (node, directive,instanceContent) {
+    /*const propValue = evaluateExpression(instanceContent, directive.val);
+
+    node.setAttribute(directive.opt, propValue);
+
+    return true;*/
+    return true;
+};
+
+const directives = {
+    "ignore": {
+        init: directiveIgnoreBoth,
+        render: directiveIgnoreBoth
+    },
+    "if": {
+        render: directiveIfRender
+    },
+    "on": {
+        init: directiveOnInit,
+    },
+    model: {
+        init: directiveModelInit,
+        render: directiveModelRender
+    },
+    "bind": {
+        render: directiveBindRender
+    }
+};
+
 /**
  * Axon Node
  * @class
@@ -121,16 +218,53 @@ const AxonNode = class {
         this._children = getSubNodes(element.children);
     }
     /**
+     * Runs directive over node, returns false when this node shouldnt be recursed
+     * @param {"init"|"render"} type
+     * @returns {Boolean}
+     */
+    execDirectives(type) {
+        return this.directives.map(directive => {
+            const directivesDictEntry = directives[directive.name];
+
+            if (!directivesDictEntry) {
+                console.log(`directive '${directive.name}' not found`);
+                return true;
+            } else {
+                if (!directivesDictEntry[type]) {
+                    console.log(`directive has no type '${type}'`);
+                    return true;
+                } else {
+                    return directivesDictEntry[type](directive, this);
+                }
+            }
+        }).every(val => val !== false);
+    }
+    /**
+     * Runs execDirectives against the node and all subnodes
+     * @param {"init"|"render"} type
+     */
+    execDirectivesRecursive(type) {
+        const result = this.execDirectives(type);
+
+        if (result) {
+            this._children.forEach(child => {
+                child.execDirectives(type);
+            });
+        }
+
+        return result;
+    }
+    /**
      * Initializes directives
      */
     init() {
-
+        return this.execDirectivesRecursive("init");
     }
     /**
      * Renders directives
      */
     render() {
-
+        return this.execDirectivesRecursive("render");
     }
 };
 
