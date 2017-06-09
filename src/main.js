@@ -18,7 +18,6 @@ const AxonNode = class {
      */
     constructor(element, _parent, _root) {
         const node = this;
-
         const recurseSubNodes = function (child) {
             if (hasDirectives(child)) {
                 //-> Recurse

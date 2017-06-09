@@ -131,6 +131,34 @@ var Axon = function () {
         return node.addEventListener(eventType, eventFn, false);
     };
 
+    const findPropInNode = function (path, node) {
+        let entry = node.data;
+        let current;
+        let index = 0;
+
+        while (index < path.length) {
+            const propPath = path[index];
+
+            current = entry[propPath];
+
+            if (isDefined(current)) {
+                if (index < path.length - 1) {
+                    entry = current;
+                } else {
+                    return {
+                        node,
+                        val: current,
+                        set: val => entry[propPath] = val
+                    };
+                }
+            }
+
+            index++;
+        }
+
+        return false;
+    };
+
     /**
      * Gets property from Axon instance
      * @private
@@ -139,53 +167,49 @@ var Axon = function () {
      * @returns {Mixed} property of instance
      */
     const retrieveProp = function (expression, node) {
-        const splitExpression = expression.split(".");
-        let result = false;
-        let foundResult = false;
-        let mustExit = false;
+        const path = expression.split(".");
+        let endReached = false;
         let walker = node;
-        let prop;
 
-        while (!foundResult && !mustExit) {
-            //Node-level
-            let index = 0;
+        while (!endReached) {
+            const data = findPropInNode(path, walker);
 
-            //console.log("ND", {walker});
-
-            while (!foundResult && index < splitExpression.length) {
-                //prop-level
-                const propPath = splitExpression[index];
-
-                //console.log("PR", {walker, propPath, index});
-
-                prop = walker.data[propPath];
-
-                if (isDefined(prop)) {
-                    if (index < splitExpression.length - 1) {
-                        walker = prop;
-                    } else {
-                        result = {
-                            val: prop,
-                            node: walker
-                        };
-
-                        //console.log("RESULT", {result});
-
-                        foundResult = true;
-                    }
-                }
-
-                index++;
-            }
-
-            if (walker._parent !== false) {
-                walker = walker._parent;
+            if (data) {
+                console.log(data);
+                return data;
             } else {
-                mustExit = true;
+                if (walker._parent !== false) {
+                    walker = walker._parent;
+                } else {
+                    endReached = true;
+                }
             }
         }
 
-        return result;
+        return false;
+
+        /*let walkerData = walker.data;
+            let index = 0;
+             //console.log("ND", {walker});
+             while (!foundResult && index < splitExpression.length) { //prop-level
+                const propPath = splitExpression[index];
+                 //console.log("PR", {walker, propPath, index});
+                 prop = walkerData[propPath];
+                 if (isDefined(prop)) {
+                    if (index < splitExpression.length - 1) {
+                        walkerData = prop;
+                    } else {
+                        result = {
+                            val: prop,
+                            container: walkerData[propPath],
+                            node: walker
+                        };
+                         console.log("RESULT", {result});
+                         foundResult = true;
+                    }
+                }
+                 index++;
+            }*/
     };
 
     const getNodeContentProp = function (node) {
@@ -201,13 +225,14 @@ var Axon = function () {
     const directiveModelInit = function (directive, node) {
         const element = node._element;
         const elementContentProp = getNodeContentProp(element);
+        const propName = directive.val;
 
         const eventFn = function () {
-            const targetProp = retrieveProp(directive.val, node);
+            const targetProp = retrieveProp(propName, node);
             const newVal = element[elementContentProp];
 
             //Update and render data node
-            targetProp.node.data[directive.val] = newVal;
+            targetProp.set(newVal);
             targetProp.node.render();
         };
 
@@ -268,7 +293,6 @@ var Axon = function () {
          */
         constructor(element, _parent, _root) {
             const node = this;
-
             const recurseSubNodes = function (child) {
                 if (hasDirectives(child)) {
                     //-> Recurse

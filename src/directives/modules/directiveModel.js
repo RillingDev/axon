@@ -8,13 +8,14 @@ import getElementContentProp from "../../dom/getElementContentProp";
 const directiveModelInit = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
+    const propName=directive.val;
 
     const eventFn = function () {
-        const targetProp = retrieveProp(directive.val, node);
+        const targetProp = retrieveProp(propName, node);
         const newVal = element[elementContentProp];
 
         //Update and render data node
-        targetProp.node.data[directive.val] = newVal;
+        targetProp.set(newVal);
         targetProp.node.render();
     };
 
