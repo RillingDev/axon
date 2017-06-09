@@ -1,6 +1,6 @@
 "use strict";
 
-//import isDefined from "../lib/isDefined";
+import {isDefined} from "../util";
 
 /**
  * Gets property from Axon instance
@@ -9,33 +9,54 @@
  * @param {String} expression Directive expression
  * @returns {Mixed} property of instance
  */
-const retrieveProp = function (instanceContentMethods, expression) {
-    /*const splitExpression = expression.split(".");
-    const result = {
-        val: null,
-        ref: null
-    };
-    let container = instanceContentMethods;
+const retrieveProp = function (expression, node) {
+    const splitExpression = expression.split(".");
+    let result = false;
+    let foundResult = false;
+    let mustExit = false;
+    let walker = node;
     let prop;
 
-    splitExpression.forEach((propPath, index) => {
-        prop = container[propPath];
+    while (!foundResult && !mustExit) { //Node-level
+        let index = 0;
 
-        if (isDefined(prop)) {
+        console.log("ND", {walker});
 
-            if (index < splitExpression.length - 1) {
-                container = prop;
-            } else {
-                result.val = prop;
-                result.ref = container;
+        while (!foundResult && index < splitExpression.length) { //prop-level
+            const propPath = splitExpression[index];
+
+            console.log("PR", {walker, propPath, index});
+
+            prop = walker.data[propPath];
+
+            if (isDefined(prop)) {
+                if (index < splitExpression.length - 1) {
+                    walker = prop;
+                } else {
+                    result = {
+                        val: prop,
+                        ref: walker
+                    };
+
+                    console.log("RESULT", {result});
+
+                    foundResult = true;
+                }
             }
-        } else {
-            throw new Error(`Missing prop '${expression}'`);
-        }
-    });
 
-    return result;*/
-    return "bar";
+            index++;
+        }
+
+        if (walker._parent !== false) {
+            walker = walker._parent;
+        } else {
+            mustExit = true;
+        }
+    }
+
+    console.log()
+
+    return result;
 };
 
 export default retrieveProp;

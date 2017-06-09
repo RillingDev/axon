@@ -1,14 +1,8 @@
 "use strict";
 
 import query from "./dom/query";
-import {
-    hasDirectives,
-    getDirectives
-} from "./dom/directive";
-import {
-    cloneArray,
-    flattenArray
-} from "./util";
+import {hasDirectives, getDirectives} from "./dom/directive";
+import {cloneArray, flattenArray} from "./util";
 import directivesDict from "./directives/index";
 
 /**
@@ -23,10 +17,12 @@ const AxonNode = class {
      * @param {Element|true} _root
      */
     constructor(element, _parent, _root) {
+        const node = this;
+
         const recurseSubNodes = function (child) {
             if (hasDirectives(child)) {
                 //-> Recurse
-                return new AxonNode(child, element, _root);
+                return new AxonNode(child, node, _root);
             } else if (child.children.length > 0) {
                 //-> Enter Children
                 return getSubNodes(child.children);
@@ -52,21 +48,24 @@ const AxonNode = class {
      * @returns {Boolean}
      */
     execDirectives(type) {
-        return this.directives.map(directive => {
-            const directivesDictEntry = directivesDict[directive.name];
+        return this
+            .directives
+            .map(directive => {
+                const directivesDictEntry = directivesDict[directive.name];
 
-            if (!directivesDictEntry) {
-                console.log(`directive '${directive.name}' not found`);
-                return true;
-            } else {
-                if (!directivesDictEntry[type]) {
-                    console.log(`directive has no type '${type}'`);
+                if (!directivesDictEntry) {
+                    console.log(`directive '${directive.name}' not found`);
                     return true;
                 } else {
-                    return directivesDictEntry[type](directive, this);
+                    if (!directivesDictEntry[type]) {
+                        console.log(`directive has no type '${type}'`);
+                        return true;
+                    } else {
+                        return directivesDictEntry[type](directive, this);
+                    }
                 }
-            }
-        }).every(val => val !== false);
+            })
+            .every(val => val !== false);
     }
     /**
      * Runs execDirectives against the node and all subnodes
@@ -76,9 +75,11 @@ const AxonNode = class {
         const result = this.execDirectives(type);
 
         if (result) {
-            this._children.forEach(child => {
-                child.execDirectives(type);
-            });
+            this
+                ._children
+                .forEach(child => {
+                    child.execDirectives(type);
+                });
         }
 
         return result;
@@ -119,6 +120,5 @@ const AxonNodeRoot = class extends AxonNode {
         this.render();
     }
 };
-
 
 export default AxonNodeRoot;

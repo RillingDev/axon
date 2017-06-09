@@ -33,8 +33,6 @@ const flattenArray = function (arr) {
     return result;
 };
 
-export {
-    cloneArray,
-    isArray,
-    flattenArray
-};
+const isDefined = val => typeof val !== "undefined";
+
+export {cloneArray, isArray, flattenArray, isDefined};

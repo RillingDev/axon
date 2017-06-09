@@ -33,6 +33,8 @@ const flattenArray = function (arr) {
     return result;
 };
 
+const isDefined = val => typeof val !== "undefined";
+
 /**
  *
  * @param {String} selector
@@ -44,11 +46,14 @@ const query = function (selector, context = document, all = false) {
     return all ? cloneArray(context.querySelectorAll(selector)) : context.querySelector(selector);
 };
 
-//const DOM_EVENT_TIMEOUT = 20; //event timeout in ms
-//const DOM_EVENT_MODEL = "input";
-
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_DELIMITER = ":";
+
+const DOM_EVENT_MODEL = "input";
+
+const DOM_PROP_VALUE = "value";
+const DOM_PROP_TEXT = "textContent";
+const DOM_PROP_HTML = "innerHTML";
 
 /**
  * Checks if an attribute is an axon directive
@@ -120,36 +125,110 @@ const directiveOnInit = function (node, directive, instanceContent) {
     return true;
 };
 
-/*import {
-    bindEvent
-} from "../../dom/event";
-import retrieveProp from "../../controller/retrieveProp";
-import getNodeValueType from "../../dom/getNodeValueType";*/
+//@TODO
+
+//import getNodeValueType from "./getNodeValueType";
+
+const bindEvent = function (node, eventType, eventFn) {
+    return node.addEventListener(eventType, eventFn, false);
+};
+
+/**
+ * Gets property from Axon instance
+ * @private
+ * @param {Object} instanceContentMethods Axon instance data container
+ * @param {String} expression Directive expression
+ * @returns {Mixed} property of instance
+ */
+const retrieveProp = function (expression, node) {
+    const splitExpression = expression.split(".");
+    let result = false;
+    let foundResult = false;
+    let mustExit = false;
+    let walker = node;
+    let prop;
+
+    while (!foundResult && !mustExit) { //Node-level
+        let index = 0;
+
+        console.log("ND", {walker});
+
+        while (!foundResult && index < splitExpression.length) { //prop-level
+            const propPath = splitExpression[index];
+
+            console.log("PR", {walker, propPath, index});
+
+            prop = walker.data[propPath];
+
+            if (isDefined(prop)) {
+                if (index < splitExpression.length - 1) {
+                    walker = prop;
+                } else {
+                    result = {
+                        val: prop,
+                        ref: walker
+                    };
+
+                    console.log("RESULT", {result});
+
+                    foundResult = true;
+                }
+            }
+
+            index++;
+        }
+
+        if (walker._parent !== false) {
+            walker = walker._parent;
+        } else {
+            mustExit = true;
+        }
+    }
+
+    console.log();
+
+    return result;
+};
+
+const getNodeContentProp = function (node) {
+    if (isDefined(node[DOM_PROP_VALUE])) {
+        return DOM_PROP_VALUE;
+    } else if (isDefined(node[DOM_PROP_TEXT])) {
+        return DOM_PROP_TEXT;
+    } else {
+        return DOM_PROP_HTML;
+    }
+};
 
 const directiveModelInit = function (directive, node) {
-    /*const targetProp = retrieveProp(instanceContent.$data, directive.val);
-    const eventFn = function (currentValue, newValue) {
-        targetProp.ref[directive.val] = newValue;
+    const element = node._element;
+    const elementContentProp = getNodeContentProp(element);
+    const targetProp = retrieveProp(directive.val, node);
 
-        setTimeout(() => {
-            instanceMethods.$render();
-        }, DOM_EVENT_TIMEOUT);
+    const eventFn = function () {
+        const newVal = element[elementContentProp];
+
+        console.log(newVal);
+        targetProp.ref.data[directive.val] = newVal;
+        targetProp.ref.render();
     };
 
-    bindEvent(node, DOM_EVENT_MODEL, eventFn, [targetProp.val], instanceContent);
+    bindEvent(node._element, DOM_EVENT_MODEL, eventFn);
 
-    return true;*/
-    console.log("MODEL",[directive, node]);
     return true;
 };
 
 const directiveModelRender = function (directive, node) {
-    /*const nodeValueType = getNodeValueType(node);
-    const propValue = retrieveProp(instanceContent.$data, directive.val);
+    const element = node._element;
+    const elementContentProp = getNodeContentProp(element);
+    const targetProp = retrieveProp(directive.val, node);
 
-    node[nodeValueType] = propValue.val;*/
+    console.log("MODEL", [
+        directive, node
+    ], [elementContentProp, targetProp]);
 
-    console.log("MODEL",[directive, node]);
+    element[elementContentProp] = targetProp.val;
+
     return true;
 };
 
@@ -192,13 +271,16 @@ const AxonNode = class {
     /**
      * Axon Element Node Constructor
      * @param {Element} element
+     * @param {Element} _parent
      * @param {Element|true} _root
      */
-    constructor(element, _root) {
+    constructor(element, _parent, _root) {
+        const node = this;
+
         const recurseSubNodes = function (child) {
             if (hasDirectives(child)) {
                 //-> Recurse
-                return new AxonNode(child, _root);
+                return new AxonNode(child, node, _root);
             } else if (child.children.length > 0) {
                 //-> Enter Children
                 return getSubNodes(child.children);
@@ -209,13 +291,14 @@ const AxonNode = class {
         };
         const getSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
 
-        this.data = {};
+        this.data = {}; //@TODO attach proxy
+
         this.directives = getDirectives(element);
 
-        this._root = _root; //is either a reference to the root or true if the node is the root
         this._element = element;
-        //Flatten Array as we only care about the relative position
-        this._children = getSubNodes(element.children);
+        this._parent = _parent;
+        this._root = _root; //is either a reference to the root or true if the node is the root
+        this._children = getSubNodes(element.children); //Flatten Array as we only care about the relative position
     }
     /**
      * Runs directive over node, returns false when this node shouldnt be recursed
@@ -223,21 +306,24 @@ const AxonNode = class {
      * @returns {Boolean}
      */
     execDirectives(type) {
-        return this.directives.map(directive => {
-            const directivesDictEntry = directives[directive.name];
+        return this
+            .directives
+            .map(directive => {
+                const directivesDictEntry = directives[directive.name];
 
-            if (!directivesDictEntry) {
-                console.log(`directive '${directive.name}' not found`);
-                return true;
-            } else {
-                if (!directivesDictEntry[type]) {
-                    console.log(`directive has no type '${type}'`);
+                if (!directivesDictEntry) {
+                    console.log(`directive '${directive.name}' not found`);
                     return true;
                 } else {
-                    return directivesDictEntry[type](directive, this);
+                    if (!directivesDictEntry[type]) {
+                        console.log(`directive has no type '${type}'`);
+                        return true;
+                    } else {
+                        return directivesDictEntry[type](directive, this);
+                    }
                 }
-            }
-        }).every(val => val !== false);
+            })
+            .every(val => val !== false);
     }
     /**
      * Runs execDirectives against the node and all subnodes
@@ -247,9 +333,11 @@ const AxonNode = class {
         const result = this.execDirectives(type);
 
         if (result) {
-            this._children.forEach(child => {
-                child.execDirectives(type);
-            });
+            this
+                ._children
+                .forEach(child => {
+                    child.execDirectives(type);
+                });
         }
 
         return result;
@@ -277,12 +365,11 @@ const AxonNodeRoot = class extends AxonNode {
      * Basic Axon Constructor
      * @constructor
      * @param {Object} cfg Config data for the Axon instance
-     * @returns {Axon} Returns Axon instance
      */
     constructor(cfg) {
         const element = query(cfg.el);
 
-        super(element, true);
+        super(element, false, true);
 
         this.data = cfg.data || {};
         this.methods = cfg.methods || {};
