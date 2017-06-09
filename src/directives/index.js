@@ -28,7 +28,7 @@ const directives = {
     "on": {
         init: directiveOnInit,
     },
-    model: {
+    "model": {
         init: directiveModelInit,
         render: directiveModelRender
     },

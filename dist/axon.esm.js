@@ -46,6 +46,7 @@ const query = function (selector, context = document, all = false) {
 
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_DELIMITER = ":";
+const DOM_ATTR_HIDDEN = "hidden";
 
 const DOM_EVENT_MODEL = "input";
 
@@ -92,23 +93,101 @@ const getDirectives = function (element) {
 
 const directiveIgnoreBoth = () => false;
 
-/*import evaluateExpression from "../../controller/evaluateExpression";
-import {
-    DOM_ATTR_HIDDEN
-} from "../../lib/constants";*/
+const findPropInNode = function (path, obj) {
+    let entry = obj;
+    let current;
+    let index = 0;
 
-const directiveIfRender = function (node, directive, instanceContent) {
-    /*const propValue = evaluateExpression(instanceContent, directive.val);
-    const result = Boolean(propValue);
+    while (index < path.length) {
+        const propPath = path[index];
 
-    if (result) {
-        node.removeAttribute(DOM_ATTR_HIDDEN);
-    } else {
-        node.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
+        current = entry[propPath];
+
+        if (isDefined(current)) {
+            if (index < path.length - 1) {
+                entry = current;
+            } else {
+                return {
+                    val: current,
+                    set: val => entry[propPath] = val
+                };
+            }
+        }
+
+        index++;
     }
 
-    return result;*/
-    return true;
+    return false;
+};
+
+//@TODO
+const retrieveProp = function (expression, node) {
+    const path = expression.split(".");
+    const data = findPropInNode(path, node._root.methods);
+
+    if (data !== false) {
+        console.log(data);
+
+        return data;
+    } else {
+        return false;
+    }
+};
+
+/**
+ * Retrieves a prop from the data container
+ * @param {String} expression
+ * @param {AxonNode} node
+ * @returns {Mixed|false}
+ */
+const retrieveProp$1 = function (expression, node) {
+    const path = expression.split(".");
+    let endReached = false;
+    let current = node;
+
+    console.log([node,path]);
+
+    while (!endReached) {
+        const data = findPropInNode(path, current.data);
+
+        if (data !== false) {
+            data.node = current;
+
+            return data;
+        } else {
+            if (current._parent !== false) {
+                current = current._parent;
+            } else {
+                endReached = true;
+            }
+        }
+    }
+
+    return false;
+};
+
+const REGEX_FUNCTION = /\(.*\)/;
+
+/**
+ * Redirects to fitting retriever and returns
+ * @param {String} name
+ * @param {Axon} node
+ * @returns {Mixed}
+ */
+const evaluateExpression = (name, node) => REGEX_FUNCTION.test(name) ? retrieveProp(name, node) : retrieveProp$1(name, node);
+
+const directiveIfRender = function (directive, node) {
+    const element = node._element;
+    const expressionValue = evaluateExpression(directive.val, node);
+    const result = Boolean(expressionValue);
+
+    if (result) {
+        element.removeAttribute(DOM_ATTR_HIDDEN);
+    } else {
+        element.setAttribute(DOM_ATTR_HIDDEN, true);
+    }
+
+    return result;
 };
 
 /*import bindEvent from "../../dom/bindEvent";
@@ -131,96 +210,6 @@ const bindEvent = function (node, eventType, eventFn) {
     return node.addEventListener(eventType, eventFn, false);
 };
 
-const findPropInNode = function (path, node) {
-    let entry = node.data;
-    let current;
-    let index = 0;
-
-    while (index < path.length) {
-        const propPath = path[index];
-
-        current = entry[propPath];
-
-        if (isDefined(current)) {
-            if (index < path.length - 1) {
-                entry = current;
-            } else {
-                return {
-                    node,
-                    val: current,
-                    set: val => entry[propPath] = val
-                };
-            }
-        }
-
-        index++;
-    }
-
-    return false;
-};
-
-/**
- * Gets property from Axon instance
- * @private
- * @param {Object} instanceContentMethods Axon instance data container
- * @param {String} expression Directive expression
- * @returns {Mixed} property of instance
- */
-const retrieveProp = function (expression, node) {
-    const path = expression.split(".");
-    let endReached = false;
-    let walker = node;
-
-    while (!endReached) {
-        const data = findPropInNode(path, walker);
-
-        if (data) {
-            console.log(data);
-            return data;
-        } else {
-            if (walker._parent !== false) {
-                walker = walker._parent;
-            } else {
-                endReached = true;
-            }
-        }
-    }
-
-    return false;
-
-    /*let walkerData = walker.data;
-        let index = 0;
-
-        //console.log("ND", {walker});
-
-        while (!foundResult && index < splitExpression.length) { //prop-level
-            const propPath = splitExpression[index];
-
-            //console.log("PR", {walker, propPath, index});
-
-            prop = walkerData[propPath];
-
-            if (isDefined(prop)) {
-                if (index < splitExpression.length - 1) {
-                    walkerData = prop;
-                } else {
-                    result = {
-                        val: prop,
-                        container: walkerData[propPath],
-                        node: walker
-                    };
-
-                    console.log("RESULT", {result});
-
-                    foundResult = true;
-                }
-            }
-
-            index++;
-        }*/
-
-};
-
 const getNodeContentProp = function (node) {
     if (isDefined(node[DOM_PROP_VALUE])) {
         return DOM_PROP_VALUE;
@@ -232,17 +221,19 @@ const getNodeContentProp = function (node) {
 };
 
 const directiveModelInit = function (directive, node) {
+    const propName = directive.val;
     const element = node._element;
     const elementContentProp = getNodeContentProp(element);
-    const propName=directive.val;
 
     const eventFn = function () {
-        const targetProp = retrieveProp(propName, node);
+        const targetProp = retrieveProp$1(propName, node);
         const newVal = element[elementContentProp];
 
         //Update and render data node
         targetProp.set(newVal);
-        targetProp.node.render();
+        targetProp
+            .node
+            .render();
     };
 
     bindEvent(node._element, DOM_EVENT_MODEL, eventFn);
@@ -251,9 +242,10 @@ const directiveModelInit = function (directive, node) {
 };
 
 const directiveModelRender = function (directive, node) {
+    const propName = directive.val;
     const element = node._element;
     const elementContentProp = getNodeContentProp(element);
-    const targetProp = retrieveProp(directive.val, node);
+    const targetProp = retrieveProp$1(propName, node);
 
     element[elementContentProp] = targetProp.val;
 
@@ -282,7 +274,7 @@ const directives = {
     "on": {
         init: directiveOnInit,
     },
-    model: {
+    "model": {
         init: directiveModelInit,
         render: directiveModelRender
     },

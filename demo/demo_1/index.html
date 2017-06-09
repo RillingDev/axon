@@ -15,10 +15,9 @@
         <div>
             <label>Name:</label>
             <input type="text" x-model="foo.bar">
-             <p>Hello <span x-model="foo.bar"></span>! <span x-model="foo.bar"></span> is cool!</p>
-        </div>
-        <!--<div x-if="name">
-            <p>Hello <span x-model="name"></span>! <span x-model="name"></span> is cool!</p>-->
+            <div x-if="foo.bar.length">
+                <p>Hello <span x-model="foo.bar"></span>! <span x-model="foo.bar"></span> is cool!</p>
+            </div>
         </div>
     </div>
     <script src="../../dist/axon.js"></script>

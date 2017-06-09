@@ -1,24 +1,21 @@
 "use strict";
 
-/*import evaluateExpression from "../../controller/evaluateExpression";
-import {
-    DOM_ATTR_HIDDEN
-} from "../../lib/constants";*/
+import retrieveExpression from "../../controller/retrieveExpression";
 
-const directiveIfRender = function (node, directive, instanceContent) {
-    /*const propValue = evaluateExpression(instanceContent, directive.val);
-    const result = Boolean(propValue);
+import {DOM_ATTR_HIDDEN} from "../../constants";
+
+const directiveIfRender = function (directive, node) {
+    const element = node._element;
+    const expressionValue = retrieveExpression(directive.val, node);
+    const result = Boolean(expressionValue);
 
     if (result) {
-        node.removeAttribute(DOM_ATTR_HIDDEN);
+        element.removeAttribute(DOM_ATTR_HIDDEN);
     } else {
-        node.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
+        element.setAttribute(DOM_ATTR_HIDDEN, true);
     }
 
-    return result;*/
-    return true;
+    return result;
 };
 
-export {
-    directiveIfRender
-};
+export {directiveIfRender};

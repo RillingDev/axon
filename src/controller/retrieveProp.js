@@ -1,55 +1,30 @@
 "use strict";
 
-import {isDefined} from "../util";
-
-const findPropInNode = function (path, node) {
-    let entry = node.data;
-    let current;
-    let index = 0;
-
-    while (index < path.length) {
-        const propPath = path[index];
-
-        current = entry[propPath];
-
-        if (isDefined(current)) {
-            if (index < path.length - 1) {
-                entry = current;
-            } else {
-                return {
-                    node,
-                    val: current,
-                    set: val => entry[propPath] = val
-                };
-            }
-        }
-
-        index++;
-    }
-
-    return false;
-};
+import findPropInNode from "./findPropInNode";
 
 /**
- * Gets property from Axon instance
- * @private
- * @param {Object} instanceContentMethods Axon instance data container
- * @param {String} expression Directive expression
- * @returns {Mixed} property of instance
+ * Retrieves a prop from the data container
+ * @param {String} expression
+ * @param {AxonNode} node
+ * @returns {Mixed|false}
  */
 const retrieveProp = function (expression, node) {
     const path = expression.split(".");
     let endReached = false;
-    let walker = node;
+    let current = node;
+
+    console.log([node,path])
 
     while (!endReached) {
-        const data = findPropInNode(path, walker);
+        const data = findPropInNode(path, current.data);
 
-        if (data) {
+        if (data !== false) {
+            data.node = current;
+
             return data;
         } else {
-            if (walker._parent !== false) {
-                walker = walker._parent;
+            if (current._parent !== false) {
+                current = current._parent;
             } else {
                 endReached = true;
             }

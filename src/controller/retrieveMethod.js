@@ -1,33 +1,19 @@
 "use strict";
 
-//import evaluateExpression from "./evaluateExpression";
+import findPropInNode from "./findPropInNode";
 
-/**
- * Gets method from Axon instance
- * @private
- * @param {Object} instanceContentMethods Axon instance methods container
- * @param {String} expression Directive expression
- * @returns {Function} method of instance
- */
-const retrieveMethod = function (expression, node) {
-    //const methodsDict = node._root.methods;
-    /*const expressionSplit = expression.substr(0, expression.length - 1).split("(");
-    const methodName = expressionSplit[0];
-    const methodArgs = expressionSplit[1].split(",").filter(item => item !== "").map(arg => {
-        return evaluateExpression(instanceContentMethods, arg);
-    });
-    const methodFn = instanceContentMethods[methodName];
+//@TODO
+const retrieveProp = function (expression, node) {
+    const path = expression.split(".");
+    const data = findPropInNode(path, node._root.methods);
 
-    if (typeof methodFn === "function") {
-        return {
-            fn: methodFn,
-            args: methodArgs
-        };
+    if (data !== false) {
+        console.log(data);
+
+        return data;
     } else {
-        throw new Error(`Missing method '${expression}'`);
-    }*/
-
-    return () => "foo";
+        return false;
+    }
 };
 
-export default retrieveMethod;
+export default retrieveProp;
