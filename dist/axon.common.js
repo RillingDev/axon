@@ -151,12 +151,12 @@ const retrieveProp = function (expression, node) {
     while (!foundResult && !mustExit) { //Node-level
         let index = 0;
 
-        console.log("ND", {walker});
+        //console.log("ND", {walker});
 
         while (!foundResult && index < splitExpression.length) { //prop-level
             const propPath = splitExpression[index];
 
-            console.log("PR", {walker, propPath, index});
+            //console.log("PR", {walker, propPath, index});
 
             prop = walker.data[propPath];
 
@@ -166,10 +166,10 @@ const retrieveProp = function (expression, node) {
                 } else {
                     result = {
                         val: prop,
-                        ref: walker
+                        node: walker
                     };
 
-                    console.log("RESULT", {result});
+                    //console.log("RESULT", {result});
 
                     foundResult = true;
                 }
@@ -184,8 +184,6 @@ const retrieveProp = function (expression, node) {
             mustExit = true;
         }
     }
-
-    console.log();
 
     return result;
 };
@@ -203,14 +201,14 @@ const getNodeContentProp = function (node) {
 const directiveModelInit = function (directive, node) {
     const element = node._element;
     const elementContentProp = getNodeContentProp(element);
-    const targetProp = retrieveProp(directive.val, node);
 
     const eventFn = function () {
+        const targetProp = retrieveProp(directive.val, node);
         const newVal = element[elementContentProp];
 
-        console.log(newVal);
-        targetProp.ref.data[directive.val] = newVal;
-        targetProp.ref.render();
+        //Update and render data node
+        targetProp.node.data[directive.val] = newVal;
+        targetProp.node.render();
     };
 
     bindEvent(node._element, DOM_EVENT_MODEL, eventFn);
@@ -222,10 +220,6 @@ const directiveModelRender = function (directive, node) {
     const element = node._element;
     const elementContentProp = getNodeContentProp(element);
     const targetProp = retrieveProp(directive.val, node);
-
-    console.log("MODEL", [
-        directive, node
-    ], [elementContentProp, targetProp]);
 
     element[elementContentProp] = targetProp.val;
 

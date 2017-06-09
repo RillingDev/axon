@@ -20,12 +20,12 @@ const retrieveProp = function (expression, node) {
     while (!foundResult && !mustExit) { //Node-level
         let index = 0;
 
-        console.log("ND", {walker});
+        //console.log("ND", {walker});
 
         while (!foundResult && index < splitExpression.length) { //prop-level
             const propPath = splitExpression[index];
 
-            console.log("PR", {walker, propPath, index});
+            //console.log("PR", {walker, propPath, index});
 
             prop = walker.data[propPath];
 
@@ -35,10 +35,10 @@ const retrieveProp = function (expression, node) {
                 } else {
                     result = {
                         val: prop,
-                        ref: walker
+                        node: walker
                     };
 
-                    console.log("RESULT", {result});
+                    //console.log("RESULT", {result});
 
                     foundResult = true;
                 }
@@ -53,8 +53,6 @@ const retrieveProp = function (expression, node) {
             mustExit = true;
         }
     }
-
-    console.log()
 
     return result;
 };
