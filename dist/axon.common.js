@@ -336,7 +336,7 @@ const AxonNode = class {
      * @param {"init"|"render"} type
      * @returns {Boolean}
      */
-    execDirectives(type) {
+    run(type) {
         return this
             .directives
             .map(directive => {
@@ -360,14 +360,14 @@ const AxonNode = class {
      * Runs execDirectives against the node and all subnodes
      * @param {"init"|"render"} type
      */
-    execDirectivesRecursive(type) {
-        const result = this.execDirectives(type);
+    runDeep(type) {
+        const result = this.run(type);
 
         if (result) {
             this
                 ._children
                 .forEach(child => {
-                    child.execDirectives(type);
+                    child.run(type);
                 });
         }
 
@@ -377,13 +377,13 @@ const AxonNode = class {
      * Initializes directives
      */
     init() {
-        return this.execDirectivesRecursive("init");
+        return this.runDeep("init");
     }
     /**
      * Renders directives
      */
     render() {
-        return this.execDirectivesRecursive("render");
+        return this.runDeep("render");
     }
 };
 

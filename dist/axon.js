@@ -338,7 +338,7 @@ var Axon = function () {
          * @param {"init"|"render"} type
          * @returns {Boolean}
          */
-        execDirectives(type) {
+        run(type) {
             return this.directives.map(directive => {
                 const directivesDictEntry = directives[directive.name];
 
@@ -359,12 +359,12 @@ var Axon = function () {
          * Runs execDirectives against the node and all subnodes
          * @param {"init"|"render"} type
          */
-        execDirectivesRecursive(type) {
-            const result = this.execDirectives(type);
+        runDeep(type) {
+            const result = this.run(type);
 
             if (result) {
                 this._children.forEach(child => {
-                    child.execDirectives(type);
+                    child.run(type);
                 });
             }
 
@@ -374,13 +374,13 @@ var Axon = function () {
          * Initializes directives
          */
         init() {
-            return this.execDirectivesRecursive("init");
+            return this.runDeep("init");
         }
         /**
          * Renders directives
          */
         render() {
-            return this.execDirectivesRecursive("render");
+            return this.runDeep("render");
         }
     };
 
