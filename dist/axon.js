@@ -149,7 +149,7 @@ var Axon = function () {
         let endReached = false;
         let current = node;
 
-        console.log([node, path]);
+        console.log("&", [node, path]);
 
         while (!endReached) {
             const data = findPropInNode(path, current.data);
@@ -182,16 +182,17 @@ var Axon = function () {
 
     const directiveIfRender = function (directive, node) {
         const element = node._element;
-        const expressionValue = evaluateExpression(directive.val, node);
-        const result = Boolean(expressionValue);
+        const expressionValue = evaluateExpression(directive.val, node).val;
 
-        if (result) {
+        if (expressionValue) {
             element.removeAttribute(DOM_ATTR_HIDDEN);
+
+            return true;
         } else {
             element.setAttribute(DOM_ATTR_HIDDEN, true);
-        }
 
-        return result;
+            return false;
+        }
     };
 
     /*import bindEvent from "../../dom/bindEvent";

@@ -8,12 +8,12 @@ import findPropInNode from "./findPropInNode";
  * @param {AxonNode} node
  * @returns {Mixed|false}
  */
-const retrieveProp = function (expression, node) {
+const retrieveProp = function(expression, node) {
     const path = expression.split(".");
     let endReached = false;
     let current = node;
 
-    console.log([node,path])
+    console.log("&", [node, path]);
 
     while (!endReached) {
         const data = findPropInNode(path, current.data);

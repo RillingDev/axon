@@ -5,7 +5,7 @@ const app = new Axon({
     data: {
         name: "Foo",
         foo: {
-            bar: 123123
+            bar: "Foooo"
         }
     },
     methods: {

@@ -142,12 +142,12 @@ const retrieveProp = function (expression, node) {
  * @param {AxonNode} node
  * @returns {Mixed|false}
  */
-const retrieveProp$1 = function (expression, node) {
+const retrieveProp$1 = function(expression, node) {
     const path = expression.split(".");
     let endReached = false;
     let current = node;
 
-    console.log([node,path]);
+    console.log("&", [node, path]);
 
     while (!endReached) {
         const data = findPropInNode(path, current.data);
@@ -178,18 +178,19 @@ const REGEX_FUNCTION = /\(.*\)/;
  */
 const evaluateExpression = (name, node) => REGEX_FUNCTION.test(name) ? retrieveProp(name, node) : retrieveProp$1(name, node);
 
-const directiveIfRender = function (directive, node) {
+const directiveIfRender = function(directive, node) {
     const element = node._element;
-    const expressionValue = evaluateExpression(directive.val, node);
-    const result = Boolean(expressionValue);
+    const expressionValue = evaluateExpression(directive.val, node).val;
 
-    if (result) {
+    if (expressionValue) {
         element.removeAttribute(DOM_ATTR_HIDDEN);
+
+        return true;
     } else {
         element.setAttribute(DOM_ATTR_HIDDEN, true);
-    }
 
-    return result;
+        return false;
+    }
 };
 
 /*import bindEvent from "../../dom/bindEvent";
