@@ -11,8 +11,6 @@ const retrieveMethod = function(expression, node) {
     const path = matched[1].split(".");
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
 
-    console.log({path,args,node})
-
     const data = findPropInNode(path, node._root.methods);
 
     if (data !== false) {

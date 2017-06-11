@@ -11,6 +11,16 @@ import retrieveProp from "./retrieveProp";
  * @param {Axon} node
  * @returns {Mixed}
  */
-const evaluateExpression = (name, node) => REGEX_FUNCTION.test(name) ? retrieveMethod(name, node) : retrieveProp(name, node);
+const evaluateExpression = function (name, node) {
+    if (REGEX_FUNCTION.test(name)) {
+        const methodProp = retrieveMethod(name, node);
+
+        methodProp.val = methodProp.val.apply(node._root, methodProp.args);
+
+        return methodProp;
+    } else {
+        return retrieveProp(name, node);
+    }
+};
 
 export default evaluateExpression;

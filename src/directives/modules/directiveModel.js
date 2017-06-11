@@ -6,15 +6,12 @@ import retrieveProp from "../../controller/retrieveProp";
 import getElementContentProp from "../../dom/getElementContentProp";
 
 const directiveModelInit = function(directive, node) {
-    const propName = directive.val;
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
     const eventFn = function() {
-        const targetProp = retrieveProp(propName, node);
-        const newVal = element[elementContentProp];
+        const targetProp = retrieveProp(directive.val, node);
 
-        //Update and render data node
-        targetProp.set(newVal);
+        targetProp.set(element[elementContentProp]);
         targetProp.node.render();
     };
 
@@ -24,12 +21,11 @@ const directiveModelInit = function(directive, node) {
 };
 
 const directiveModelRender = function(directive, node) {
-    const propName = directive.val;
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
-    const targetProp = retrieveProp(propName, node);
+    const targetProp = retrieveProp(directive.val, node);
 
-    element[elementContentProp] = targetProp.val;
+    element[elementContentProp] = String(targetProp.val);
 
     return true;
 };

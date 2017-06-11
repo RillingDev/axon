@@ -173,15 +173,12 @@ var Axon = function () {
     };
 
     const directiveModelInit = function (directive, node) {
-        const propName = directive.val;
         const element = node._element;
         const elementContentProp = getNodeContentProp(element);
         const eventFn = function () {
-            const targetProp = retrieveProp(propName, node);
-            const newVal = element[elementContentProp];
+            const targetProp = retrieveProp(directive.val, node);
 
-            //Update and render data node
-            targetProp.set(newVal);
+            targetProp.set(element[elementContentProp]);
             targetProp.node.render();
         };
 
@@ -191,12 +188,11 @@ var Axon = function () {
     };
 
     const directiveModelRender = function (directive, node) {
-        const propName = directive.val;
         const element = node._element;
         const elementContentProp = getNodeContentProp(element);
-        const targetProp = retrieveProp(propName, node);
+        const targetProp = retrieveProp(directive.val, node);
 
-        element[elementContentProp] = targetProp.val;
+        element[elementContentProp] = String(targetProp.val);
 
         return true;
     };
@@ -208,8 +204,6 @@ var Axon = function () {
         const matched = expression.match(REGEX_METHOD);
         const path = matched[1].split(".");
         const args = isDefined(matched[2]) ? matched[2].split(",") : [];
-
-        console.log({ path, args, node });
 
         const data = findPropInNode(path, node._root.methods);
 
@@ -230,7 +224,17 @@ var Axon = function () {
      * @param {Axon} node
      * @returns {Mixed}
      */
-    const evaluateExpression = (name, node) => REGEX_FUNCTION.test(name) ? retrieveMethod(name, node) : retrieveProp(name, node);
+    const evaluateExpression = function (name, node) {
+        if (REGEX_FUNCTION.test(name)) {
+            const methodProp = retrieveMethod(name, node);
+
+            methodProp.val = methodProp.val.apply(node._root, methodProp.args);
+
+            return methodProp;
+        } else {
+            return retrieveProp(name, node);
+        }
+    };
 
     const directiveBindRender = function (directive, node) {
         node._element.setAttribute(directive.opt, evaluateExpression(directive.val, node).val);
