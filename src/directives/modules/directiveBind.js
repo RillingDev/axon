@@ -1,13 +1,10 @@
 "use strict";
 
-//import evaluateExpression from "../../controller/evaluateExpression";
+import retrieveExpression from "../../controller/retrieveExpression";
 
-const directiveBindRender = function (node, directive,instanceContent) {
-    /*const propValue = evaluateExpression(instanceContent, directive.val);
+const directiveBindRender = function(directive, node) {
+    node._element.setAttribute(directive.opt, retrieveExpression(directive.val, node).val);
 
-    node.setAttribute(directive.opt, propValue);
-
-    return true;*/
     return true;
 };
 

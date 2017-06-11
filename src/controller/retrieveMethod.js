@@ -1,14 +1,22 @@
 "use strict";
 
+const REGEX_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
+
 import findPropInNode from "./findPropInNode";
+import { isDefined } from "../util";
 
 //@TODO
-const retrieveProp = function (expression, node) {
-    const path = expression.split(".");
+const retrieveMethod = function(expression, node) {
+    const matched = expression.match(REGEX_METHOD);
+    const path = matched[1].split(".");
+    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
+
+    console.log({path,args,node})
+
     const data = findPropInNode(path, node._root.methods);
 
     if (data !== false) {
-        console.log(data);
+        data.args = args;
 
         return data;
     } else {
@@ -16,4 +24,4 @@ const retrieveProp = function (expression, node) {
     }
 };
 
-export default retrieveProp;
+export default retrieveMethod;

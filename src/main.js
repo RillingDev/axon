@@ -1,8 +1,14 @@
 "use strict";
 
 import query from "./dom/query";
-import {hasDirectives, getDirectives} from "./dom/directive";
-import {cloneArray, flattenArray} from "./util";
+import {
+    hasDirectives,
+    getDirectives
+} from "./dom/directive";
+import {
+    cloneArray,
+    flattenArray
+} from "./util";
 import directivesDict from "./directives/index";
 
 /**
@@ -16,7 +22,7 @@ const AxonNode = class {
      * @param {Element} _parent
      * @param {Element|true} _root
      */
-    constructor(element, _parent, _root) {
+    constructor(_element, _parent = null, _root = this) {
         const node = this;
         const recurseSubNodes = function (child) {
             if (hasDirectives(child)) {
@@ -34,12 +40,12 @@ const AxonNode = class {
 
         this.data = {}; //@TODO attach proxy
 
-        this.directives = getDirectives(element);
+        this.directives = getDirectives(_element);
 
-        this._element = element;
+        this._element = _element;
         this._parent = _parent;
-        this._root = _root; //is either a reference to the root or true if the node is the root
-        this._children = getSubNodes(element.children); //Flatten Array as we only care about the relative position
+        this._root = _root;
+        this._children = getSubNodes(_element.children);
     }
     /**
      * Runs directive over node, returns false when this node shouldnt be recursed
@@ -53,11 +59,11 @@ const AxonNode = class {
                 const directivesDictEntry = directivesDict[directive.name];
 
                 if (!directivesDictEntry) {
-                    console.log(`directive '${directive.name}' not found`);
+                    //Directive is not supported
                     return true;
                 } else {
                     if (!directivesDictEntry[type]) {
-                        console.log(`directive has no type '${type}'`);
+                        //Directive doesnt have this type
                         return true;
                     } else {
                         return directivesDictEntry[type](directive, this);
@@ -108,9 +114,7 @@ const AxonNodeRoot = class extends AxonNode {
      * @param {Object} cfg Config data for the Axon instance
      */
     constructor(cfg) {
-        const element = query(cfg.el);
-
-        super(element, false, true);
+        super(query(cfg.el));
 
         this.data = cfg.data || {};
         this.methods = cfg.methods || {};

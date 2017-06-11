@@ -5,12 +5,15 @@ const app = new Axon({
     data: {
         name: "Foo",
         foo: {
-            bar: "Foooo"
+            bar: "Fooooo"
         }
     },
     methods: {
         getFoo() {
             return "fooo";
+        },
+        eventy() {
+            console.log("AAAAAAAAA");
         }
     }
 });

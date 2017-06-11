@@ -13,7 +13,7 @@ const retrieveProp = function(expression, node) {
     let endReached = false;
     let current = node;
 
-    console.log("&", [node, path]);
+    //console.log("&", [node, path]);
 
     while (!endReached) {
         const data = findPropInNode(path, current.data);

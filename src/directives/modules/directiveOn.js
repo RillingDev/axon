@@ -1,14 +1,11 @@
 "use strict";
 
-/*import bindEvent from "../../dom/bindEvent";
-import retrieveMethod from "../../controller/retrieveMethod";*/
+import { bindEvent } from "../../dom/event";
+import retrieveMethod from "../../controller/retrieveMethod";
 
-const directiveOnInit = function (node, directive, instanceContent) {
-    /*const targetMethod = retrieveMethod(instanceContent.$methods, directive.val);
+const directiveOnInit = function(directive, node) {
+    bindEvent(node._element, directive.opt, retrieveMethod(directive.val, node).val);
 
-    bindEvent(node, directive.opt, targetMethod.fn, targetMethod.args, instanceContent);
-
-    return true;*/
     return true;
 };
 

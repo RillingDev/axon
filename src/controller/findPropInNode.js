@@ -1,8 +1,8 @@
 "use strict";
 
-import {isDefined} from "../util";
+import { isDefined } from "../util";
 
-const findPropInNode = function (path, obj) {
+const findPropInNode = function(path, obj) {
     let entry = obj;
     let current;
     let index = 0;

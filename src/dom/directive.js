@@ -40,7 +40,7 @@ const getDirectives = function (element) {
         return {
             val,
             name: nameFull[0],
-            secondary: nameFull[1] || false,
+            opt: nameFull[1] || false,
         };
     });
 };

@@ -18,7 +18,7 @@ const directiveModelInit = function(directive, node) {
         targetProp.node.render();
     };
 
-    bindEvent(node._element, DOM_EVENT_MODEL, eventFn);
+    bindEvent(element, DOM_EVENT_MODEL, eventFn);
 
     return true;
 };
