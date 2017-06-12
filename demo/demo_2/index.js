@@ -9,7 +9,7 @@ const app = new Axon({
     },
     methods: {
         getFoobar(foo) {
-            return foo + "bar";
+            return foo + this.model_1 + foo;
         }
     }
 });

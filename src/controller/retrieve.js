@@ -97,7 +97,13 @@ const findPath = function (obj, path) {
  */
 const retrieveExpression = function (name, node) {
     if (REGEX_IS_FUNCTION.test(name)) {
-        return applyMethodContext(retrieveMethod(name, node));
+        const method = retrieveMethod(name, node);
+        const methodResult = applyMethodContext(method);
+
+        return {
+            node: method.node,
+            val: methodResult
+        };
     } else {
         return retrieveProp(name, node);
     }

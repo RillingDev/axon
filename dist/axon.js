@@ -145,6 +145,7 @@ var Axon = function () {
         element.addEventListener(eventType, eventFn, false);
     };
 
+    //@TODO test those
     const REGEX_IS_FUNCTION = /\(.*\)/;
     const REGEX_IS_NUMBER = /^[\d\.]+$/;
     const REGEX_IS_STRING = /^'\w+'$/;
@@ -237,7 +238,13 @@ var Axon = function () {
      */
     const retrieveExpression = function (name, node) {
         if (REGEX_IS_FUNCTION.test(name)) {
-            return applyMethodContext(retrieveMethod(name, node));
+            const method = retrieveMethod(name, node);
+            const methodResult = applyMethodContext(method);
+
+            return {
+                node: method.node,
+                val: methodResult
+            };
         } else {
             return retrieveProp(name, node);
         }
