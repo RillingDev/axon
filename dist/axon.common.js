@@ -338,44 +338,31 @@ const AxonNode = class {
     /**
      * Runs directive over node, returns false when this node shouldnt be recursed
      * @param {"init"|"render"} type
-     * @returns {Boolean}
+     * @returns {Array}
      */
     run(type) {
-        return this
-            .directives
-            .map(directive => {
-                const directivesDictEntry = directives[directive.name];
+        return this.directives.map(directive => {
+            const directivesDictEntry = directives[directive.name];
 
-                if (!directivesDictEntry) {
-                    //Directive is not supported
-                    return true;
-                } else {
-                    if (!directivesDictEntry[type]) {
-                        //Directive doesnt have this type
-                        return true;
-                    } else {
-                        return directivesDictEntry[type](directive, this);
-                    }
-                }
-            })
-            .every(val => val !== false);
+            if (directivesDictEntry && directivesDictEntry[type]) {
+                return directivesDictEntry[type](directive, this);
+            } else {
+                return true;
+            }
+        });
     }
     /**
      * Runs execDirectives against the node and all subnodes
      * @param {"init"|"render"} type
      */
     runDeep(type) {
-        const result = this.run(type);
+        const result = this.run(type).every(val => val !== false);
 
         if (result) {
-            this
-                ._children
-                .forEach(child => {
-                    child.run(type);
-                });
+            return this._children.map(child => child.runDeep(type));
+        } else {
+            return false;
         }
-
-        return result;
     }
     /**
      * Initializes directives
