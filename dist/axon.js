@@ -148,6 +148,8 @@ var Axon = function () {
     const REGEX_IS_FUNCTION = /\(.*\)/;
     const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
 
+    const missingPropErrorFactory = propName => new Error(`missing prop/method '${propName}'`);
+
     /**
      * Gets the topmost node
      * @param {Node} node
@@ -227,7 +229,7 @@ var Axon = function () {
     const retrieveProp = function (expression, node) {
         let current = node;
 
-        while (current._parent !== false) {
+        while (current && current._parent !== false) {
             const data = findPath(current.data, expression);
 
             if (data !== false) {
@@ -239,7 +241,7 @@ var Axon = function () {
             }
         }
 
-        return false;
+        throw missingPropErrorFactory(expression);
     };
 
     /**
@@ -260,7 +262,7 @@ var Axon = function () {
 
             return data;
         } else {
-            return false;
+            throw missingPropErrorFactory(expression);
         }
     };
 
