@@ -144,9 +144,39 @@ const bindEvent = function (element, eventType, eventFn) {
 };
 
 const REGEX_IS_FUNCTION = /\(.*\)/;
-const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
+const REGEX_IS_NUMBER = /^[\d\.]+$/;
+const REGEX_IS_STRING = /^'\w+'$/;
+const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
+/**
+ * Creates a new missing-prop error
+ * @param {String} propName
+ * @returns {Error}
+ */
 const missingPropErrorFactory = propName => new Error(`missing prop/method '${propName}'`);
+
+/**
+ * Runs a method in the given context
+ * @param {Object} methodProp
+ * @returns {Mixed}
+ */
+const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
+
+/**
+ * Parses expression args to "real" values
+ *  @param {String} arg
+ * @param {Node} node
+ * @returns {Mixed}
+ */
+const mapArg = function (arg, node) {
+    if (REGEX_IS_NUMBER.test(arg)) {
+        return Number(arg);
+    } else if (REGEX_IS_STRING.test(arg)) {
+        return arg.substr(1, arg.length - 2);
+    } else {
+        return retrieveProp(arg, node);
+    }
+};
 
 /**
  * Gets the topmost node
@@ -196,13 +226,6 @@ const findPath = function (obj, path) {
 
     return false;
 };
-
-/**
- * Runs a method in the given context
- * @param {Object} methodProp
- * @returns {Mixed}
- */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
 
 /**
  * Redirects to fitting retriever and returns
@@ -255,7 +278,7 @@ const retrieveMethod = function (expression, node) {
     const data = findPath(_root.methods, matched[1]);
 
     if (data !== false) {
-        data.args = args;
+        data.args = args.map(arg => mapArg(arg, node));
         data.node = _root;
 
         return data;
@@ -390,12 +413,12 @@ const AxonNode = class {
         //return new Proxy(this, nodeProxy);
     }
     /**
-     * Runs directive on node, returns false when this node shouldnt be recursed
+     * Runs directives on the node and all subnodes
      * @param {"init"|"render"} type
-     * @returns {Array}
+     * @returns {Array|false}
      */
     run(type) {
-        return this.directives.map(directive => {
+        const runDirective = directive => {
             const directivesDictEntry = directives[directive.name];
 
             if (directivesDictEntry && directivesDictEntry[type]) {
@@ -403,19 +426,11 @@ const AxonNode = class {
             } else {
                 return true;
             }
-        });
-    }
-    /**
-     * Runs directives on the node and all subnodes
-     * @param {"init"|"render"} type
-     * @returns {Array|false}
-     */
-    runDeep(type) {
-        const result = this.run(type);
+        };
 
         //Recurse if all directives return true
-        if (result.every(val => val !== false)) {
-            return this._children.map(child => child.runDeep(type));
+        if (this.directives.map(runDirective).every(val => val === true)) {
+            return this._children.map(child => child.run(type));
         } else {
             return false;
         }
@@ -424,13 +439,13 @@ const AxonNode = class {
      * Initializes directives
      */
     init() {
-        return this.runDeep("init");
+        return this.run("init");
     }
     /**
      * Renders directives
      */
     render() {
-        return this.runDeep("render");
+        return this.run("render");
     }
 };
 

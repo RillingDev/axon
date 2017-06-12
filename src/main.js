@@ -31,12 +31,12 @@ const AxonNode = class {
         //return new Proxy(this, nodeProxy);
     }
     /**
-     * Runs directive on node, returns false when this node shouldnt be recursed
+     * Runs directives on the node and all subnodes
      * @param {"init"|"render"} type
-     * @returns {Array}
+     * @returns {Array|false}
      */
     run(type) {
-        return this.directives.map(directive => {
+        const runDirective = directive => {
             const directivesDictEntry = directivesDict[directive.name];
 
             if (directivesDictEntry && directivesDictEntry[type]) {
@@ -44,19 +44,11 @@ const AxonNode = class {
             } else {
                 return true;
             }
-        });
-    }
-    /**
-     * Runs directives on the node and all subnodes
-     * @param {"init"|"render"} type
-     * @returns {Array|false}
-     */
-    runDeep(type) {
-        const result = this.run(type);
+        };
 
         //Recurse if all directives return true
-        if (result.every(val => val !== false)) {
-            return this._children.map(child => child.runDeep(type));
+        if (this.directives.map(runDirective).every(val => val === true)) {
+            return this._children.map(child => child.run(type));
         } else {
             return false;
         }
@@ -65,13 +57,13 @@ const AxonNode = class {
      * Initializes directives
      */
     init() {
-        return this.runDeep("init");
+        return this.run("init");
     }
     /**
      * Renders directives
      */
     render() {
-        return this.runDeep("render");
+        return this.run("render");
     }
 };
 

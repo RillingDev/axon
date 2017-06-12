@@ -4,10 +4,41 @@ import {
     isDefined
 } from "../util";
 
+//@TODO test those
 const REGEX_IS_FUNCTION = /\(.*\)/;
-const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
+const REGEX_IS_NUMBER = /^[\d\.]+$/;
+const REGEX_IS_STRING = /^'\w+'$/;
+const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
+/**
+ * Creates a new missing-prop error
+ * @param {String} propName
+ * @returns {Error}
+ */
 const missingPropErrorFactory = propName => new Error(`missing prop/method '${propName}'`);
+
+/**
+ * Runs a method in the given context
+ * @param {Object} methodProp
+ * @returns {Mixed}
+ */
+const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
+
+/**
+ * Parses expression args to "real" values
+ *  @param {String} arg
+ * @param {Node} node
+ * @returns {Mixed}
+ */
+const mapArg = function (arg, node) {
+    if (REGEX_IS_NUMBER.test(arg)) {
+        return Number(arg);
+    } else if (REGEX_IS_STRING.test(arg)) {
+        return arg.substr(1, arg.length - 2);
+    } else {
+        return retrieveProp(arg, node);
+    }
+};
 
 /**
  * Gets the topmost node
@@ -57,13 +88,6 @@ const findPath = function (obj, path) {
 
     return false;
 };
-
-/**
- * Runs a method in the given context
- * @param {Object} methodProp
- * @returns {Mixed}
- */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
 
 /**
  * Redirects to fitting retriever and returns
@@ -116,7 +140,7 @@ const retrieveMethod = function (expression, node) {
     const data = findPath(_root.methods, matched[1]);
 
     if (data !== false) {
-        data.args = args;
+        data.args = args.map(arg => mapArg(arg, node));
         data.node = _root;
 
         return data;
