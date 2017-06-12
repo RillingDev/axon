@@ -1,10 +1,13 @@
 "use strict";
 
-import {retrieveExpression} from "../../controller/retrieve";
+import {
+    retrieveExpression
+} from "../../controller/retrieve";
+import {
+    DOM_ATTR_HIDDEN
+} from "../../constants";
 
-import { DOM_ATTR_HIDDEN } from "../../constants";
-
-const directiveIfRender = function(directive, node) {
+const directiveIfBoth = function (directive, node) {
     const element = node._element;
     const expressionValue = retrieveExpression(directive.val, node).val;
 
@@ -19,4 +22,6 @@ const directiveIfRender = function(directive, node) {
     }
 };
 
-export { directiveIfRender };
+export {
+    directiveIfBoth
+};

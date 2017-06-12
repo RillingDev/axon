@@ -14,7 +14,7 @@ import {
     directiveHTMLRender
 } from "./modules/directiveHTML";
 import {
-    directiveIfRender
+    directiveIfBoth
 } from "./modules/directiveIf";
 import {
     directiveOnInit
@@ -35,7 +35,8 @@ const directives = {
         render: directiveHTMLRender
     },
     "if": {
-        render: directiveIfRender
+        init: directiveIfBoth,
+        render: directiveIfBoth
     },
     "on": {
         init: directiveOnInit,

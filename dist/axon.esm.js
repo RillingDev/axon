@@ -112,23 +112,24 @@ const getNodeRoot = function (node) {
     return result;
 };
 
-const findPropInNode = function (path, obj) {
-    let entry = obj;
+const findPath = function (obj, path) {
+    const arr = path.split(".");
+    let last = obj;
     let current;
     let index = 0;
 
-    while (index < path.length) {
-        const propPath = path[index];
+    while (index < arr.length) {
+        const currentPath = arr[index];
 
-        current = entry[propPath];
+        current = last[currentPath];
 
         if (isDefined(current)) {
-            if (index < path.length - 1) {
-                entry = current;
+            if (index < arr.length - 1) {
+                last = current;
             } else {
                 return {
                     val: current,
-                    set: val => entry[propPath] = val
+                    set: val => last[currentPath] = val
                 };
             }
         }
@@ -139,7 +140,7 @@ const findPropInNode = function (path, obj) {
     return false;
 };
 
-const applyContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
+const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
 
 /**
  * Redirects to fitting retriever and returns
@@ -149,10 +150,8 @@ const applyContext = methodProp => methodProp.val.apply(methodProp.node.data, me
  */
 const retrieveExpression = function (name, node) {
     if (REGEX_IS_FUNCTION.test(name)) {
-        const methodProp = retrieveMethod(name, node);
-
         //Call method with context set to rootnode data
-        return applyContext(methodProp);
+        return applyMethodContext(retrieveMethod(name, node));
     } else {
         return retrieveProp(name, node);
     }
@@ -165,25 +164,17 @@ const retrieveExpression = function (name, node) {
  * @returns {Mixed|false}
  */
 const retrieveProp = function (expression, node) {
-    const path = expression.split(".");
-    let endReached = false;
     let current = node;
 
-    //console.log("&", [node, path]);
-
-    while (!endReached) {
-        const data = findPropInNode(path, current.data);
+    while (current._parent !== false) {
+        const data = findPath(current.data, expression);
 
         if (data !== false) {
             data.node = current;
 
             return data;
         } else {
-            if (current._parent !== false) {
-                current = current._parent;
-            } else {
-                endReached = true;
-            }
+            current = current._parent;
         }
     }
 
@@ -193,11 +184,9 @@ const retrieveProp = function (expression, node) {
 //@TODO
 const retrieveMethod = function (expression, node) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
-    const path = matched[1].split(".");
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const _root = getNodeRoot(node);
-
-    const data = findPropInNode(path, _root.methods);
+    const data = findPath(_root.methods, matched[1]);
 
     if (data !== false) {
         data.args = args;
@@ -219,14 +208,14 @@ const getNodeContentProp = function (node) {
     }
 };
 
-const directiveModelInit = function(directive, node) {
+const directiveModelInit = function (directive, node) {
     const element = node._element;
     const elementContentProp = getNodeContentProp(element);
-    const eventFn = function() {
+    const eventFn = function () {
         const targetProp = retrieveProp(directive.val, node);
 
         targetProp.set(element[elementContentProp]);
-        //targetProp.node.render();
+        targetProp.node.render();
     };
 
     bindEvent(element, DOM_EVENT_MODEL, eventFn);
@@ -234,7 +223,7 @@ const directiveModelInit = function(directive, node) {
     return true;
 };
 
-const directiveModelRender = function(directive, node) {
+const directiveModelRender = function (directive, node) {
     const element = node._element;
     const elementContentProp = getNodeContentProp(element);
     const targetProp = retrieveProp(directive.val, node);
@@ -244,25 +233,25 @@ const directiveModelRender = function(directive, node) {
     return true;
 };
 
-const directiveBindRender = function(directive, node) {
+const directiveBindRender = function (directive, node) {
     node._element.setAttribute(directive.opt, retrieveExpression(directive.val, node).val);
 
     return true;
 };
 
-const directiveTextRender = function(directive, node) {
+const directiveTextRender = function (directive, node) {
     node._element[DOM_PROP_TEXT] = retrieveExpression(directive.val, node).val;
 
     return true;
 };
 
-const directiveHTMLRender = function(directive, node) {
+const directiveHTMLRender = function (directive, node) {
     node._element[DOM_PROP_HTML] = retrieveExpression(directive.val, node).val;
 
     return true;
 };
 
-const directiveIfRender = function(directive, node) {
+const directiveIfBoth = function (directive, node) {
     const element = node._element;
     const expressionValue = retrieveExpression(directive.val, node).val;
 
@@ -280,9 +269,7 @@ const directiveIfRender = function(directive, node) {
 const directiveOnInit = function (directive, node) {
     const methodProp = retrieveMethod(directive.val, node);
 
-    bindEvent(node._element, directive.opt, () => {
-        return methodProp.val.apply(methodProp.node.data, methodProp.args);
-    });
+    bindEvent(node._element, directive.opt, () => applyMethodContext(methodProp));
 
     return true;
 };
@@ -302,7 +289,8 @@ const directives = {
         render: directiveHTMLRender
     },
     "if": {
-        render: directiveIfRender
+        init: directiveIfBoth,
+        render: directiveIfBoth
     },
     "on": {
         init: directiveOnInit,

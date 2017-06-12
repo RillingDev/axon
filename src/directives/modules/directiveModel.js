@@ -1,18 +1,24 @@
 "use strict";
 
-import { DOM_EVENT_MODEL } from "../../constants";
-import { bindEvent } from "../../dom/event";
-import {retrieveProp} from "../../controller/retrieve";
+import {
+    DOM_EVENT_MODEL
+} from "../../constants";
+import {
+    bindEvent
+} from "../../dom/event";
+import {
+    retrieveProp
+} from "../../controller/retrieve";
 import getElementContentProp from "../../dom/getElementContentProp";
 
-const directiveModelInit = function(directive, node) {
+const directiveModelInit = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
-    const eventFn = function() {
+    const eventFn = function () {
         const targetProp = retrieveProp(directive.val, node);
 
         targetProp.set(element[elementContentProp]);
-        //targetProp.node.render();
+        targetProp.node.render();
     };
 
     bindEvent(element, DOM_EVENT_MODEL, eventFn);
@@ -20,7 +26,7 @@ const directiveModelInit = function(directive, node) {
     return true;
 };
 
-const directiveModelRender = function(directive, node) {
+const directiveModelRender = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
     const targetProp = retrieveProp(directive.val, node);
@@ -30,4 +36,7 @@ const directiveModelRender = function(directive, node) {
     return true;
 };
 
-export { directiveModelInit, directiveModelRender };
+export {
+    directiveModelInit,
+    directiveModelRender
+};
