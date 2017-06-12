@@ -1,6 +1,6 @@
 "use strict";
 
-import retrieveExpression from "../../controller/retrieveExpression";
+import {retrieveExpression} from "../../controller/retrieve";
 import { DOM_PROP_HTML } from "../../constants";
 
 const directiveHTMLRender = function(directive, node) {

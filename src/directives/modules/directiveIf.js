@@ -1,6 +1,6 @@
 "use strict";
 
-import retrieveExpression from "../../controller/retrieveExpression";
+import {retrieveExpression} from "../../controller/retrieve";
 
 import { DOM_ATTR_HIDDEN } from "../../constants";
 

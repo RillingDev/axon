@@ -2,7 +2,7 @@
 
 import { DOM_EVENT_MODEL } from "../../constants";
 import { bindEvent } from "../../dom/event";
-import retrieveProp from "../../controller/retrieveProp";
+import {retrieveProp} from "../../controller/retrieve";
 import getElementContentProp from "../../dom/getElementContentProp";
 
 const directiveModelInit = function(directive, node) {
@@ -12,7 +12,7 @@ const directiveModelInit = function(directive, node) {
         const targetProp = retrieveProp(directive.val, node);
 
         targetProp.set(element[elementContentProp]);
-        targetProp.node.render();
+        //targetProp.node.render();
     };
 
     bindEvent(element, DOM_EVENT_MODEL, eventFn);

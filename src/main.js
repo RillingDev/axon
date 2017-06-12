@@ -1,14 +1,14 @@
 "use strict";
 
+import {
+    cloneArray,
+    flattenArray
+} from "./util";
 import query from "./dom/query";
 import {
     hasDirectives,
     getDirectives
 } from "./dom/directive";
-import {
-    cloneArray,
-    flattenArray
-} from "./util";
 import directivesDict from "./directives/index";
 
 /**
@@ -18,16 +18,16 @@ import directivesDict from "./directives/index";
 const AxonNode = class {
     /**
      * Axon Element Node Constructor
-     * @param {Element} element
+     * @param {Object} data
+     * @param {Element} _element
      * @param {Element} _parent
-     * @param {Element|true} _root
      */
-    constructor(_element, _parent = null, _root = this) {
+    constructor(data = {}, _element = null, _parent = null) {
         const node = this;
         const recurseSubNodes = function (child) {
             if (hasDirectives(child)) {
                 //-> Recurse
-                return new AxonNode(child, node, _root);
+                return new AxonNode({}, child, node);
             } else if (child.children.length > 0) {
                 //-> Enter Children
                 return getSubNodes(child.children);
@@ -38,14 +38,14 @@ const AxonNode = class {
         };
         const getSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
 
-        this.data = {}; //@TODO attach proxy
-
+        this.data = data; //@TODO attach proxy
         this.directives = getDirectives(_element);
 
         this._element = _element;
         this._parent = _parent;
-        this._root = _root;
         this._children = getSubNodes(_element.children);
+
+        //return new Proxy(this, nodeProxy);
     }
     /**
      * Runs directive over node, returns false when this node shouldnt be recursed
@@ -114,9 +114,8 @@ const AxonNodeRoot = class extends AxonNode {
      * @param {Object} cfg Config data for the Axon instance
      */
     constructor(cfg) {
-        super(query(cfg.el));
+        super(cfg.data, query(cfg.el));
 
-        this.data = cfg.data || {};
         this.methods = cfg.methods || {};
 
         this.init();

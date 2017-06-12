@@ -14,8 +14,8 @@
     <div id="myApp">
         <div>
             <label>Name:</label>
-            <input type="text" x-model="foo.bar">
-            <div >
+            <input type="text" x-model="foo.bar" x-on:input="eventy(1,2,3)">
+            <div>
                 <div>
                     <p>Hello <span x-text="foo.bar"></span>! <span x-text="foo.bar"></span> is cool!</p>
                     <p>Length: <span x-text="foo.bar.length"></span></p>

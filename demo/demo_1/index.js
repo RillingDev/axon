@@ -12,8 +12,10 @@ const app = new Axon({
         getFoo() {
             return "fooo";
         },
-        eventy() {
-            console.log("AAAAAAAAA");
+        eventy(a, b, c) {
+            const vm = this;
+
+            console.log("AAAAAAAAA", vm, a, b, c);
         }
     }
 });

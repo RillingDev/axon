@@ -1,6 +1,6 @@
 "use strict";
 
-import retrieveExpression from "../../controller/retrieveExpression";
+import {retrieveExpression} from "../../controller/retrieve";
 
 const directiveBindRender = function(directive, node) {
     node._element.setAttribute(directive.opt, retrieveExpression(directive.val, node).val);

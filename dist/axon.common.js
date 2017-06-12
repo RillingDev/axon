@@ -101,7 +101,20 @@ const bindEvent = function (node, eventType, eventFn) {
     return node.addEventListener(eventType, eventFn, false);
 };
 
-const findPropInNode = function(path, obj) {
+const REGEX_IS_FUNCTION = /\(.*\)/;
+const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
+
+const getNodeRoot = function (node) {
+    let result = node;
+
+    while (result._parent !== null) {
+        result = result._parent;
+    }
+
+    return result;
+};
+
+const findPropInNode = function (path, obj) {
     let entry = obj;
     let current;
     let index = 0;
@@ -128,13 +141,32 @@ const findPropInNode = function(path, obj) {
     return false;
 };
 
+const applyContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
+
+/**
+ * Redirects to fitting retriever and returns
+ * @param {String} name
+ * @param {Axon} node
+ * @returns {Mixed}
+ */
+const retrieveExpression = function (name, node) {
+    if (REGEX_IS_FUNCTION.test(name)) {
+        const methodProp = retrieveMethod(name, node);
+
+        //Call method with context set to rootnode data
+        return applyContext(methodProp);
+    } else {
+        return retrieveProp(name, node);
+    }
+};
+
 /**
  * Retrieves a prop from the data container
  * @param {String} expression
  * @param {AxonNode} node
  * @returns {Mixed|false}
  */
-const retrieveProp = function(expression, node) {
+const retrieveProp = function (expression, node) {
     const path = expression.split(".");
     let endReached = false;
     let current = node;
@@ -160,6 +192,25 @@ const retrieveProp = function(expression, node) {
     return false;
 };
 
+//@TODO
+const retrieveMethod = function (expression, node) {
+    const matched = expression.match(REGEX_CONTENT_METHOD);
+    const path = matched[1].split(".");
+    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
+    const _root = getNodeRoot(node);
+
+    const data = findPropInNode(path, _root.methods);
+
+    if (data !== false) {
+        data.args = args;
+        data.node = _root;
+
+        return data;
+    } else {
+        return false;
+    }
+};
+
 const getNodeContentProp = function (node) {
     if (isDefined(node[DOM_PROP_VALUE])) {
         return DOM_PROP_VALUE;
@@ -177,7 +228,7 @@ const directiveModelInit = function(directive, node) {
         const targetProp = retrieveProp(directive.val, node);
 
         targetProp.set(element[elementContentProp]);
-        targetProp.node.render();
+        //targetProp.node.render();
     };
 
     bindEvent(element, DOM_EVENT_MODEL, eventFn);
@@ -195,66 +246,27 @@ const directiveModelRender = function(directive, node) {
     return true;
 };
 
-const REGEX_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
-
-//@TODO
-const retrieveMethod = function(expression, node) {
-    const matched = expression.match(REGEX_METHOD);
-    const path = matched[1].split(".");
-    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
-
-    const data = findPropInNode(path, node._root.methods);
-
-    if (data !== false) {
-        data.args = args;
-
-        return data;
-    } else {
-        return false;
-    }
-};
-
-const REGEX_FUNCTION = /\(.*\)/;
-
-/**
- * Redirects to fitting retriever and returns
- * @param {String} name
- * @param {Axon} node
- * @returns {Mixed}
- */
-const evaluateExpression = function (name, node) {
-    if (REGEX_FUNCTION.test(name)) {
-        const methodProp = retrieveMethod(name, node);
-
-        methodProp.val = methodProp.val.apply(node._root, methodProp.args);
-
-        return methodProp;
-    } else {
-        return retrieveProp(name, node);
-    }
-};
-
 const directiveBindRender = function(directive, node) {
-    node._element.setAttribute(directive.opt, evaluateExpression(directive.val, node).val);
+    node._element.setAttribute(directive.opt, retrieveExpression(directive.val, node).val);
 
     return true;
 };
 
 const directiveTextRender = function(directive, node) {
-    node._element[DOM_PROP_TEXT] = evaluateExpression(directive.val, node).val;
+    node._element[DOM_PROP_TEXT] = retrieveExpression(directive.val, node).val;
 
     return true;
 };
 
 const directiveHTMLRender = function(directive, node) {
-    node._element[DOM_PROP_HTML] = evaluateExpression(directive.val, node).val;
+    node._element[DOM_PROP_HTML] = retrieveExpression(directive.val, node).val;
 
     return true;
 };
 
 const directiveIfRender = function(directive, node) {
     const element = node._element;
-    const expressionValue = evaluateExpression(directive.val, node).val;
+    const expressionValue = retrieveExpression(directive.val, node).val;
 
     if (expressionValue) {
         element.removeAttribute(DOM_ATTR_HIDDEN);
@@ -267,8 +279,12 @@ const directiveIfRender = function(directive, node) {
     }
 };
 
-const directiveOnInit = function(directive, node) {
-    bindEvent(node._element, directive.opt, retrieveMethod(directive.val, node).val);
+const directiveOnInit = function (directive, node) {
+    const methodProp = retrieveMethod(directive.val, node);
+
+    bindEvent(node._element, directive.opt, () => {
+        return methodProp.val.apply(methodProp.node.data, methodProp.args);
+    });
 
     return true;
 };
@@ -302,16 +318,16 @@ const directives = {
 const AxonNode = class {
     /**
      * Axon Element Node Constructor
-     * @param {Element} element
+     * @param {Object} data
+     * @param {Element} _element
      * @param {Element} _parent
-     * @param {Element|true} _root
      */
-    constructor(_element, _parent = null, _root = this) {
+    constructor(data = {}, _element = null, _parent = null) {
         const node = this;
         const recurseSubNodes = function (child) {
             if (hasDirectives(child)) {
                 //-> Recurse
-                return new AxonNode(child, node, _root);
+                return new AxonNode({}, child, node);
             } else if (child.children.length > 0) {
                 //-> Enter Children
                 return getSubNodes(child.children);
@@ -322,14 +338,14 @@ const AxonNode = class {
         };
         const getSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
 
-        this.data = {}; //@TODO attach proxy
-
+        this.data = data; //@TODO attach proxy
         this.directives = getDirectives(_element);
 
         this._element = _element;
         this._parent = _parent;
-        this._root = _root;
         this._children = getSubNodes(_element.children);
+
+        //return new Proxy(this, nodeProxy);
     }
     /**
      * Runs directive over node, returns false when this node shouldnt be recursed
@@ -398,9 +414,8 @@ const AxonNodeRoot = class extends AxonNode {
      * @param {Object} cfg Config data for the Axon instance
      */
     constructor(cfg) {
-        super(query(cfg.el));
+        super(cfg.data, query(cfg.el));
 
-        this.data = cfg.data || {};
         this.methods = cfg.methods || {};
 
         this.init();
