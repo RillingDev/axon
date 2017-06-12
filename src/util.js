@@ -33,6 +33,16 @@ const flattenArray = function (arr) {
     return result;
 };
 
+/**
+ * Checks if a vlue is not undefined
+ * @param {Mixed} val
+ * @returns {Boolean}
+ */
 const isDefined = val => typeof val !== "undefined";
 
-export {cloneArray, isArray, flattenArray, isDefined};
+export {
+    cloneArray,
+    isArray,
+    flattenArray,
+    isDefined
+};

@@ -1,14 +1,12 @@
 "use strict";
 
-import {
-    cloneArray,
-    flattenArray
-} from "./util";
 import query from "./dom/query";
 import {
-    hasDirectives,
     getDirectives
 } from "./dom/directive";
+import {
+    getSubNodes
+} from "./dom/nodes";
 import directivesDict from "./directives/index";
 
 /**
@@ -18,37 +16,22 @@ import directivesDict from "./directives/index";
 const AxonNode = class {
     /**
      * Axon Element Node Constructor
-     * @param {Object} data
      * @param {Element} _element
-     * @param {Element} _parent
+     * @param {Element} _parent´
+     * @param {Object} data
      */
-    constructor(data = {}, _element = null, _parent = null) {
-        const node = this;
-        const recurseSubNodes = function (child) {
-            if (hasDirectives(child)) {
-                //-> Recurse
-                return new AxonNode({}, child, node);
-            } else if (child.children.length > 0) {
-                //-> Enter Children
-                return getSubNodes(child.children);
-            } else {
-                //-> Exit dead-end
-                return null;
-            }
-        };
-        const getSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
-
-        this.data = data; //@TODO attach proxy
-        this.directives = getDirectives(_element);
-
+    constructor(_element = null, _parent = null, data = {}) {
         this._element = _element;
         this._parent = _parent;
-        this._children = getSubNodes(_element.children);
+        this._children = getSubNodes(this, _element.children, AxonNode);
+
+        this.directives = getDirectives(_element);
+        this.data = data; //@TODO attach proxy
 
         //return new Proxy(this, nodeProxy);
     }
     /**
-     * Runs directive over node, returns false when this node shouldnt be recursed
+     * Runs directive on node, returns false when this node shouldnt be recursed
      * @param {"init"|"render"} type
      * @returns {Array}
      */
@@ -64,13 +47,15 @@ const AxonNode = class {
         });
     }
     /**
-     * Runs execDirectives against the node and all subnodes
+     * Runs directives on the node and all subnodes
      * @param {"init"|"render"} type
+     * @returns {Array|false}
      */
     runDeep(type) {
-        const result = this.run(type).every(val => val !== false);
+        const result = this.run(type);
 
-        if (result) {
+        //Recurse if all directives return true
+        if (result.every(val => val !== false)) {
             return this._children.map(child => child.runDeep(type));
         } else {
             return false;
@@ -100,8 +85,8 @@ const AxonNodeRoot = class extends AxonNode {
      * @constructor
      * @param {Object} cfg Config data for the Axon instance
      */
-    constructor(cfg) {
-        super(cfg.data, query(cfg.el));
+    constructor(cfg = {}) {
+        super(query(cfg.el), null, cfg.data);
 
         this.methods = cfg.methods || {};
 

@@ -35,6 +35,11 @@ var Axon = function () {
         return result;
     };
 
+    /**
+     * Checks if a vlue is not undefined
+     * @param {Mixed} val
+     * @returns {Boolean}
+     */
     const isDefined = val => typeof val !== "undefined";
 
     /**
@@ -95,17 +100,59 @@ var Axon = function () {
         });
     };
 
-    //@TODO
+    /**
+     * Recursively gets all subnodes
+     * @param {AxonNode} node
+     * @param {ElementList} children
+     * @param {class} AxonNode
+     * @returns {Array}
+     */
+    const getSubNodes = function (node, children, AxonNode) {
+        /**
+         * Iterate over a single child DOM element
+         * @param {Element} child
+         * @returns {AxonNode|null}
+         */
+        const recurseSubNodes = function (child) {
+            if (hasDirectives(child)) {
+                //-> Recurse
+                return new AxonNode(child, node, {});
+            } else if (child.children.length > 0) {
+                //-> Enter Children
+                return mapSubNodes(child.children);
+            } else {
+                //-> Exit dead-end
+                return null;
+            }
+        };
+        /**
+         * Maps and processes Array of children
+         * @param {Array} children
+         * @returns {Array}
+         */
+        const mapSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
 
-    //import getNodeValueType from "./getNodeValueType";
+        return mapSubNodes(children);
+    };
 
-    const bindEvent = function (node, eventType, eventFn) {
-        return node.addEventListener(eventType, eventFn, false);
+    /**
+     * addEventListener shorthand
+     * @param {Element} node
+     * @param {String} eventType
+     * @param {Function} eventFn
+     */
+    const bindEvent = function (element, eventType, eventFn) {
+        element.addEventListener(eventType, eventFn, false);
     };
 
     const REGEX_IS_FUNCTION = /\(.*\)/;
     const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
 
+    /**
+     * Gets the topmost node
+     * @param {Node} node
+     * @returns {Node}
+     */
     const getNodeRoot = function (node) {
         let result = node;
 
@@ -116,6 +163,12 @@ var Axon = function () {
         return result;
     };
 
+    /**
+     * Finds a string-path as object property
+     * @param {Object} obj
+     * @param {String} path
+     * @returns {Object|false}
+     */
     const findPath = function (obj, path) {
         const arr = path.split(".");
         let last = obj;
@@ -144,6 +197,11 @@ var Axon = function () {
         return false;
     };
 
+    /**
+     * Runs a method in the given context
+     * @param {Object} methodProp
+     * @returns {Mixed}
+     */
     const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
 
     /**
@@ -154,7 +212,6 @@ var Axon = function () {
      */
     const retrieveExpression = function (name, node) {
         if (REGEX_IS_FUNCTION.test(name)) {
-            //Call method with context set to rootnode data
             return applyMethodContext(retrieveMethod(name, node));
         } else {
             return retrieveProp(name, node);
@@ -185,7 +242,12 @@ var Axon = function () {
         return false;
     };
 
-    //@TODO
+    /**
+     * Retrieves a method from the method container
+     * @param {String} expression
+     * @param {AxonNode} node
+     * @returns {Mixed|false}
+     */
     const retrieveMethod = function (expression, node) {
         const matched = expression.match(REGEX_CONTENT_METHOD);
         const args = isDefined(matched[2]) ? matched[2].split(",") : [];
@@ -202,10 +264,15 @@ var Axon = function () {
         }
     };
 
-    const getNodeContentProp = function (node) {
-        if (isDefined(node[DOM_PROP_VALUE])) {
+    /**
+     * Checks which type of content property an Element uses
+     * @param {Element} element
+     * @returns {String}
+     */
+    const getElementContentProp = function (element) {
+        if (isDefined(element[DOM_PROP_VALUE])) {
             return DOM_PROP_VALUE;
-        } else if (isDefined(node[DOM_PROP_TEXT])) {
+        } else if (isDefined(element[DOM_PROP_TEXT])) {
             return DOM_PROP_TEXT;
         } else {
             return DOM_PROP_HTML;
@@ -214,7 +281,7 @@ var Axon = function () {
 
     const directiveModelInit = function (directive, node) {
         const element = node._element;
-        const elementContentProp = getNodeContentProp(element);
+        const elementContentProp = getElementContentProp(element);
         const eventFn = function () {
             const targetProp = retrieveProp(directive.val, node);
 
@@ -229,7 +296,7 @@ var Axon = function () {
 
     const directiveModelRender = function (directive, node) {
         const element = node._element;
-        const elementContentProp = getNodeContentProp(element);
+        const elementContentProp = getElementContentProp(element);
         const targetProp = retrieveProp(directive.val, node);
 
         element[elementContentProp] = String(targetProp.val);
@@ -308,37 +375,22 @@ var Axon = function () {
     const AxonNode = class {
         /**
          * Axon Element Node Constructor
-         * @param {Object} data
          * @param {Element} _element
-         * @param {Element} _parent
+         * @param {Element} _parent´
+         * @param {Object} data
          */
-        constructor(data = {}, _element = null, _parent = null) {
-            const node = this;
-            const recurseSubNodes = function (child) {
-                if (hasDirectives(child)) {
-                    //-> Recurse
-                    return new AxonNode({}, child, node);
-                } else if (child.children.length > 0) {
-                    //-> Enter Children
-                    return getSubNodes(child.children);
-                } else {
-                    //-> Exit dead-end
-                    return null;
-                }
-            };
-            const getSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
-
-            this.data = data; //@TODO attach proxy
-            this.directives = getDirectives(_element);
-
+        constructor(_element = null, _parent = null, data = {}) {
             this._element = _element;
             this._parent = _parent;
-            this._children = getSubNodes(_element.children);
+            this._children = getSubNodes(this, _element.children, AxonNode);
+
+            this.directives = getDirectives(_element);
+            this.data = data; //@TODO attach proxy
 
             //return new Proxy(this, nodeProxy);
         }
         /**
-         * Runs directive over node, returns false when this node shouldnt be recursed
+         * Runs directive on node, returns false when this node shouldnt be recursed
          * @param {"init"|"render"} type
          * @returns {Array}
          */
@@ -354,13 +406,15 @@ var Axon = function () {
             });
         }
         /**
-         * Runs execDirectives against the node and all subnodes
+         * Runs directives on the node and all subnodes
          * @param {"init"|"render"} type
+         * @returns {Array|false}
          */
         runDeep(type) {
-            const result = this.run(type).every(val => val !== false);
+            const result = this.run(type);
 
-            if (result) {
+            //Recurse if all directives return true
+            if (result.every(val => val !== false)) {
                 return this._children.map(child => child.runDeep(type));
             } else {
                 return false;
@@ -390,8 +444,8 @@ var Axon = function () {
          * @constructor
          * @param {Object} cfg Config data for the Axon instance
          */
-        constructor(cfg) {
-            super(cfg.data, query(cfg.el));
+        constructor(cfg = {}) {
+            super(query(cfg.el), null, cfg.data);
 
             this.methods = cfg.methods || {};
 

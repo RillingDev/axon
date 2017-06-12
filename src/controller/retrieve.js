@@ -1,12 +1,17 @@
 "use strict";
 
-const REGEX_IS_FUNCTION = /\(.*\)/;
-const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
-
 import {
     isDefined
 } from "../util";
 
+const REGEX_IS_FUNCTION = /\(.*\)/;
+const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]+)*)?\s*\)\s*/;
+
+/**
+ * Gets the topmost node
+ * @param {Node} node
+ * @returns {Node}
+ */
 const getNodeRoot = function (node) {
     let result = node;
 
@@ -17,6 +22,12 @@ const getNodeRoot = function (node) {
     return result;
 };
 
+/**
+ * Finds a string-path as object property
+ * @param {Object} obj
+ * @param {String} path
+ * @returns {Object|false}
+ */
 const findPath = function (obj, path) {
     const arr = path.split(".");
     let last = obj;
@@ -45,6 +56,11 @@ const findPath = function (obj, path) {
     return false;
 };
 
+/**
+ * Runs a method in the given context
+ * @param {Object} methodProp
+ * @returns {Mixed}
+ */
 const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
 
 /**
@@ -55,7 +71,6 @@ const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.da
  */
 const retrieveExpression = function (name, node) {
     if (REGEX_IS_FUNCTION.test(name)) {
-        //Call method with context set to rootnode data
         return applyMethodContext(retrieveMethod(name, node));
     } else {
         return retrieveProp(name, node);
@@ -86,7 +101,12 @@ const retrieveProp = function (expression, node) {
     return false;
 };
 
-//@TODO
+/**
+ * Retrieves a method from the method container
+ * @param {String} expression
+ * @param {AxonNode} node
+ * @returns {Mixed|false}
+ */
 const retrieveMethod = function (expression, node) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];

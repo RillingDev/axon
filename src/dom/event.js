@@ -1,10 +1,13 @@
 "use strict";
-//@TODO
 
-//import getNodeValueType from "./getNodeValueType";
-
-const bindEvent = function (node, eventType, eventFn) {
-    return node.addEventListener(eventType, eventFn, false);
+/**
+ * addEventListener shorthand
+ * @param {Element} node
+ * @param {String} eventType
+ * @param {Function} eventFn
+ */
+const bindEvent = function (element, eventType, eventFn) {
+    element.addEventListener(eventType, eventFn, false);
 };
 
 export {
