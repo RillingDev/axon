@@ -396,13 +396,14 @@ var Axon = function () {
 
     const cleanDirectiveDyns = function (parent) {
         cloneArray(parent.children).forEach(child => {
+            console.log([child, hasDirective(child, DOM_DIR_DYN)]);
             if (hasDirective(child, DOM_DIR_DYN)) {
                 child.remove();
             }
         });
     };
 
-    const directiveForRender = function (directive, node) {
+    const directiveForRender = function (directive, node, AxonNode) {
         const directiveSplit = directive.val.split(" ");
         const iteratorKey = directiveSplit[0];
         const iterable = retrieveProp(directiveSplit[2], node).val;
@@ -412,11 +413,15 @@ var Axon = function () {
         cleanDirectiveDyns(element.parentElement);
 
         for (let i of iterable) {
-            const nodeI = Object.assign({}, node);
+            const nodeElement = element.cloneNode();
+            const nodeData = Object.assign({}, node.data);
 
-            nodeI[iteratorKey] = i;
+            setDirective(nodeElement, DOM_DIR_DYN, true);
+            removeDirective(nodeElement, "for");
 
-            nodesNew.push(nodeI);
+            nodeData[iteratorKey] = i;
+
+            nodesNew.push(new AxonNode(element.appendChild(nodeElement), node._parent, nodeData));
         }
 
         console.log({
@@ -424,16 +429,7 @@ var Axon = function () {
             nodesNew
         });
 
-        nodesNew.forEach(nodeNew => {
-            const elementNew = element.cloneNode();
-
-            setDirective(elementNew, DOM_DIR_DYN, true);
-            removeDirective(elementNew, "for");
-
-            nodeNew._element = element.appendChild(elementNew);
-        });
-
-        //node._children = nodesNew;
+        node._children = nodesNew;
 
         return true;
     };
@@ -533,7 +529,7 @@ var Axon = function () {
                 const directivesDictEntry = directives[directive.name];
 
                 if (directivesDictEntry && directivesDictEntry[type]) {
-                    return directivesDictEntry[type](directive, this);
+                    return directivesDictEntry[type](directive, this, AxonNode);
                 } else {
                     return true;
                 }

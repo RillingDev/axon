@@ -46,7 +46,7 @@ const AxonNode = class {
             const directivesDictEntry = directivesDict[directive.name];
 
             if (directivesDictEntry && directivesDictEntry[type]) {
-                return directivesDictEntry[type](directive, this);
+                return directivesDictEntry[type](directive, this, AxonNode);
             } else {
                 return true;
             }

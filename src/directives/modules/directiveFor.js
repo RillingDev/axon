@@ -16,13 +16,14 @@ const DOM_DIR_DYN = "dyn";
 
 const cleanDirectiveDyns = function (parent) {
     cloneArray(parent.children).forEach(child => {
+        console.log([child, hasDirective(child, DOM_DIR_DYN)]);
         if (hasDirective(child, DOM_DIR_DYN)) {
             child.remove();
         }
     });
 };
 
-const directiveForRender = function (directive, node) {
+const directiveForRender = function (directive, node, AxonNode) {
     const directiveSplit = directive.val.split(" ");
     const iteratorKey = directiveSplit[0];
     const iterable = retrieveProp(directiveSplit[2], node).val;
@@ -32,11 +33,15 @@ const directiveForRender = function (directive, node) {
     cleanDirectiveDyns(element.parentElement);
 
     for (let i of iterable) {
-        const nodeI = Object.assign({}, node);
+        const nodeElement = element.cloneNode();
+        const nodeData = Object.assign({}, node.data);
 
-        nodeI[iteratorKey] = i;
+        setDirective(nodeElement, DOM_DIR_DYN, true);
+        removeDirective(nodeElement, "for");
 
-        nodesNew.push(nodeI);
+        nodeData[iteratorKey] = i;
+
+        nodesNew.push(new AxonNode(element.appendChild(nodeElement), node._parent, nodeData));
     }
 
     console.log({
@@ -44,16 +49,7 @@ const directiveForRender = function (directive, node) {
         nodesNew,
     });
 
-    nodesNew.forEach(nodeNew => {
-        const elementNew = element.cloneNode();
-
-        setDirective(elementNew, DOM_DIR_DYN, true);
-        removeDirective(elementNew, "for");
-
-        nodeNew._element = element.appendChild(elementNew);
-    });
-
-    //node._children = nodesNew;
+    node._children = nodesNew;
 
     return true;
 };
