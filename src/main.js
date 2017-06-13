@@ -7,8 +7,10 @@ import {
 import {
     getSubNodes
 } from "./dom/nodes";
+import {
+    nodeProxy
+} from "./controller/proxy";
 import directivesDict from "./directives/index";
-
 /**
  * Axon Node
  * @class
@@ -26,9 +28,9 @@ const AxonNode = class {
         this._children = getSubNodes(this, _element.children, AxonNode);
 
         this.directives = getDirectives(_element);
-        this.data = data; //@TODO attach proxy
+        this.data = data;
 
-        //return new Proxy(this, nodeProxy);
+        return new Proxy(this, nodeProxy);
     }
     /**
      * Runs directives on the node and all subnodes

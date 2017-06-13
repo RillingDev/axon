@@ -24,4 +24,6 @@ const getElementContentProp = function (element) {
     }
 };
 
-export default getElementContentProp;
+export {
+    getElementContentProp
+};

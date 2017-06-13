@@ -9,7 +9,9 @@ import {
 import {
     retrieveProp
 } from "../../controller/retrieve";
-import getElementContentProp from "../../dom/getElementContentProp";
+import {
+    getElementContentProp
+} from "../../dom/element";
 
 const directiveModelInit = function (directive, node) {
     const element = node._element;
@@ -17,7 +19,7 @@ const directiveModelInit = function (directive, node) {
     const eventFn = function () {
         const targetProp = retrieveProp(directive.val, node);
 
-        targetProp.set(element[elementContentProp]);
+        targetProp.con[targetProp.key] = element[elementContentProp];
         targetProp.node.render();
     };
 

@@ -131,6 +131,16 @@ const getSubNodes = function (node, children, AxonNode) {
     return mapSubNodes(children);
 };
 
+const nodeProxy = {
+    get: (target, key) => {
+        if (key in target.data) {
+            return target.data[key];
+        } else {
+            return target[key];
+        }
+    }
+};
+
 /**
  * addEventListener shorthand
  * @param {Element} node
@@ -159,7 +169,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
+const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node, methodProp.args);
 
 /**
  * Parses expression args to "real" values
@@ -215,7 +225,8 @@ const findPath = function (obj, path) {
             } else {
                 return {
                     val: current,
-                    set: val => last[currentPath] = val
+                    con: last,
+                    key: currentPath
                 };
             }
         }
@@ -313,7 +324,7 @@ const directiveModelInit = function (directive, node) {
     const eventFn = function () {
         const targetProp = retrieveProp(directive.val, node);
 
-        targetProp.set(element[elementContentProp]);
+        targetProp.con[targetProp.key] = element[elementContentProp];
         targetProp.node.render();
     };
 
@@ -413,9 +424,9 @@ const AxonNode = class {
         this._children = getSubNodes(this, _element.children, AxonNode);
 
         this.directives = getDirectives(_element);
-        this.data = data; //@TODO attach proxy
+        this.data = data;
 
-        //return new Proxy(this, nodeProxy);
+        return new Proxy(this, nodeProxy);
     }
     /**
      * Runs directives on the node and all subnodes

@@ -22,7 +22,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
+const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node, methodProp.args);
 
 /**
  * Parses expression args to "real" values
@@ -78,7 +78,8 @@ const findPath = function (obj, path) {
             } else {
                 return {
                     val: current,
-                    set: val => last[currentPath] = val
+                    con: last,
+                    key: currentPath
                 };
             }
         }
