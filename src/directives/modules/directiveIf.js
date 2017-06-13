@@ -9,7 +9,7 @@ import {
 
 const directiveIfBoth = function (directive, node) {
     const element = node._element;
-    const expressionValue = retrieveExpression(directive.val, node).val;
+    const expressionValue = retrieveExpression(directive.val, node, true).val;
 
     if (expressionValue) {
         element.removeAttribute(DOM_ATTR_HIDDEN);

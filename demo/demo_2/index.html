@@ -16,21 +16,21 @@
             <h2>Active</h2>
             <div>
                 <h3>Model</h3>
-                <input type="text" x-model="model_1">
-                <p x-model="model_1"></p>
+                <input type="text" x-model="foo">
+                <p x-model="foo"></p>
             </div>
             <hr>
             <div>
                 <h3>Bind:value</h3>
-                <input type="text" x-bind:value="model_1">
+                <input type="text" x-bind:value="foo">
                 <input type="text" x-bind:value="getFoobar('hello')">
             </div>
             <hr>
             <div>
                 <h3>For</h3>
                 <ul>
-                    <li x-for="i in randomNumbers">
-                        <span x-model="i"></span>
+                    <li x-for="i in list">
+                        <span x-text="i"></span>
                     </li>
                 </ul>
             </div>

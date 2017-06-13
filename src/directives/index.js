@@ -8,6 +8,9 @@ import {
     directiveBindRender
 } from "./modules/directiveBind";
 import {
+    directiveForRender
+} from "./modules/directiveFor";
+import {
     directiveTextRender
 } from "./modules/directiveText";
 import {
@@ -27,6 +30,9 @@ const directives = {
     },
     "bind": {
         render: directiveBindRender
+    },
+    "for": {
+        render: directiveForRender
     },
     "text": {
         render: directiveTextRender

@@ -11,6 +11,7 @@ import {
     nodeProxy
 } from "./controller/proxy";
 import directivesDict from "./directives/index";
+
 /**
  * Axon Node
  * @class
@@ -23,14 +24,17 @@ const AxonNode = class {
      * @param {Object} data
      */
     constructor(_element = null, _parent = null, data = {}) {
-        this._element = _element;
-        this._parent = _parent;
-        this._children = getSubNodes(this, _element.children, AxonNode);
+        const proxy = new Proxy(this, nodeProxy);
 
-        this.directives = getDirectives(_element);
-        this.data = data;
+        proxy.data = data;
 
-        return new Proxy(this, nodeProxy);
+        proxy._element = _element;
+        proxy._parent = _parent;
+        proxy._children = getSubNodes(proxy, _element.children, AxonNode);
+
+        proxy.directives = getDirectives(_element);
+
+        return proxy;
     }
     /**
      * Runs directives on the node and all subnodes

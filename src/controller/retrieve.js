@@ -94,11 +94,12 @@ const findPath = function (obj, path) {
  * Redirects to fitting retriever and returns
  * @param {String} name
  * @param {Axon} node
+ * @param {Boolean} allowUndefined
  * @returns {Mixed}
  */
-const retrieveExpression = function (name, node) {
+const retrieveExpression = function (name, node, allowUndefined = false) {
     if (REGEX_IS_FUNCTION.test(name)) {
-        const method = retrieveMethod(name, node);
+        const method = retrieveMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
 
         return {
@@ -106,7 +107,7 @@ const retrieveExpression = function (name, node) {
             val: methodResult
         };
     } else {
-        return retrieveProp(name, node);
+        return retrieveProp(name, node, allowUndefined);
     }
 };
 
@@ -114,9 +115,10 @@ const retrieveExpression = function (name, node) {
  * Retrieves a prop from the data container
  * @param {String} expression
  * @param {AxonNode} node
+ * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const retrieveProp = function (expression, node) {
+const retrieveProp = function (expression, node, allowUndefined = false) {
     let current = node;
 
     while (current && current._parent !== false) {
@@ -131,16 +133,22 @@ const retrieveProp = function (expression, node) {
         }
     }
 
-    throw missingPropErrorFactory(expression);
+    if (allowUndefined) {
+        return false;
+    } else {
+        throw missingPropErrorFactory(expression);
+    }
+
 };
 
 /**
  * Retrieves a method from the method container
  * @param {String} expression
  * @param {AxonNode} node
+ * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const retrieveMethod = function (expression, node) {
+const retrieveMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const _root = getNodeRoot(node);
@@ -152,7 +160,11 @@ const retrieveMethod = function (expression, node) {
 
         return data;
     } else {
-        throw missingPropErrorFactory(expression);
+        if (allowUndefined) {
+            return false;
+        } else {
+            throw missingPropErrorFactory(expression);
+        }
     }
 };
 

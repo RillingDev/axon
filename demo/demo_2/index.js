@@ -3,13 +3,13 @@
 const app = new Axon({
     el: "#myApp",
     data: {
-        model_1: "foooo",
-        randomNumbers: [1, 3, 15, 124, 2144],
-        i: "bar"
+        foo: "foooo",
+        list: [1, 3, 15, 124, 2144]
     },
     methods: {
         getFoobar(foo) {
-            return foo + this.model_1 + foo;
+            console.log(this);
+            return foo + this.foo + foo;
         }
     }
 });

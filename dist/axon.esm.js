@@ -241,11 +241,12 @@ const findPath = function (obj, path) {
  * Redirects to fitting retriever and returns
  * @param {String} name
  * @param {Axon} node
+ * @param {Boolean} allowUndefined
  * @returns {Mixed}
  */
-const retrieveExpression = function (name, node) {
+const retrieveExpression = function (name, node, allowUndefined = false) {
     if (REGEX_IS_FUNCTION.test(name)) {
-        const method = retrieveMethod(name, node);
+        const method = retrieveMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
 
         return {
@@ -253,7 +254,7 @@ const retrieveExpression = function (name, node) {
             val: methodResult
         };
     } else {
-        return retrieveProp(name, node);
+        return retrieveProp(name, node, allowUndefined);
     }
 };
 
@@ -261,9 +262,10 @@ const retrieveExpression = function (name, node) {
  * Retrieves a prop from the data container
  * @param {String} expression
  * @param {AxonNode} node
+ * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const retrieveProp = function (expression, node) {
+const retrieveProp = function (expression, node, allowUndefined = false) {
     let current = node;
 
     while (current && current._parent !== false) {
@@ -278,16 +280,22 @@ const retrieveProp = function (expression, node) {
         }
     }
 
-    throw missingPropErrorFactory(expression);
+    if (allowUndefined) {
+        return false;
+    } else {
+        throw missingPropErrorFactory(expression);
+    }
+
 };
 
 /**
  * Retrieves a method from the method container
  * @param {String} expression
  * @param {AxonNode} node
+ * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const retrieveMethod = function (expression, node) {
+const retrieveMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const _root = getNodeRoot(node);
@@ -299,7 +307,11 @@ const retrieveMethod = function (expression, node) {
 
         return data;
     } else {
-        throw missingPropErrorFactory(expression);
+        if (allowUndefined) {
+            return false;
+        } else {
+            throw missingPropErrorFactory(expression);
+        }
     }
 };
 
@@ -349,6 +361,20 @@ const directiveBindRender = function (directive, node) {
     return true;
 };
 
+const directiveForRender = function (directive, node) {
+    const directiveSplit = directive.val.split(" ");
+    const iterator = directiveSplit[0];
+    const iterable = retrieveProp(directiveSplit[2], node);
+    //node._element[DOM_PROP_HTML] = retrieveExpression(directive.val, node).val;
+
+    console.log({
+        iterator,
+        iterable
+    });
+
+    return false;
+};
+
 const directiveTextRender = function (directive, node) {
     node._element[DOM_PROP_TEXT] = retrieveExpression(directive.val, node).val;
 
@@ -363,7 +389,7 @@ const directiveHTMLRender = function (directive, node) {
 
 const directiveIfBoth = function (directive, node) {
     const element = node._element;
-    const expressionValue = retrieveExpression(directive.val, node).val;
+    const expressionValue = retrieveExpression(directive.val, node, true).val;
 
     if (expressionValue) {
         element.removeAttribute(DOM_ATTR_HIDDEN);
@@ -392,6 +418,9 @@ const directives = {
     "bind": {
         render: directiveBindRender
     },
+    "for": {
+        render: directiveForRender
+    },
     "text": {
         render: directiveTextRender
     },
@@ -419,14 +448,17 @@ const AxonNode = class {
      * @param {Object} data
      */
     constructor(_element = null, _parent = null, data = {}) {
-        this._element = _element;
-        this._parent = _parent;
-        this._children = getSubNodes(this, _element.children, AxonNode);
+        const proxy = new Proxy(this, nodeProxy);
 
-        this.directives = getDirectives(_element);
-        this.data = data;
+        proxy.data = data;
 
-        return new Proxy(this, nodeProxy);
+        proxy._element = _element;
+        proxy._parent = _parent;
+        proxy._children = getSubNodes(proxy, _element.children, AxonNode);
+
+        proxy.directives = getDirectives(_element);
+
+        return proxy;
     }
     /**
      * Runs directives on the node and all subnodes
