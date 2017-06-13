@@ -1,9 +1,6 @@
 "use strict";
 
 import {
-    DOM_EVENT_MODEL
-} from "../../constants";
-import {
     bindEvent
 } from "../../dom/event";
 import {
@@ -12,6 +9,8 @@ import {
 import {
     getElementContentProp
 } from "../../dom/element";
+
+const DOM_EVENT_MODEL = "input";
 
 const directiveModelInit = function (directive, node) {
     const element = node._element;

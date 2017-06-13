@@ -4,21 +4,58 @@ import {
     retrieveProp
 } from "../../controller/retrieve";
 import {
-    DOM_PROP_HTML
-} from "../../constants";
+    hasDirective,
+    removeDirective,
+    setDirective
+} from "../../dom/directive";
+import {
+    cloneArray,
+} from "../../util";
+
+const DOM_DIR_DYN = "dyn";
+
+const cleanDirectiveDyns = function (parent) {
+    cloneArray(parent.children).forEach(child => {
+        if (hasDirective(child, DOM_DIR_DYN)) {
+            child.remove();
+        }
+    });
+};
 
 const directiveForRender = function (directive, node) {
     const directiveSplit = directive.val.split(" ");
-    const iterator = directiveSplit[0];
-    const iterable = retrieveProp(directiveSplit[2], node);
-    //node._element[DOM_PROP_HTML] = retrieveExpression(directive.val, node).val;
+    const iteratorKey = directiveSplit[0];
+    const iterable = retrieveProp(directiveSplit[2], node).val;
+    const nodesNew = [];
+    const element = node._element;
+
+    cleanDirectiveDyns(element.parentElement);
+
+    for (let i of iterable) {
+        const nodeI = Object.assign({}, node);
+
+        nodeI[iteratorKey] = i;
+
+        nodesNew.push(nodeI);
+    }
 
     console.log({
-        iterator,
-        iterable
-    })
+        element,
+        nodesNew,
+    });
 
-    return false;
+    nodesNew.forEach(nodeNew => {
+        const elementNew = element.cloneNode();
+
+        setDirective(elementNew, DOM_DIR_DYN, true);
+        removeDirective(elementNew, "for");
+
+        nodeNew._element = element.appendChild(elementNew);
+    });
+
+    //node._children = nodesNew;
+
+    return true;
 };
 
 export {

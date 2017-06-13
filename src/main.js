@@ -2,7 +2,7 @@
 
 import query from "./dom/query";
 import {
-    getDirectives
+    parseDirectives
 } from "./dom/directive";
 import {
     getSubNodes
@@ -32,7 +32,7 @@ const AxonNode = class {
         proxy._parent = _parent;
         proxy._children = getSubNodes(proxy, _element.children, AxonNode);
 
-        proxy.directives = getDirectives(_element);
+        proxy.directives = parseDirectives(_element);
 
         return proxy;
     }

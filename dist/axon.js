@@ -57,35 +57,61 @@ var Axon = function () {
     const DOM_ATTR_DELIMITER = ":";
     const DOM_ATTR_HIDDEN = "hidden";
 
-    const DOM_EVENT_MODEL = "input";
-
     const DOM_PROP_VALUE = "value";
     const DOM_PROP_TEXT = "textContent";
     const DOM_PROP_HTML = "innerHTML";
+
+    /**
+     * Sets a value as directive
+     * @param {Element} element
+     * @param {String} key
+     * @param {String} value
+     */
+    const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREFIX + key, value);
+
+    /**
+     * Checks a value as directive
+     * @param {Element} element
+     * @param {String} key
+     * @returns {Boolean}
+     */
+    const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + key);
+
+    /**
+     * Removes a directive
+     * @param {Element} element
+     * @param {String} key
+     */
+    const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFIX + key);
 
     /**
      * Checks if an attribute is an axon directive
      * @param {Attribute} attr
      * @returns {Boolean}
      */
-    const isAttrDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
+    const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
+
+    /**
+     * Returns array of all directives
+     * @param {Element} element
+     * @returns {Array}
+     */
+    const getDirectives = element => cloneArray(element.attributes).filter(isDirective);
 
     /**
      * Checks if the element has any directives
      * @param {Element} element
      * @returns {Boolean}
      */
-    const hasDirectives = element => cloneArray(element.attributes).some(isAttrDirective);
+    const hasDirectives = element => getDirectives(element).length > 0;
 
     /**
-     * Returns directives on node
+     * Returns directives on node with name parsed
      * @param {Element} element
      * @returns {Array}
      */
-    const getDirectives = function (element) {
-        const attributes = cloneArray(element.attributes).filter(isAttrDirective);
-
-        return attributes.map(attr => {
+    const parseDirectives = function (element) {
+        return getDirectives(element).map(attr => {
             /**
              * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
              */
@@ -333,6 +359,8 @@ var Axon = function () {
         }
     };
 
+    const DOM_EVENT_MODEL = "input";
+
     const directiveModelInit = function (directive, node) {
         const element = node._element;
         const elementContentProp = getElementContentProp(element);
@@ -364,18 +392,50 @@ var Axon = function () {
         return true;
     };
 
+    const DOM_DIR_DYN = "dyn";
+
+    const cleanDirectiveDyns = function (parent) {
+        cloneArray(parent.children).forEach(child => {
+            if (hasDirective(child, DOM_DIR_DYN)) {
+                child.remove();
+            }
+        });
+    };
+
     const directiveForRender = function (directive, node) {
         const directiveSplit = directive.val.split(" ");
-        const iterator = directiveSplit[0];
-        const iterable = retrieveProp(directiveSplit[2], node);
-        //node._element[DOM_PROP_HTML] = retrieveExpression(directive.val, node).val;
+        const iteratorKey = directiveSplit[0];
+        const iterable = retrieveProp(directiveSplit[2], node).val;
+        const nodesNew = [];
+        const element = node._element;
+
+        cleanDirectiveDyns(element.parentElement);
+
+        for (let i of iterable) {
+            const nodeI = Object.assign({}, node);
+
+            nodeI[iteratorKey] = i;
+
+            nodesNew.push(nodeI);
+        }
 
         console.log({
-            iterator,
-            iterable
+            element,
+            nodesNew
         });
 
-        return false;
+        nodesNew.forEach(nodeNew => {
+            const elementNew = element.cloneNode();
+
+            setDirective(elementNew, DOM_DIR_DYN, true);
+            removeDirective(elementNew, "for");
+
+            nodeNew._element = element.appendChild(elementNew);
+        });
+
+        //node._children = nodesNew;
+
+        return true;
     };
 
     const directiveTextRender = function (directive, node) {
@@ -459,7 +519,7 @@ var Axon = function () {
             proxy._parent = _parent;
             proxy._children = getSubNodes(proxy, _element.children, AxonNode);
 
-            proxy.directives = getDirectives(_element);
+            proxy.directives = parseDirectives(_element);
 
             return proxy;
         }
