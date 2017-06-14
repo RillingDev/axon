@@ -58,14 +58,10 @@ const directiveForRender = function (directive, node, AxonNode) {
         setElementActive(nodeElement, true);
 
         nodeData[iteratorKey] = i;
-        elementInserted = element.insertAdjacentElement("afterend", nodeElement);
+        elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
 
         nodesNew.push(new AxonNode(elementInserted, node._parent, nodeData));
     }
-
-    console.log({
-        nodesNew,
-    });
 
     node._children = nodesNew;
 

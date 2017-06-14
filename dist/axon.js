@@ -213,7 +213,7 @@ var Axon = function () {
         } else if (REGEX_IS_STRING.test(arg)) {
             return arg.substr(1, arg.length - 2);
         } else {
-            return retrieveProp(arg, node);
+            return retrieveProp(arg, node).val;
         }
     };
 
@@ -435,7 +435,7 @@ var Axon = function () {
             setElementActive(nodeElement, true);
 
             nodeData[iteratorKey] = i;
-            elementInserted = element.insertAdjacentElement("afterend", nodeElement);
+            elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
 
             nodesNew.push(new AxonNode(elementInserted, node._parent, nodeData));
         }

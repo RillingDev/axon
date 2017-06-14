@@ -13,24 +13,18 @@
     <h1>Demo 2</h1>
     <div id="myApp">
         <div>
-            <h2>Active</h2>
+            <h2>List</h2>
             <div>
-                <h3>Model</h3>
-                <input type="text" x-model="foo">
-                <p x-model="foo"></p>
+                <h3>Add</h3>
+                <input type="text" x-model="newItem">
+                <button x-on:click="addItem()">Add</button>
             </div>
             <hr>
             <div>
-                <h3>Bind:value</h3>
-                <input type="text" x-bind:value="foo">
-                <input type="text" x-bind:value="getFoobar('hello')">
-            </div>
-            <hr>
-            <div>
-                <h3>For</h3>
+                <h3>Content</h3>
                 <ul>
                     <li x-for="i in list">
-                        <span x-text="i">Foo</span>
+                        <span x-text="i"></span>
                     </li>
                 </ul>
             </div>
