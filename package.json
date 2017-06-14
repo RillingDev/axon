@@ -1,6 +1,6 @@
 {
     "name": "axonjs",
-    "version": "v0.21.0",
+    "version": "v1.0.0-rc1",
     "description": "A super tiny vue-like framework",
     "main": "dist/axon.common.js",
     "namespace": {
@@ -19,7 +19,8 @@
     },
     "keywords": [
         "framework",
-        "vue"
+        "directives",
+        "vue-like"
     ],
     "author": "Felix Rilling",
     "license": "MIT",
