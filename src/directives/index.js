@@ -8,6 +8,7 @@ import {
     directiveBindRender
 } from "./modules/directiveBind";
 import {
+    directiveForInit,
     directiveForRender
 } from "./modules/directiveFor";
 import {
@@ -32,6 +33,7 @@ const directives = {
         render: directiveBindRender
     },
     "for": {
+        init: directiveForInit,
         render: directiveForRender
     },
     "text": {

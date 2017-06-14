@@ -6,7 +6,8 @@ import {
 import {
     DOM_PROP_VALUE,
     DOM_PROP_TEXT,
-    DOM_PROP_HTML
+    DOM_PROP_HTML,
+    DOM_ATTR_HIDDEN
 } from "../constants";
 
 /**
@@ -24,6 +25,9 @@ const getElementContentProp = function (element) {
     }
 };
 
+const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
+
 export {
-    getElementContentProp
+    getElementContentProp,
+    setElementActive
 };

@@ -4,22 +4,16 @@ import {
     retrieveExpression
 } from "../../controller/retrieve";
 import {
-    DOM_ATTR_HIDDEN
-} from "../../constants";
+    setElementActive
+} from "../../dom/element";
 
 const directiveIfBoth = function (directive, node) {
     const element = node._element;
-    const expressionValue = retrieveExpression(directive.val, node, true).val;
+    const expressionValue = Boolean(retrieveExpression(directive.val, node, true).val);
 
-    if (expressionValue) {
-        element.removeAttribute(DOM_ATTR_HIDDEN);
+    setElementActive(element,expressionValue);
 
-        return true;
-    } else {
-        element.setAttribute(DOM_ATTR_HIDDEN, true);
-
-        return false;
-    }
+    return expressionValue;
 };
 
 export {

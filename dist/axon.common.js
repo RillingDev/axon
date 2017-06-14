@@ -358,6 +358,8 @@ const getElementContentProp = function (element) {
     }
 };
 
+const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
+
 const DOM_EVENT_MODEL = "input";
 
 const directiveModelInit = function (directive, node) {
@@ -391,40 +393,54 @@ const directiveBindRender = function (directive, node) {
     return true;
 };
 
-const DOM_DIR_DYN = "dyn";
+const DOM_DIR_FOR_BASE = "for-base";
+const DOM_DIR_FOR_DYNAMIC = "for-dyn";
 
 const cleanDirectiveDyns = function (parent) {
     cloneArray(parent.children).forEach(child => {
-        console.log([child, hasDirective(child, DOM_DIR_DYN)]);
-        if (hasDirective(child, DOM_DIR_DYN)) {
+        console.log([child, hasDirective(child, DOM_DIR_FOR_DYNAMIC)]);
+        if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }
     });
 };
 
+const directiveForInit = function (directive, node) {
+    const element = node._element;
+
+    setDirective(node._element, DOM_DIR_FOR_BASE, true);
+    setElementActive(element, false);
+
+    return false;
+};
+
 const directiveForRender = function (directive, node, AxonNode) {
+    const element = node._element;
     const directiveSplit = directive.val.split(" ");
     const iteratorKey = directiveSplit[0];
     const iterable = retrieveProp(directiveSplit[2], node).val;
     const nodesNew = [];
-    const element = node._element;
+
 
     cleanDirectiveDyns(element.parentElement);
 
     for (let i of iterable) {
-        const nodeElement = element.cloneNode();
+        const nodeElement = element.cloneNode(true);
         const nodeData = Object.assign({}, node.data);
+        let elementInserted;
 
-        setDirective(nodeElement, DOM_DIR_DYN, true);
+        setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, true);
+        removeDirective(nodeElement, DOM_DIR_FOR_BASE);
         removeDirective(nodeElement, "for");
+        setElementActive(nodeElement, true);
 
         nodeData[iteratorKey] = i;
+        elementInserted = element.insertAdjacentElement("afterend", nodeElement);
 
-        nodesNew.push(new AxonNode(element.appendChild(nodeElement), node._parent, nodeData));
+        nodesNew.push(new AxonNode(elementInserted, node._parent, nodeData));
     }
 
     console.log({
-        element,
         nodesNew,
     });
 
@@ -447,17 +463,11 @@ const directiveHTMLRender = function (directive, node) {
 
 const directiveIfBoth = function (directive, node) {
     const element = node._element;
-    const expressionValue = retrieveExpression(directive.val, node, true).val;
+    const expressionValue = Boolean(retrieveExpression(directive.val, node, true).val);
 
-    if (expressionValue) {
-        element.removeAttribute(DOM_ATTR_HIDDEN);
+    setElementActive(element,expressionValue);
 
-        return true;
-    } else {
-        element.setAttribute(DOM_ATTR_HIDDEN, true);
-
-        return false;
-    }
+    return expressionValue;
 };
 
 const directiveOnInit = function (directive, node) {
@@ -477,6 +487,7 @@ const directives = {
         render: directiveBindRender
     },
     "for": {
+        init: directiveForInit,
         render: directiveForRender
     },
     "text": {
