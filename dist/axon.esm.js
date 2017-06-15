@@ -256,7 +256,7 @@ const findPath = function (obj, path) {
 
 //@TODO test those
 const REGEX_IS_FUNCTION = /\(.*\)/;
-const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]*)*)?\s*\)/;
+const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
 /**
  * Creates a new missing-prop error
@@ -495,28 +495,28 @@ const directiveOnInit = function (directive, node) {
 
 const directives = {
     "model": {
-        init: directiveModelInit,
-        render: directiveModelRender
+        _init: directiveModelInit,
+        _render: directiveModelRender
     },
     "bind": {
-        render: directiveBindRender
+        _render: directiveBindRender
     },
     "for": {
-        init: directiveForInit,
-        render: directiveForRender
+        _init: directiveForInit,
+        _render: directiveForRender
     },
     "text": {
-        render: directiveTextRender
+        _render: directiveTextRender
     },
     "html": {
-        render: directiveHTMLRender
+        _render: directiveHTMLRender
     },
     "if": {
-        init: directiveIfBoth,
-        render: directiveIfBoth
+        _init: directiveIfBoth,
+        _render: directiveIfBoth
     },
     "on": {
-        init: directiveOnInit,
+        _init: directiveOnInit,
     },
 };
 
@@ -574,13 +574,13 @@ const AxonNode = class {
      * Initializes directives
      */
     init() {
-        return this.run("init");
+        return this.run("_init");
     }
     /**
      * Renders directives
      */
     render() {
-        return this.run("render");
+        return this.run("_render");
     }
 };
 

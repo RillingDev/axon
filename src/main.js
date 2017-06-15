@@ -66,13 +66,13 @@ const AxonNode = class {
      * Initializes directives
      */
     init() {
-        return this.run("init");
+        return this.run("_init");
     }
     /**
      * Renders directives
      */
     render() {
-        return this.run("render");
+        return this.run("_render");
     }
 };
 

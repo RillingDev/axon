@@ -1,6 +1,6 @@
 {
     "name": "axonjs",
-    "version": "v1.0.0-rc7",
+    "version": "v1.0.0-rc8",
     "description": "A super tiny vue-like framework",
     "main": "dist/axon.common.js",
     "namespace": {

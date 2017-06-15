@@ -56,6 +56,9 @@ rollup
             "_key": "i",
             "_node": "j",
             "_args": "k",
+
+            "_init": "l",
+            "_render": "m",
         })]
     })
     .catch(err => {

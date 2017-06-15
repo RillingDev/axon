@@ -26,28 +26,28 @@ import {
 
 const directives = {
     "model": {
-        init: directiveModelInit,
-        render: directiveModelRender
+        _init: directiveModelInit,
+        _render: directiveModelRender
     },
     "bind": {
-        render: directiveBindRender
+        _render: directiveBindRender
     },
     "for": {
-        init: directiveForInit,
-        render: directiveForRender
+        _init: directiveForInit,
+        _render: directiveForRender
     },
     "text": {
-        render: directiveTextRender
+        _render: directiveTextRender
     },
     "html": {
-        render: directiveHTMLRender
+        _render: directiveHTMLRender
     },
     "if": {
-        init: directiveIfBoth,
-        render: directiveIfBoth
+        _init: directiveIfBoth,
+        _render: directiveIfBoth
     },
     "on": {
-        init: directiveOnInit,
+        _init: directiveOnInit,
     },
 };
 

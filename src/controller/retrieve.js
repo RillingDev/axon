@@ -10,7 +10,7 @@ import {
 
 //@TODO test those
 const REGEX_IS_FUNCTION = /\(.*\)/;
-const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]*)*)?\s*\)/;
+const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
 /**
  * Creates a new missing-prop error
