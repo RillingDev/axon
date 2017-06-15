@@ -17,7 +17,7 @@
             <div>
                 <h3>Add</h3>
                 <input type="text" x-model="newItem">
-                <button x-on:click="addItem()">Add</button>
+                <button x-on:click="addItem(newItem)">Add</button>
             </div>
             <hr>
             <div>
@@ -27,6 +27,7 @@
                         <span x-text="i"></span>
                     </li>
                 </ul>
+                <button x-on:click="swap()">Swap</button>
             </div>
             <hr>
         </div>

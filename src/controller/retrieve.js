@@ -24,6 +24,8 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  */
 const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node, methodProp._args);
 
+
+//@TODO make this less hacky
 /**
  * Parses expression args to "real" values
  *  @param {String} arg
@@ -35,6 +37,12 @@ const mapArg = function (arg, node) {
         return Number(arg);
     } else if (REGEX_IS_STRING.test(arg)) {
         return arg.substr(1, arg.length - 2);
+    } else if (arg === "null") {
+        return null;
+    } else if (arg === "true") {
+        return true;
+    } else if (arg === "false") {
+        return false;
     } else {
         return retrieveProp(arg, node)._val;
     }

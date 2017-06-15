@@ -200,6 +200,7 @@ var Axon = function () {
      */
     const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node, methodProp._args);
 
+    //@TODO make this less hacky
     /**
      * Parses expression args to "real" values
      *  @param {String} arg
@@ -211,6 +212,12 @@ var Axon = function () {
             return Number(arg);
         } else if (REGEX_IS_STRING.test(arg)) {
             return arg.substr(1, arg.length - 2);
+        } else if (arg === "null") {
+            return null;
+        } else if (arg === "true") {
+            return true;
+        } else if (arg === "false") {
+            return false;
         } else {
             return retrieveProp(arg, node)._val;
         }
@@ -465,9 +472,7 @@ var Axon = function () {
     };
 
     const directiveOnInit = function (directive, node) {
-        const methodProp = retrieveMethod(directive._content, node);
-
-        bindEvent(node._element, directive._opt, () => applyMethodContext(methodProp));
+        bindEvent(node._element, directive._opt, () => applyMethodContext(retrieveMethod(directive._content, node)));
 
         return true;
     };

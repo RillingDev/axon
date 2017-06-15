@@ -7,10 +7,16 @@ const app = new Axon({
         list: [1, 3, 15, 124, 2144]
     },
     methods: {
-        addItem() {
+        addItem(item) {
             const vm = this;
 
-            vm.list.push(vm.newItem);
+            vm.list.push(item);
+            vm.render();
+        },
+        swap() {
+            const vm = this;
+
+            vm.list = vm.list.reverse();
             vm.render();
         }
     }
