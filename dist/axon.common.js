@@ -8,13 +8,6 @@
 const cloneArray = arr => Array.from(arr);
 
 /**
- * Checks if type is array
- * @param {Array} arr
- * @returns {Boolean}
- */
-const isArray = arr => Array.isArray(arr);
-
-/**
  * Flatten Array Recursively
  * @param {Array} arr
  * @returns {Array}
@@ -23,7 +16,7 @@ const flattenArray = function (arr) {
     const result = [];
 
     arr.forEach(item => {
-        if (isArray(item)) {
+        if (Array.isArray(item)) {
             result.push(...flattenArray(item));
         } else {
             result.push(item);
@@ -158,7 +151,16 @@ const getSubNodes = function (node, children, AxonNode) {
     return mapSubNodes(children);
 };
 
+/**
+ * Redirects `node.foo` to `node.data.foo` if that exists
+ */
 const nodeProxy = {
+    /**
+     * Redirects prop lookup
+     * @param {Object} target
+     * @param {String} key
+     * @returns {Mixed}
+     */
     get: (target, key) => {
         if (key in target.data) {
             return target.data[key];
@@ -192,8 +194,9 @@ const mapArg = function (arg, node) {
     if (REGEX_IS_NUMBER.test(arg)) {
         return Number(arg);
     } else if (REGEX_IS_STRING.test(arg)) {
+        //Cut of braces
         return arg.substr(1, arg.length - 2);
-    }else if (arg === "true") {
+    } else if (arg === "true") {
         return true;
     } else if (arg === "false") {
         return false;
@@ -396,6 +399,8 @@ const directiveBindRender = function (directive, node) {
 
     return true;
 };
+
+//const REGEX_DIR_FOR = /(?:(^\w+)|\(?(\w+),(\w+)\)?) in (\w+)/;
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";

@@ -21,8 +21,9 @@ const mapArg = function (arg, node) {
     if (REGEX_IS_NUMBER.test(arg)) {
         return Number(arg);
     } else if (REGEX_IS_STRING.test(arg)) {
+        //Cut of braces
         return arg.substr(1, arg.length - 2);
-    }else if (arg === "true") {
+    } else if (arg === "true") {
         return true;
     } else if (arg === "false") {
         return false;

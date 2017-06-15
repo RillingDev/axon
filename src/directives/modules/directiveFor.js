@@ -15,6 +15,7 @@ import {
     setElementActive
 } from "../../dom/element";
 
+//const REGEX_DIR_FOR = /(?:(^\w+)|\(?(\w+),(\w+)\)?) in (\w+)/;
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";

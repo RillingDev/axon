@@ -14,12 +14,15 @@
     <div id="myApp">
         <div>
             <label>Name:</label>
-            <input type="text" x-model="foo.bar" x-on:input="eventy(1,'2',foo.bar)">
+            <input type="text" x-model="name">
+        </div>
+        <div>
+            <label>Bar:</label>
+            <input type="text" x-model="bar">
+        </div>
+        <div x-if="name.length">
             <div>
-                <p>Hello <span x-text="foo.bar"></span>! <span x-text="foo.bar"></span> is cool!</p>
-            </div>
-            <div x-if="foo.bar.length">
-                <p>Length: <span x-model="foo.bar.length"></span></p>
+                <p>Hello <span x-text="name"></span>! The value of `bar` is <span x-text="bar"></span></p>
             </div>
         </div>
     </div>

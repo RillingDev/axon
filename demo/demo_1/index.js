@@ -1,21 +1,16 @@
 "use strict";
 
+//Axon({el,data,methods})
 const app = new Axon({
-    el: "#myApp",
+    el: "#myApp", //Query for the root element
     data: {
-        name: "Foo",
-        foo: {
-            bar: "Fooooo"
-        }
+        name: "abc",
+        bar: "bar"
     },
     methods: {
-        getFoo() {
-            return "fooo";
-        },
-        eventy(a, b, c) {
-            const vm = this;
-
-            return vm.foo + a + b + c;
+        setBar(val){
+            this.bar = val;
+            this.render();
         }
     }
 });
