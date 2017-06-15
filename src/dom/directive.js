@@ -58,7 +58,7 @@ const getDirectives = element => cloneArray(element.attributes).filter(isDirecti
  * @param {Element} element
  * @returns {Boolean}
  */
-const hasDirectives = element => getDirectives(element).length>0;
+const hasDirectives = element => getDirectives(element).length > 0;
 
 /**
  * Returns directives on node with name parsed
@@ -71,12 +71,11 @@ const parseDirectives = function (element) {
          * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
          */
         const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
-        const val = attr.value;
 
         return {
-            val,
-            name: nameFull[0],
-            opt: nameFull[1] || false,
+            _val: attr.value,
+            _name: nameFull[0],
+            _opt: nameFull[1] || false,
         };
     });
 };

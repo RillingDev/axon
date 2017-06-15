@@ -99,7 +99,7 @@ const getDirectives = element => cloneArray(element.attributes).filter(isDirecti
  * @param {Element} element
  * @returns {Boolean}
  */
-const hasDirectives = element => getDirectives(element).length>0;
+const hasDirectives = element => getDirectives(element).length > 0;
 
 /**
  * Returns directives on node with name parsed
@@ -112,12 +112,11 @@ const parseDirectives = function (element) {
          * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
          */
         const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
-        const val = attr.value;
 
         return {
-            val,
-            name: nameFull[0],
-            opt: nameFull[1] || false,
+            _val: attr.value,
+            _name: nameFull[0],
+            _opt: nameFull[1] || false,
         };
     });
 };
@@ -195,7 +194,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node, methodProp.args);
+const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node, methodProp._args);
 
 /**
  * Parses expression args to "real" values
@@ -209,7 +208,7 @@ const mapArg = function (arg, node) {
     } else if (REGEX_IS_STRING.test(arg)) {
         return arg.substr(1, arg.length - 2);
     } else {
-        return retrieveProp(arg, node).val;
+        return retrieveProp(arg, node)._val;
     }
 };
 
@@ -250,9 +249,9 @@ const findPath = function (obj, path) {
                 last = current;
             } else {
                 return {
-                    val: current,
-                    con: last,
-                    key: currentPath
+                    _val: current,
+                    _con: last,
+                    _key: currentPath
                 };
             }
         }
@@ -276,8 +275,8 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
         const methodResult = applyMethodContext(method);
 
         return {
-            node: method.node,
-            val: methodResult
+            _node: method.node,
+            _val: methodResult
         };
     } else {
         return retrieveProp(name, node, allowUndefined);
@@ -298,7 +297,7 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
         const data = findPath(current.data, expression);
 
         if (data !== false) {
-            data.node = current;
+            data._node = current;
 
             return data;
         } else {
@@ -311,7 +310,6 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
     } else {
         throw missingPropErrorFactory(expression);
     }
-
 };
 
 /**
@@ -328,8 +326,8 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
     const data = findPath(_root.methods, matched[1]);
 
     if (data !== false) {
-        data.args = args.map(arg => mapArg(arg, node));
-        data.node = _root;
+        data._args = args.map(arg => mapArg(arg, node));
+        data._node = _root;
 
         return data;
     } else {
@@ -364,10 +362,10 @@ const directiveModelInit = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
     const eventFn = function () {
-        const targetProp = retrieveProp(directive.val, node);
+        const targetProp = retrieveProp(directive._val, node);
 
-        targetProp.con[targetProp.key] = element[elementContentProp];
-        targetProp.node.render();
+        targetProp._con[targetProp._key] = element[elementContentProp];
+        targetProp._node.render();
     };
 
     bindEvent(element, DOM_EVENT_MODEL, eventFn);
@@ -378,15 +376,15 @@ const directiveModelInit = function (directive, node) {
 const directiveModelRender = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
-    const targetProp = retrieveProp(directive.val, node);
+    const targetProp = retrieveProp(directive._val, node);
 
-    element[elementContentProp] = String(targetProp.val);
+    element[elementContentProp] = String(targetProp._val);
 
     return true;
 };
 
 const directiveBindRender = function (directive, node) {
-    node._element.setAttribute(directive.opt, retrieveExpression(directive.val, node).val);
+    node._element.setAttribute(directive._opt, retrieveExpression(directive._val, node)._val);
 
     return true;
 };
@@ -396,7 +394,6 @@ const DOM_DIR_FOR_DYNAMIC = "for-dyn";
 
 const cleanDirectiveDyns = function (parent) {
     cloneArray(parent.children).forEach(child => {
-        console.log([child, hasDirective(child, DOM_DIR_FOR_DYNAMIC)]);
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }
@@ -414,11 +411,10 @@ const directiveForInit = function (directive, node) {
 
 const directiveForRender = function (directive, node, AxonNode) {
     const element = node._element;
-    const directiveSplit = directive.val.split(" ");
+    const directiveSplit = directive._val.split(" ");
     const iteratorKey = directiveSplit[0];
-    const iterable = retrieveProp(directiveSplit[2], node).val;
+    const iterable = retrieveProp(directiveSplit[2], node)._val;
     const nodesNew = [];
-
 
     cleanDirectiveDyns(element.parentElement);
 
@@ -438,30 +434,26 @@ const directiveForRender = function (directive, node, AxonNode) {
         nodesNew.push(new AxonNode(elementInserted, node._parent, nodeData));
     }
 
-    console.log({
-        nodesNew,
-    });
-
     node._children = nodesNew;
 
     return true;
 };
 
 const directiveTextRender = function (directive, node) {
-    node._element[DOM_PROP_TEXT] = retrieveExpression(directive.val, node).val;
+    node._element[DOM_PROP_TEXT] = retrieveExpression(directive._val, node)._val;
 
     return true;
 };
 
 const directiveHTMLRender = function (directive, node) {
-    node._element[DOM_PROP_HTML] = retrieveExpression(directive.val, node).val;
+    node._element[DOM_PROP_HTML] = retrieveExpression(directive._val, node)._val;
 
     return true;
 };
 
 const directiveIfBoth = function (directive, node) {
     const element = node._element;
-    const expressionValue = Boolean(retrieveExpression(directive.val, node, true).val);
+    const expressionValue = Boolean(retrieveExpression(directive._val, node, true)._val);
 
     setElementActive(element,expressionValue);
 
@@ -469,9 +461,9 @@ const directiveIfBoth = function (directive, node) {
 };
 
 const directiveOnInit = function (directive, node) {
-    const methodProp = retrieveMethod(directive.val, node);
+    const methodProp = retrieveMethod(directive._val, node);
 
-    bindEvent(node._element, directive.opt, () => applyMethodContext(methodProp));
+    bindEvent(node._element, directive._opt, () => applyMethodContext(methodProp));
 
     return true;
 };
@@ -542,6 +534,8 @@ const AxonNode = class {
                 return true;
             }
         };
+
+        console.log("RENDER",this);
 
         //Recurse if all directives return true
         if (this.directives.map(runDirective).every(val => val === true)) {

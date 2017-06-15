@@ -9,9 +9,9 @@ import {
 } from "../../controller/retrieve";
 
 const directiveOnInit = function (directive, node) {
-    const methodProp = retrieveMethod(directive.val, node);
+    const methodProp = retrieveMethod(directive._val, node);
 
-    bindEvent(node._element, directive.opt, () => applyMethodContext(methodProp));
+    bindEvent(node._element, directive._opt, () => applyMethodContext(methodProp));
 
     return true;
 };

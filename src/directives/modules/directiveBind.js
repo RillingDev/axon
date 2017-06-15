@@ -5,7 +5,7 @@ import {
 } from "../../controller/retrieve";
 
 const directiveBindRender = function (directive, node) {
-    node._element.setAttribute(directive.opt, retrieveExpression(directive.val, node).val);
+    node._element.setAttribute(directive._opt, retrieveExpression(directive._val, node)._val);
 
     return true;
 };

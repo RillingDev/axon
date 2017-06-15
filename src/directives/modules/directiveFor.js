@@ -21,7 +21,6 @@ const DOM_DIR_FOR_DYNAMIC = "for-dyn";
 
 const cleanDirectiveDyns = function (parent) {
     cloneArray(parent.children).forEach(child => {
-        console.log([child, hasDirective(child, DOM_DIR_FOR_DYNAMIC)]);
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }
@@ -39,11 +38,10 @@ const directiveForInit = function (directive, node) {
 
 const directiveForRender = function (directive, node, AxonNode) {
     const element = node._element;
-    const directiveSplit = directive.val.split(" ");
+    const directiveSplit = directive._val.split(" ");
     const iteratorKey = directiveSplit[0];
-    const iterable = retrieveProp(directiveSplit[2], node).val;
+    const iterable = retrieveProp(directiveSplit[2], node)._val;
     const nodesNew = [];
-
 
     cleanDirectiveDyns(element.parentElement);
 

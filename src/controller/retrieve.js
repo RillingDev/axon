@@ -22,7 +22,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node, methodProp.args);
+const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node, methodProp._args);
 
 /**
  * Parses expression args to "real" values
@@ -36,7 +36,7 @@ const mapArg = function (arg, node) {
     } else if (REGEX_IS_STRING.test(arg)) {
         return arg.substr(1, arg.length - 2);
     } else {
-        return retrieveProp(arg, node).val;
+        return retrieveProp(arg, node)._val;
     }
 };
 
@@ -77,9 +77,9 @@ const findPath = function (obj, path) {
                 last = current;
             } else {
                 return {
-                    val: current,
-                    con: last,
-                    key: currentPath
+                    _val: current,
+                    _con: last,
+                    _key: currentPath
                 };
             }
         }
@@ -103,8 +103,8 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
         const methodResult = applyMethodContext(method);
 
         return {
-            node: method.node,
-            val: methodResult
+            _node: method.node,
+            _val: methodResult
         };
     } else {
         return retrieveProp(name, node, allowUndefined);
@@ -125,7 +125,7 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
         const data = findPath(current.data, expression);
 
         if (data !== false) {
-            data.node = current;
+            data._node = current;
 
             return data;
         } else {
@@ -138,7 +138,6 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
     } else {
         throw missingPropErrorFactory(expression);
     }
-
 };
 
 /**
@@ -155,8 +154,8 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
     const data = findPath(_root.methods, matched[1]);
 
     if (data !== false) {
-        data.args = args.map(arg => mapArg(arg, node));
-        data.node = _root;
+        data._args = args.map(arg => mapArg(arg, node));
+        data._node = _root;
 
         return data;
     } else {

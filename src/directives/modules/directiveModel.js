@@ -16,10 +16,10 @@ const directiveModelInit = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
     const eventFn = function () {
-        const targetProp = retrieveProp(directive.val, node);
+        const targetProp = retrieveProp(directive._val, node);
 
-        targetProp.con[targetProp.key] = element[elementContentProp];
-        targetProp.node.render();
+        targetProp._con[targetProp._key] = element[elementContentProp];
+        targetProp._node.render();
     };
 
     bindEvent(element, DOM_EVENT_MODEL, eventFn);
@@ -30,9 +30,9 @@ const directiveModelInit = function (directive, node) {
 const directiveModelRender = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
-    const targetProp = retrieveProp(directive.val, node);
+    const targetProp = retrieveProp(directive._val, node);
 
-    element[elementContentProp] = String(targetProp.val);
+    element[elementContentProp] = String(targetProp._val);
 
     return true;
 };

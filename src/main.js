@@ -52,6 +52,8 @@ const AxonNode = class {
             }
         };
 
+        console.log("RENDER",this);
+
         //Recurse if all directives return true
         if (this.directives.map(runDirective).every(val => val === true)) {
             return this._children.map(child => child.run(type));
