@@ -171,14 +171,18 @@ var Axon = function () {
             }
         },
         /**
-         * Redirect ALL setting to data
+         * Redirect setting to data
          * @param {Object} target
          * @param {String} key
          * @param {Mixed} val
          * @returns {Boolean}
          */
         set: (target, key, val) => {
-            target.data[key] = val;
+            if (key in target.data) {
+                target.data[key] = val;
+            } else {
+                target[key] = val;
+            }
 
             return true;
         }

@@ -36,23 +36,26 @@ rollup
         saveOutput(`${DIR_DIST}/${packageJson.namespace.file}.js`, result_iife, "JS:IIFE");
     });
 
+/**
+ * Run replace for the minified build, mangling prop names
+ */
 rollup
     .rollup({
         entry: `${DIR_SRC}/main.js`,
         plugins: [replace({
-            "_content": "_a",
-            "_name": "_b",
-            "_opt": "_c",
+            "_content": "a",
+            "_name": "b",
+            "_opt": "c",
 
-            "_element": "_d",
-            "_parent": "_e",
-            "_children": "_f",
+            "_element": "d",
+            "_parent": "e",
+            "_children": "f",
 
-            "_val": "_g",
-            "_container": "_h",
-            "_key": "_i",
-            "_node": "_j",
-            "_args": "_k",
+            "_val": "g",
+            "_container": "h",
+            "_key": "i",
+            "_node": "j",
+            "_args": "k",
         })]
     })
     .catch(err => {
