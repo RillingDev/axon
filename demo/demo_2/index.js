@@ -4,13 +4,13 @@ const app = new Axon({
     el: "#myApp",
     data: {
         newItem: "Foo",
-        list: [1, 3, 15, 124, 2144]
+        list: [{a:1}, {a:32}, {a:124}, {a:12}, {a:1212}]
     },
     methods: {
         addItem(item) {
             const vm = this;
 
-            vm.list.push(item);
+            vm.list.push({a:item});
             vm.render();
         },
         swap() {

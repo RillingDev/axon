@@ -16,8 +16,8 @@ import {
 } from "../../dom/element";
 
 
-const DOM_DIR_FOR_BASE = "for-base";
-const DOM_DIR_FOR_DYNAMIC = "for-dyn";
+const DOM_DIR_FOR_BASE = "forbase";
+const DOM_DIR_FOR_DYNAMIC = "dyn";
 
 const cleanDirectiveDyns = function (parent) {
     cloneArray(parent.children).forEach(child => {

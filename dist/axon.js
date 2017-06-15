@@ -36,7 +36,7 @@ var Axon = function () {
     };
 
     /**
-     * Checks if a vlue is not undefined
+     * Checks if a value is not undefined
      * @param {Mixed} val
      * @returns {Boolean}
      */
@@ -180,25 +180,8 @@ var Axon = function () {
         element.addEventListener(eventType, eventFn, false);
     };
 
-    //@TODO test those
-    const REGEX_IS_FUNCTION = /\(.*\)/;
     const REGEX_IS_NUMBER = /^[\d\.]+$/;
     const REGEX_IS_STRING = /^'\w+'$/;
-    const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]*)*)?\s*\)/;
-
-    /**
-     * Creates a new missing-prop error
-     * @param {String} propName
-     * @returns {Error}
-     */
-    const missingPropErrorFactory = propName => new Error(`missing prop/method '${propName}'`);
-
-    /**
-     * Runs a method in the given context
-     * @param {Object} methodProp
-     * @returns {Mixed}
-     */
-    const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node, methodProp._args);
 
     //@TODO make this less hacky
     /**
@@ -212,8 +195,6 @@ var Axon = function () {
             return Number(arg);
         } else if (REGEX_IS_STRING.test(arg)) {
             return arg.substr(1, arg.length - 2);
-        } else if (arg === "null") {
-            return null;
         } else if (arg === "true") {
             return true;
         } else if (arg === "false") {
@@ -221,21 +202,6 @@ var Axon = function () {
         } else {
             return retrieveProp(arg, node)._val;
         }
-    };
-
-    /**
-     * Gets the topmost node
-     * @param {Node} node
-     * @returns {Node}
-     */
-    const getNodeRoot = function (node) {
-        let result = node;
-
-        while (result._parent !== null) {
-            result = result._parent;
-        }
-
-        return result;
     };
 
     /**
@@ -271,6 +237,39 @@ var Axon = function () {
         }
 
         return false;
+    };
+
+    //@TODO test those
+    const REGEX_IS_FUNCTION = /\(.*\)/;
+    const REGEX_CONTENT_METHOD = /([\w\.]+)\s*\(((?:[^()]*)*)?\s*\)/;
+
+    /**
+     * Creates a new missing-prop error
+     * @param {String} propName
+     * @returns {Error}
+     */
+    const missingPropErrorFactory = propName => new Error(`missing prop/method '${propName}'`);
+
+    /**
+     * Runs a method in the given context
+     * @param {Object} methodProp
+     * @returns {Mixed}
+     */
+    const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node, methodProp._args);
+
+    /**
+     * Gets the topmost node
+     * @param {Node} node
+     * @returns {Node}
+     */
+    const getNodeRoot = function (node) {
+        let result = node;
+
+        while (result._parent !== null) {
+            result = result._parent;
+        }
+
+        return result;
     };
 
     /**
@@ -400,8 +399,8 @@ var Axon = function () {
         return true;
     };
 
-    const DOM_DIR_FOR_BASE = "for-base";
-    const DOM_DIR_FOR_DYNAMIC = "for-dyn";
+    const DOM_DIR_FOR_BASE = "forbase";
+    const DOM_DIR_FOR_DYNAMIC = "dyn";
 
     const cleanDirectiveDyns = function (parent) {
         cloneArray(parent.children).forEach(child => {

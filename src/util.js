@@ -34,7 +34,7 @@ const flattenArray = function (arr) {
 };
 
 /**
- * Checks if a vlue is not undefined
+ * Checks if a value is not undefined
  * @param {Mixed} val
  * @returns {Boolean}
  */
