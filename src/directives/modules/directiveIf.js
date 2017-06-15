@@ -9,7 +9,7 @@ import {
 
 const directiveIfBoth = function (directive, node) {
     const element = node._element;
-    const expressionValue = Boolean(retrieveExpression(directive._val, node, true)._val);
+    const expressionValue = Boolean(retrieveExpression(directive._content, node, true)._val);
 
     setElementActive(element,expressionValue);
 

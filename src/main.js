@@ -43,19 +43,18 @@ const AxonNode = class {
      */
     run(type) {
         const runDirective = directive => {
-            const directivesDictEntry = directivesDict[directive.name];
+            const directivesDictEntry = directivesDict[directive._name];
 
             if (directivesDictEntry && directivesDictEntry[type]) {
                 return directivesDictEntry[type](directive, this, AxonNode);
             } else {
+                //Ignore non-existant diretcive types
                 return true;
             }
         };
 
-        console.log("RENDER",this);
-
         //Recurse if all directives return true
-        if (this.directives.map(runDirective).every(val => val === true)) {
+        if (this.directives.map(runDirective).every(directiveResult => directiveResult === true)) {
             return this._children.map(child => child.run(type));
         } else {
             return false;

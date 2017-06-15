@@ -16,9 +16,9 @@ const directiveModelInit = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
     const eventFn = function () {
-        const targetProp = retrieveProp(directive._val, node);
+        const targetProp = retrieveProp(directive._content, node);
 
-        targetProp._con[targetProp._key] = element[elementContentProp];
+        targetProp._container[targetProp._key] = element[elementContentProp];
         targetProp._node.render();
     };
 
@@ -30,7 +30,7 @@ const directiveModelInit = function (directive, node) {
 const directiveModelRender = function (directive, node) {
     const element = node._element;
     const elementContentProp = getElementContentProp(element);
-    const targetProp = retrieveProp(directive._val, node);
+    const targetProp = retrieveProp(directive._content, node);
 
     element[elementContentProp] = String(targetProp._val);
 

@@ -118,7 +118,7 @@ var Axon = function () {
             const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
 
             return {
-                _val: attr.value,
+                _content: attr.value,
                 _name: nameFull[0],
                 _opt: nameFull[1] || false
             };
@@ -254,7 +254,7 @@ var Axon = function () {
                 } else {
                     return {
                         _val: current,
-                        _con: last,
+                        _container: last,
                         _key: currentPath
                     };
                 }
@@ -366,9 +366,9 @@ var Axon = function () {
         const element = node._element;
         const elementContentProp = getElementContentProp(element);
         const eventFn = function () {
-            const targetProp = retrieveProp(directive._val, node);
+            const targetProp = retrieveProp(directive._content, node);
 
-            targetProp._con[targetProp._key] = element[elementContentProp];
+            targetProp._container[targetProp._key] = element[elementContentProp];
             targetProp._node.render();
         };
 
@@ -380,7 +380,7 @@ var Axon = function () {
     const directiveModelRender = function (directive, node) {
         const element = node._element;
         const elementContentProp = getElementContentProp(element);
-        const targetProp = retrieveProp(directive._val, node);
+        const targetProp = retrieveProp(directive._content, node);
 
         element[elementContentProp] = String(targetProp._val);
 
@@ -388,7 +388,7 @@ var Axon = function () {
     };
 
     const directiveBindRender = function (directive, node) {
-        node._element.setAttribute(directive._opt, retrieveExpression(directive._val, node)._val);
+        node._element.setAttribute(directive._opt, retrieveExpression(directive._content, node)._val);
 
         return true;
     };
@@ -415,7 +415,7 @@ var Axon = function () {
 
     const directiveForRender = function (directive, node, AxonNode) {
         const element = node._element;
-        const directiveSplit = directive._val.split(" ");
+        const directiveSplit = directive._content.split(" ");
         const iteratorKey = directiveSplit[0];
         const iterable = retrieveProp(directiveSplit[2], node)._val;
         const nodesNew = [];
@@ -444,20 +444,20 @@ var Axon = function () {
     };
 
     const directiveTextRender = function (directive, node) {
-        node._element[DOM_PROP_TEXT] = retrieveExpression(directive._val, node)._val;
+        node._element[DOM_PROP_TEXT] = retrieveExpression(directive._content, node)._val;
 
         return true;
     };
 
     const directiveHTMLRender = function (directive, node) {
-        node._element[DOM_PROP_HTML] = retrieveExpression(directive._val, node)._val;
+        node._element[DOM_PROP_HTML] = retrieveExpression(directive._content, node)._val;
 
         return true;
     };
 
     const directiveIfBoth = function (directive, node) {
         const element = node._element;
-        const expressionValue = Boolean(retrieveExpression(directive._val, node, true)._val);
+        const expressionValue = Boolean(retrieveExpression(directive._content, node, true)._val);
 
         setElementActive(element, expressionValue);
 
@@ -465,7 +465,7 @@ var Axon = function () {
     };
 
     const directiveOnInit = function (directive, node) {
-        const methodProp = retrieveMethod(directive._val, node);
+        const methodProp = retrieveMethod(directive._content, node);
 
         bindEvent(node._element, directive._opt, () => applyMethodContext(methodProp));
 
@@ -530,19 +530,18 @@ var Axon = function () {
          */
         run(type) {
             const runDirective = directive => {
-                const directivesDictEntry = directives[directive.name];
+                const directivesDictEntry = directives[directive._name];
 
                 if (directivesDictEntry && directivesDictEntry[type]) {
                     return directivesDictEntry[type](directive, this, AxonNode);
                 } else {
+                    //Ignore non-existant diretcive types
                     return true;
                 }
             };
 
-            console.log("RENDER", this);
-
             //Recurse if all directives return true
-            if (this.directives.map(runDirective).every(val => val === true)) {
+            if (this.directives.map(runDirective).every(directiveResult => directiveResult === true)) {
                 return this._children.map(child => child.run(type));
             } else {
                 return false;

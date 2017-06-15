@@ -30,13 +30,7 @@ rollup
             moduleName: packageJson.namespace.module,
             format: "iife"
         }).code).code;
-        const result_iife_min = uglify.minify(result_iife, {
-            mangle: {
-                properties: {
-                    regex: /(opt)/g
-                }
-            }
-        }).code;
+        const result_iife_min = uglify.minify(result_iife).code;
 
         saveOutput(`${DIR_DIST}/${packageJson.namespace.file}.esm.js`, result_es, "JS:ES");
         saveOutput(`${DIR_DIST}/${packageJson.namespace.file}.common.js`, result_cjs, "JS:CommonJS");

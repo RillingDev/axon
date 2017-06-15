@@ -78,7 +78,7 @@ const findPath = function (obj, path) {
             } else {
                 return {
                     _val: current,
-                    _con: last,
+                    _container: last,
                     _key: currentPath
                 };
             }

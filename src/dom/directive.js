@@ -73,7 +73,7 @@ const parseDirectives = function (element) {
         const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
 
         return {
-            _val: attr.value,
+            _content: attr.value,
             _name: nameFull[0],
             _opt: nameFull[1] || false,
         };

@@ -38,7 +38,7 @@ const directiveForInit = function (directive, node) {
 
 const directiveForRender = function (directive, node, AxonNode) {
     const element = node._element;
-    const directiveSplit = directive._val.split(" ");
+    const directiveSplit = directive._content.split(" ");
     const iteratorKey = directiveSplit[0];
     const iterable = retrieveProp(directiveSplit[2], node)._val;
     const nodesNew = [];
