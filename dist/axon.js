@@ -154,7 +154,7 @@ var Axon = function () {
     };
 
     /**
-     * Redirects `node.foo` to `node.data.foo` if that exists
+     * Handles node->node.data redirects
      */
     const nodeProxy = {
         /**
@@ -169,6 +169,18 @@ var Axon = function () {
             } else {
                 return target[key];
             }
+        },
+        /**
+         * Redirect ALL setting to data
+         * @param {Object} target
+         * @param {String} key
+         * @param {Mixed} val
+         * @returns {Boolean}
+         */
+        set: (target, key, val) => {
+            target.data[key] = val;
+
+            return true;
         }
     };
 
@@ -455,13 +467,13 @@ var Axon = function () {
     };
 
     const directiveTextRender = function (directive, node) {
-        node._element[DOM_PROP_TEXT] = retrieveExpression(directive._content, node)._val;
+        node._element[DOM_PROP_TEXT] = String(retrieveExpression(directive._content, node)._val);
 
         return true;
     };
 
     const directiveHTMLRender = function (directive, node) {
-        node._element[DOM_PROP_HTML] = retrieveExpression(directive._content, node)._val;
+        node._element[DOM_PROP_HTML] = String(retrieveExpression(directive._content, node)._val);
 
         return true;
     };
@@ -520,15 +532,17 @@ var Axon = function () {
          * @param {Object} data
          */
         constructor(_element = null, _parent = null, data = {}) {
-            const proxy = new Proxy(this, nodeProxy);
+            let proxy;
 
-            proxy.data = data;
+            this.data = data;
 
-            proxy._element = _element;
-            proxy._parent = _parent;
+            this.directives = parseDirectives(_element);
+            this._element = _element;
+            this._parent = _parent;
+
+            proxy = new Proxy(this, nodeProxy); //Bind proxy as late as possible
+
             proxy._children = getSubNodes(proxy, _element.children, AxonNode);
-
-            proxy.directives = parseDirectives(_element);
 
             return proxy;
         }

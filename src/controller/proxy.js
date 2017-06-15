@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * Redirects `node.foo` to `node.data.foo` if that exists
+ * Handles node->node.data redirects
  */
 const nodeProxy = {
     /**
@@ -16,6 +16,18 @@ const nodeProxy = {
         } else {
             return target[key];
         }
+    },
+    /**
+     * Redirect ALL setting to data
+     * @param {Object} target
+     * @param {String} key
+     * @param {Mixed} val
+     * @returns {Boolean}
+     */
+    set: (target, key, val) => {
+        target.data[key] = val;
+
+        return true;
     }
 };
 

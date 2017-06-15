@@ -19,6 +19,7 @@
         <div>
             <label>Bar:</label>
             <input type="text" x-model="bar">
+            <button x-on:click="setBar('bar')">Reset Bar</button>
         </div>
         <div x-if="name.length">
             <div>
@@ -26,7 +27,7 @@
             </div>
         </div>
     </div>
-    <script src="../../dist/axon.min.js"></script>
+    <script src="../../dist/axon.js"></script>
     <script src="index.js"></script>
 </body>
 

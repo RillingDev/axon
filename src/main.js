@@ -24,15 +24,17 @@ const AxonNode = class {
      * @param {Object} data
      */
     constructor(_element = null, _parent = null, data = {}) {
-        const proxy = new Proxy(this, nodeProxy);
+        let proxy;
 
-        proxy.data = data;
+        this.data = data;
 
-        proxy._element = _element;
-        proxy._parent = _parent;
+        this.directives = parseDirectives(_element);
+        this._element = _element;
+        this._parent = _parent;
+
+        proxy = new Proxy(this, nodeProxy); //Bind proxy as late as possible
+
         proxy._children = getSubNodes(proxy, _element.children, AxonNode);
-
-        proxy.directives = parseDirectives(_element);
 
         return proxy;
     }

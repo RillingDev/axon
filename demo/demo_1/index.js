@@ -4,7 +4,7 @@
 const app = new Axon({
     el: "#myApp", //Query for the root element
     data: {
-        name: "abc",
+        name: "Lorem ipsum",
         bar: "bar"
     },
     methods: {

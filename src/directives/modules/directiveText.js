@@ -8,7 +8,7 @@ import {
 } from "../../constants";
 
 const directiveTextRender = function (directive, node) {
-    node._element[DOM_PROP_TEXT] = retrieveExpression(directive._content, node)._val;
+    node._element[DOM_PROP_TEXT] = String(retrieveExpression(directive._content, node)._val);
 
     return true;
 };
