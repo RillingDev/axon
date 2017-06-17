@@ -178,7 +178,7 @@ var Axon = function () {
          * @returns {Boolean}
          */
         set: (target, key, val) => {
-            if (key in target.data) {
+            if (!(key in target)) {
                 target.data[key] = val;
             } else {
                 target[key] = val;

@@ -28,13 +28,13 @@
     },
     "homepage": "https://github.com/FelixRilling/axonjs#readme",
     "devDependencies": {
-        "babel-core": "7.0.0-alpha.7",
-        "babel-preset-latest": "7.0.0-alpha.7",
+        "babel-core": "7.0.0-alpha.12",
+        "babel-preset-es2016": "7.0.0-alpha.12",
         "eslint": "^4.0.0",
         "npm-run-all": "^4.0.2",
-        "rollup": "^0.41.6",
+        "rollup": "^0.43.0",
         "rollup-plugin-replace": "^1.1.1",
-        "uglify-es": "^3.0.15"
+        "uglify-es": "^3.0.17"
     },
     "dependencies": {}
 }
