@@ -7,17 +7,21 @@
     <meta name="description" content="AxonJS Demo">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://necolas.github.io/normalize.css/5.0.0/normalize.css" type="text/css" rel="stylesheet" />
+    <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>
 </head>
 
 <body>
-    <h1>Demo 2</h1>
-    <div id="myApp">
+    <div class="container" id="myApp">
+        <h1>Demo 2</h1>
         <div>
             <h2>List</h2>
             <div>
-                <h3>Add</h3>
-                <input type="text" x-model="newItem">
-                <button x-on:click="addItem(newItem)">Add</button>
+                <h3>Input</h3>
+                <div class="form-group">
+                    <label>Add</label>
+                    <input type="text" class="form-control" x-model="newItem">
+                </div>
+                <button class="btn btn-primary" x-on:click="addItem(newItem)">Add</button>
             </div>
             <hr>
             <div>
@@ -27,7 +31,7 @@
                         <span x-text="i"></span>
                     </li>
                 </ul>
-                <button x-on:click="swap()">Reverse</button>
+                <button class="btn btn-primary" x-on:click="swap()">Reverse</button>
             </div>
             <hr>
         </div>

@@ -21,5 +21,3 @@ const app = new Axon({
         }
     }
 });
-
-console.log(app);

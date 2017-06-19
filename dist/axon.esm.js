@@ -531,20 +531,20 @@ const AxonNode = class {
      * @param {Element} _parent´
      * @param {Object} data
      */
-    constructor(_element = null, _parent = null, data = {}) {
-        let proxy;
+    constructor(_element = null, _parent = null, data = {}, returnAll = false) {
+        const proxy = new Proxy(this, nodeProxy);
 
         this.data = data;
-
         this.directives = parseDirectives(_element);
+
         this._element = _element;
         this._parent = _parent;
+        this._children = getSubNodes(proxy, _element.children, AxonNode);
 
-        proxy = new Proxy(this, nodeProxy); //Bind proxy as late as possible
-
-        proxy._children = getSubNodes(proxy, _element.children, AxonNode);
-
-        return proxy;
+        /**
+         * The root-node requires the direct access in addition to the proxy
+         */
+        return returnAll ? [this, proxy] : proxy;
     }
     /**
      * Runs directives on the node and all subnodes
@@ -595,12 +595,18 @@ const AxonNodeRoot = class extends AxonNode {
      * @param {Object} cfg Config data for the Axon instance
      */
     constructor(cfg = {}) {
-        super(query(cfg.el), null, cfg.data);
+        const node = super(query(cfg.el), null, cfg.data, true);
 
-        this.methods = cfg.methods || {};
+        /**
+         * node[0] is the direct node access
+         * node[1] is the proxied access
+         */
+        node[0].methods = cfg.methods || {};
 
-        this.init();
-        this.render();
+        node[0].init();
+        node[0].render();
+
+        return node[1];
     }
 };
 
