@@ -10,7 +10,7 @@ import {
 import {
     nodeProxy
 } from "./controller/proxy";
-import directivesDict from "./directives/index";
+import mapDirectives from "./directives/index";
 
 /**
  * Axon Node
@@ -45,14 +45,16 @@ const AxonNode = class {
      */
     run(type) {
         const runDirective = directive => {
-            const directivesDictEntry = directivesDict[directive._name];
+            if (mapDirectives.has(directive._name)) {
+                const mapDirectivesEntry = mapDirectives.get(directive._name);
 
-            if (directivesDictEntry && directivesDictEntry[type]) {
-                return directivesDictEntry[type](directive, this, AxonNode);
-            } else {
-                //Ignore non-existant diretcive types
-                return true;
+                if (mapDirectivesEntry[type]) {
+                    return mapDirectivesEntry[type](directive, this, AxonNode);
+                }
             }
+            //Ignore non-existant diretcive types
+            return true;
+
         };
 
         //Recurse if all directives return true

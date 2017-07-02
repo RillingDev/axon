@@ -503,7 +503,7 @@ const directiveOnInit = function (directive, node) {
     return true;
 };
 
-const directives = {
+const directives = mapFromObject({
     "model": {
         _init: directiveModelInit,
         _render: directiveModelRender
@@ -528,7 +528,7 @@ const directives = {
     "on": {
         _init: directiveOnInit,
     },
-};
+});
 
 /**
  * Axon Node
@@ -563,14 +563,16 @@ const AxonNode = class {
      */
     run(type) {
         const runDirective = directive => {
-            const directivesDictEntry = directives[directive._name];
+            if (directives.has(directive._name)) {
+                const mapDirectivesEntry = directives.get(directive._name);
 
-            if (directivesDictEntry && directivesDictEntry[type]) {
-                return directivesDictEntry[type](directive, this, AxonNode);
-            } else {
-                //Ignore non-existant diretcive types
-                return true;
+                if (mapDirectivesEntry[type]) {
+                    return mapDirectivesEntry[type](directive, this, AxonNode);
+                }
             }
+            //Ignore non-existant diretcive types
+            return true;
+
         };
 
         //Recurse if all directives return true

@@ -1,6 +1,9 @@
 "use strict";
 
 import {
+    mapFromObject
+} from "../util";
+import {
     directiveModelInit,
     directiveModelRender
 } from "./modules/directiveModel";
@@ -24,7 +27,7 @@ import {
     directiveOnInit
 } from "./modules/directiveOn";
 
-const directives = {
+const directives = mapFromObject({
     "model": {
         _init: directiveModelInit,
         _render: directiveModelRender
@@ -49,7 +52,7 @@ const directives = {
     "on": {
         _init: directiveOnInit,
     },
-};
+});
 
 
 export default directives;
