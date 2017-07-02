@@ -32,6 +32,13 @@ const flattenArray = function (arr) {
 const isDefined = val => typeof val !== "undefined";
 
 /**
+ * Creates a Map from an Object
+ * @param {Object} obj
+ * @returns {Map}
+ */
+const mapFromObject = obj => new Map(Object.entries(obj));
+
+/**
  *
  * @param {String} selector
  * @param {Node} [context=document]
@@ -200,25 +207,29 @@ const REGEX_IS_STRING = /^["'`].*["'`]$/;
 const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
 const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
-//@TODO make this less hacky
+const mapLiterals = mapFromObject({
+    "false": false,
+    "true": true,
+    "null": null
+});
+
 /**
- * Parses expression args to "real" values
- *  @param {String} arg
- * @param {Node} node
+ * Parses Literal String
+ * @param {String} expression
+ * @param {AxonNode} node
  * @returns {Mixed}
  */
-const mapArg = function (arg, node) {
-    if (REGEX_IS_NUMBER.test(arg)) {
-        return Number(arg);
-    } else if (REGEX_IS_STRING.test(arg)) {
-        //Cut of braces
-        return arg.substr(1, arg.length - 2);
-    } else if (arg === "true") {
-        return true;
-    } else if (arg === "false") {
-        return false;
+const parseLiteral = function (expression, node) {
+    if (REGEX_IS_NUMBER.test(expression)) {
+        //Cast to number
+        return Number(expression);
+    } else if (REGEX_IS_STRING.test(expression)) {
+        //Cut of quotes
+        return expression.substr(1, expression.length - 2);
+    } else if (mapLiterals.has(expression)) {
+        return mapLiterals.get(expression);
     } else {
-        return retrieveProp(arg, node)._val;
+        return retrieveProp(expression, node)._val;
     }
 };
 
@@ -229,24 +240,22 @@ const mapArg = function (arg, node) {
  * @returns {Object|false}
  */
 const findPath = function (obj, path) {
-    const arr = path.split(".");
+    const keys = path.split(".");
     let last = obj;
     let current;
     let index = 0;
 
-    while (index < arr.length) {
-        const currentPath = arr[index];
-
-        current = last[currentPath];
+    while (index < keys.length) {
+        current = last[keys[index]];
 
         if (isDefined(current)) {
-            if (index < arr.length - 1) {
+            if (index < keys.length - 1) {
                 last = current;
             } else {
                 return {
                     _val: current,
                     _container: last,
-                    _key: currentPath
+                    _key: keys[index]
                 };
             }
         }
@@ -350,7 +359,7 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
     const data = findPath(_root.methods, matched[1]);
 
     if (data !== false) {
-        data._args = args.map(arg => mapArg(arg, node));
+        data._args = args.map(arg => parseLiteral(arg, node));
         data._node = _root;
 
         return data;

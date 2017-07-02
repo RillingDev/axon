@@ -33,8 +33,16 @@ const flattenArray = function (arr) {
  */
 const isDefined = val => typeof val !== "undefined";
 
+/**
+ * Creates a Map from an Object
+ * @param {Object} obj
+ * @returns {Map}
+ */
+const mapFromObject = obj => new Map(Object.entries(obj));
+
 export {
     cloneArray,
     flattenArray,
-    isDefined
+    isDefined,
+    mapFromObject
 };
