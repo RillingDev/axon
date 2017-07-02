@@ -194,8 +194,11 @@ const bindEvent = function (element, eventType, eventFn) {
     element.addEventListener(eventType, eventFn, false);
 };
 
-const REGEX_IS_NUMBER = /^[\d\.]+$/;
-const REGEX_IS_STRING = /^'\w+'$/;
+//@TODO test those
+const REGEX_IS_NUMBER = /^[\d.-]+$/;
+const REGEX_IS_STRING = /^["'`].*["'`]$/;
+const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
+const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
 //@TODO make this less hacky
 /**
@@ -253,10 +256,6 @@ const findPath = function (obj, path) {
 
     return false;
 };
-
-//@TODO test those
-const REGEX_IS_FUNCTION = /\(.*\)/;
-const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
 /**
  * Creates a new missing-prop error
