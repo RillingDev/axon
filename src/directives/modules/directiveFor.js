@@ -15,18 +15,9 @@ import {
     setElementActive
 } from "../../dom/element";
 
-//const REGEX_DIR_FOR = /(?:(^\w+)|\(?(\w+),(\w+)\)?) in (\w+)/;
-
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
-
-const cleanDirectiveDyns = function (parent) {
-    cloneArray(parent.children).forEach(child => {
-        if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
-            child.remove();
-        }
-    });
-};
+const FOR_REGEX = /(\w+) in (\w+)/;
 
 const directiveForInit = function (directive, node) {
     const element = node._element;
@@ -39,12 +30,17 @@ const directiveForInit = function (directive, node) {
 
 const directiveForRender = function (directive, node, AxonNode) {
     const element = node._element;
-    const directiveSplit = directive._content.split(" ");
-    const iteratorKey = directiveSplit[0];
+    const directiveSplit = FOR_REGEX.exec(directive._content);
+    const iteratorKey = directiveSplit[1];
     const iterable = retrieveProp(directiveSplit[2], node)._val;
     const nodesNew = [];
 
-    cleanDirectiveDyns(element.parentElement);
+    //Delete old nodes
+    cloneArray(element.parentElement.children).forEach(child => {
+        if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
+            child.remove();
+        }
+    });
 
     for (let i of iterable) {
         const nodeElement = element.cloneNode(true);

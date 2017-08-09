@@ -34,7 +34,7 @@ const AxonNode = class {
         this._children = getSubNodes(proxy, _element.children, AxonNode);
 
         /**
-         * The root-node requires the direct access in addition to the proxy
+         * The root-node requires the direct access to the node as wekk as the proxy
          */
         return returnAll ? [this, proxy] : proxy;
     }
@@ -52,9 +52,9 @@ const AxonNode = class {
                     return mapDirectivesEntry[type](directive, this, AxonNode);
                 }
             }
+
             //Ignore non-existant diretcive types
             return true;
-
         };
 
         //Recurse if all directives return true
