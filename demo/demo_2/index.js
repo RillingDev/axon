@@ -4,7 +4,7 @@ const app = new Axon({
     el: "#myApp",
     data: {
         newItem: "Foo",
-        list: [1, 23, 415, 25, 2521]
+        list: ["Foo", "Bar", "Fizz"]
     },
     methods: {
         addItem(item) {
@@ -17,6 +17,12 @@ const app = new Axon({
             const vm = this;
 
             vm.list = vm.list.reverse();
+            vm.render();
+        },
+        sort() {
+            const vm = this;
+
+            vm.list = vm.list.sort();
             vm.render();
         }
     }

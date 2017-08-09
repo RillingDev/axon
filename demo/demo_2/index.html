@@ -16,11 +16,10 @@
             <h2>List</h2>
             <div>
                 <h3>Input</h3>
-                <div class="form-group">
-                    <label>Add</label>
-                    <input type="text" class="form-control" x-model="newItem">
+                <div>
+                    <input type="text" x-model="newItem">
+                    <button class="btn btn-primary" x-on:click="addItem(newItem)">Add</button>
                 </div>
-                <button class="btn btn-primary" x-on:click="addItem(newItem)">Add</button>
             </div>
             <hr>
             <div>
@@ -31,6 +30,7 @@
                     </li>
                 </ul>
                 <button class="btn btn-primary" x-on:click="swap()">Reverse</button>
+                <button class="btn btn-primary" x-on:click="sort()">Sort</button>
             </div>
             <hr>
         </div>

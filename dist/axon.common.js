@@ -116,9 +116,9 @@ const parseDirectives = function (element) {
         const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
 
         return {
-            _content: attr.value,
-            _name: nameFull[0],
-            _opt: nameFull[1] || false,
+            a: attr.value,
+            b: nameFull[0],
+            c: nameFull[1] || false,
         };
     });
 };
@@ -231,7 +231,7 @@ const parseLiteral = function (expression, node) {
     } else if (mapLiterals.has(expression)) {
         return mapLiterals.get(expression);
     } else {
-        return retrieveProp(expression, node)._val;
+        return retrieveProp(expression, node).g;
     }
 };
 
@@ -255,9 +255,9 @@ const findPath = function (obj, path) {
                 last = current;
             } else {
                 return {
-                    _val: current,
-                    _container: last,
-                    _key: keys[index]
+                    g: current,
+                    h: last,
+                    i: keys[index]
                 };
             }
         }
@@ -280,7 +280,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node, methodProp._args);
+const applyMethodContext = methodProp => methodProp.g.apply(methodProp.j, methodProp.k);
 
 /**
  * Gets the topmost node
@@ -290,8 +290,8 @@ const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node,
 const getNodeRoot = function (node) {
     let result = node;
 
-    while (result._parent !== null) {
-        result = result._parent;
+    while (result.e !== null) {
+        result = result.e;
     }
 
     return result;
@@ -310,8 +310,8 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
         const methodResult = applyMethodContext(method);
 
         return {
-            _node: method.node,
-            _val: methodResult
+            j: method.node,
+            g: methodResult
         };
     } else {
         return retrieveProp(name, node, allowUndefined);
@@ -328,15 +328,15 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
 const retrieveProp = function (expression, node, allowUndefined = false) {
     let current = node;
 
-    while (current && current._parent !== false) {
+    while (current && current.e !== false) {
         const data = findPath(current.data, expression);
 
         if (data !== false) {
-            data._node = current;
+            data.j = current;
 
             return data;
         } else {
-            current = current._parent;
+            current = current.e;
         }
     }
 
@@ -361,8 +361,8 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
     const data = findPath(_root.methods, matched[1]);
 
     if (data !== false) {
-        data._args = args.map(arg => parseLiteral(arg, node));
-        data._node = _root;
+        data.k = args.map(arg => parseLiteral(arg, node));
+        data.j = _root;
 
         return data;
     } else {
@@ -394,13 +394,13 @@ const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_A
 const DOM_EVENT_MODEL = "input";
 
 const directiveModelInit = function (directive, node) {
-    const element = node._element;
+    const element = node.d;
     const elementContentProp = getElementContentProp(element);
     const eventFn = function () {
-        const targetProp = retrieveProp(directive._content, node);
+        const targetProp = retrieveProp(directive.a, node);
 
-        targetProp._container[targetProp._key] = element[elementContentProp];
-        targetProp._node.render();
+        targetProp.h[targetProp.i] = element[elementContentProp];
+        targetProp.j.render();
     };
 
     bindEvent(element, DOM_EVENT_MODEL, eventFn);
@@ -409,39 +409,40 @@ const directiveModelInit = function (directive, node) {
 };
 
 const directiveModelRender = function (directive, node) {
-    const element = node._element;
+    const element = node.d;
     const elementContentProp = getElementContentProp(element);
-    const targetProp = retrieveProp(directive._content, node);
+    const targetProp = retrieveProp(directive.a, node);
 
-    element[elementContentProp] = String(targetProp._val);
+    element[elementContentProp] = String(targetProp.g);
 
     return true;
 };
 
 const directiveBindRender = function (directive, node) {
-    node._element.setAttribute(directive._opt, retrieveExpression(directive._content, node)._val);
+    node.d.setAttribute(directive.c, retrieveExpression(directive.a, node).g);
 
     return true;
 };
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
-const FOR_REGEX = /(\w+) in (\w+)/;
+const FOR_REGEX_ARR = /(\w+) in (\w+)/;
+//const FOR_REGEX_OBJ = /\((\w+),(\w+)\) in (\w+)/;
 
 const directiveForInit = function (directive, node) {
-    const element = node._element;
+    const element = node.d;
 
-    setDirective(node._element, DOM_DIR_FOR_BASE, true);
+    setDirective(node.d, DOM_DIR_FOR_BASE, true);
     setElementActive(element, false);
 
     return false;
 };
 
 const directiveForRender = function (directive, node, AxonNode) {
-    const element = node._element;
-    const directiveSplit = FOR_REGEX.exec(directive._content);
+    const element = node.d;
+    const directiveSplit = FOR_REGEX_ARR.exec(directive.a);
     const iteratorKey = directiveSplit[1];
-    const iterable = retrieveProp(directiveSplit[2], node)._val;
+    const iterable = retrieveProp(directiveSplit[2], node).g;
     const nodesNew = [];
 
     //Delete old nodes
@@ -464,29 +465,29 @@ const directiveForRender = function (directive, node, AxonNode) {
         nodeData[iteratorKey] = i;
         elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
 
-        nodesNew.push(new AxonNode(elementInserted, node._parent, nodeData));
+        nodesNew.push(new AxonNode(elementInserted, node.e, nodeData));
     }
 
-    node._children = nodesNew;
+    node.f = nodesNew;
 
     return true;
 };
 
 const directiveTextRender = function (directive, node) {
-    node._element[DOM_PROP_TEXT] = String(retrieveExpression(directive._content, node)._val);
+    node.d[DOM_PROP_TEXT] = String(retrieveExpression(directive.a, node).g);
 
     return true;
 };
 
 const directiveHTMLRender = function (directive, node) {
-    node._element[DOM_PROP_HTML] = String(retrieveExpression(directive._content, node)._val);
+    node.d[DOM_PROP_HTML] = String(retrieveExpression(directive.a, node).g);
 
     return true;
 };
 
 const directiveIfBoth = function (directive, node) {
-    const element = node._element;
-    const expressionValue = Boolean(retrieveExpression(directive._content, node, true)._val);
+    const element = node.d;
+    const expressionValue = Boolean(retrieveExpression(directive.a, node, true).g);
 
     setElementActive(element,expressionValue);
 
@@ -494,35 +495,35 @@ const directiveIfBoth = function (directive, node) {
 };
 
 const directiveOnInit = function (directive, node) {
-    bindEvent(node._element, directive._opt, () => applyMethodContext(retrieveMethod(directive._content, node)));
+    bindEvent(node.d, directive.c, () => applyMethodContext(retrieveMethod(directive.a, node)));
 
     return true;
 };
 
 const directives = mapFromObject({
     "model": {
-        _init: directiveModelInit,
-        _render: directiveModelRender
+        l: directiveModelInit,
+        m: directiveModelRender
     },
     "bind": {
-        _render: directiveBindRender
+        m: directiveBindRender
     },
     "for": {
-        _init: directiveForInit,
-        _render: directiveForRender
+        l: directiveForInit,
+        m: directiveForRender
     },
     "text": {
-        _render: directiveTextRender
+        m: directiveTextRender
     },
     "html": {
-        _render: directiveHTMLRender
+        m: directiveHTMLRender
     },
     "if": {
-        _init: directiveIfBoth,
-        _render: directiveIfBoth
+        l: directiveIfBoth,
+        m: directiveIfBoth
     },
     "on": {
-        _init: directiveOnInit,
+        l: directiveOnInit,
     },
 });
 
@@ -533,22 +534,22 @@ const directives = mapFromObject({
 const AxonNode = class {
     /**
      * Axon Element Node Constructor
-     * @param {Element} _element
-     * @param {Element} _parent´
+     * @param {Element} d
+     * @param {Element} e´
      * @param {Object} data
      */
-    constructor(_element = null, _parent = null, data = {}, returnAll = false) {
+    constructor(d = null, e = null, data = {}, returnAll = false) {
         const proxy = new Proxy(this, nodeProxy);
 
         this.data = data;
-        this.directives = parseDirectives(_element);
+        this.directives = parseDirectives(d);
 
-        this._element = _element;
-        this._parent = _parent;
-        this._children = getSubNodes(proxy, _element.children, AxonNode);
+        this.d = d;
+        this.e = e;
+        this.f = getSubNodes(proxy, d.children, AxonNode);
 
         /**
-         * The root-node requires the direct access to the node as wekk as the proxy
+         * The root-node requires the direct access to the node as well as the proxy
          */
         return returnAll ? [this, proxy] : proxy;
     }
@@ -559,8 +560,8 @@ const AxonNode = class {
      */
     run(type) {
         const runDirective = directive => {
-            if (directives.has(directive._name)) {
-                const mapDirectivesEntry = directives.get(directive._name);
+            if (directives.has(directive.b)) {
+                const mapDirectivesEntry = directives.get(directive.b);
 
                 if (mapDirectivesEntry[type]) {
                     return mapDirectivesEntry[type](directive, this, AxonNode);
@@ -573,7 +574,7 @@ const AxonNode = class {
 
         //Recurse if all directives return true
         if (this.directives.map(runDirective).every(directiveResult => directiveResult === true)) {
-            return this._children.map(child => child.run(type));
+            return this.f.map(child => child.run(type));
         } else {
             return false;
         }
@@ -582,13 +583,13 @@ const AxonNode = class {
      * Initializes directives
      */
     init() {
-        return this.run("_init");
+        return this.run("l");
     }
     /**
      * Renders directives
      */
     render() {
-        return this.run("_render");
+        return this.run("m");
     }
 };
 

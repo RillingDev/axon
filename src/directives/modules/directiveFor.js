@@ -17,7 +17,8 @@ import {
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
-const FOR_REGEX = /(\w+) in (\w+)/;
+const FOR_REGEX_ARR = /(\w+) in (\w+)/;
+//const FOR_REGEX_OBJ = /\((\w+),(\w+)\) in (\w+)/;
 
 const directiveForInit = function (directive, node) {
     const element = node._element;
@@ -30,7 +31,7 @@ const directiveForInit = function (directive, node) {
 
 const directiveForRender = function (directive, node, AxonNode) {
     const element = node._element;
-    const directiveSplit = FOR_REGEX.exec(directive._content);
+    const directiveSplit = FOR_REGEX_ARR.exec(directive._content);
     const iteratorKey = directiveSplit[1];
     const iterable = retrieveProp(directiveSplit[2], node)._val;
     const nodesNew = [];

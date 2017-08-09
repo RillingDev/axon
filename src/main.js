@@ -34,7 +34,7 @@ const AxonNode = class {
         this._children = getSubNodes(proxy, _element.children, AxonNode);
 
         /**
-         * The root-node requires the direct access to the node as wekk as the proxy
+         * The root-node requires the direct access to the node as well as the proxy
          */
         return returnAll ? [this, proxy] : proxy;
     }
