@@ -469,7 +469,6 @@ const directiveBindRender = function (directive, node) {
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
 const FOR_REGEX_ARR = /(\w+) in (\w+)/;
-//const FOR_REGEX_OBJ = /\((\w+),(\w+)\) in (\w+)/;
 
 const directiveForInit = function (directive, node) {
     const element = node._element;
@@ -488,7 +487,7 @@ const directiveForRender = function (directive, node, AxonNode) {
     const nodesNew = [];
 
     //Delete old nodes
-    arrClone(element.parentElement.children).forEach(child => {
+    forEach(arrClone(element.parentElement.children), child => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }
