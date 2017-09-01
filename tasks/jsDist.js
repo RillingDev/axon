@@ -2,8 +2,8 @@
 
 const babel = require("babel-core");
 const uglify = require("uglify-es");
-const replace = require("rollup-plugin-replace");
 const bundle = require("./lib/bundle");
+const resolve = require("rollup-plugin-node-resolve");
 
 bundle([{
     id: "es",
@@ -32,22 +32,28 @@ bundle([{
         }).code
     ).code
 }], [
-    replace({
-        "_content": "a",
-        "_name": "b",
-        "_opt": "c",
+    resolve({
+        // use "module" field for ES6 module if possible
+        module: true, // Default: true
 
-        "_element": "d",
-        "_parent": "e",
-        "_children": "f",
+        // use "jsnext:main" if possible
+        // – see https://github.com/rollup/rollup/wiki/jsnext:main
+        jsnext: true, // Default: false
 
-        "_val": "g",
-        "_container": "h",
-        "_key": "i",
-        "_node": "j",
-        "_args": "k",
+        // use "main" field or index.js, even if it's not an ES6 module
+        // (needs to be converted from CommonJS to ES6
+        // – see https://github.com/rollup/rollup-plugin-commonjs
+        main: false, // Default: true
 
-        "_init": "l",
-        "_render": "m",
+        // some package.json files have a `browser` field which
+        // specifies alternative files to load for people bundling
+        // for the browser. If that's you, use this option, otherwise
+        // pkg.browser will be ignored
+        browser: false, // Default: false
+
+        // If true, inspect resolved files to check that they are
+        // ES2015 modules
+        modulesOnly: true, // Default: false
+
     })
 ]);
