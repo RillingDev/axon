@@ -5,8 +5,8 @@ import {
     DOM_ATTR_DELIMITER
 } from "../constants";
 import {
-    cloneArray,
-} from "../util";
+    arrClone,
+} from "lightdash";
 
 /**
  * Sets a value as directive
@@ -51,7 +51,7 @@ const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
  * @param {Element} element
  * @returns {Array}
  */
-const getDirectives = element => cloneArray(element.attributes).filter(isDirective);
+const getDirectives = element => arrClone(element.attributes).filter(isDirective);
 
 /**
  * Checks if the element has any directives

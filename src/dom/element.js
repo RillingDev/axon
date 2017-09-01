@@ -2,7 +2,7 @@
 
 import {
     isDefined
-} from "../util";
+} from "lightdash";
 import {
     DOM_PROP_VALUE,
     DOM_PROP_TEXT,

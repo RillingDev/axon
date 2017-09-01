@@ -1,9 +1,9 @@
 "use strict";
 
 import {
-    cloneArray,
-    flattenArray
-} from "../util";
+    arrClone,
+    arrFlattenDeep
+} from "lightdash";
 import {
     hasDirectives
 } from "./directive";
@@ -38,7 +38,7 @@ const getSubNodes = function (node, children, AxonNode) {
      * @param {Array} children
      * @returns {Array}
      */
-    const mapSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
+    const mapSubNodes = children => arrFlattenDeep(arrClone(children).map(recurseSubNodes).filter(val => val !== null));
 
     return mapSubNodes(children);
 };

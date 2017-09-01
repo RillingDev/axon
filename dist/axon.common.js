@@ -1,44 +1,86 @@
 'use strict';
 
 /**
- * Create a new array with the same contents
- * @param {Array} arr
- * @returns {Array}
+ * Checks if two values are the same
+ *
+ * @param {*} a
+ * @param {*} b
+ * @returns {boolean}
  */
-const cloneArray = arr => Array.from(arr);
-
 /**
- * Flatten Array Recursively
- * @param {Array} arr
- * @returns {Array}
+ * Checks if the value is typeof the typestring
+ *
+ * @param {*} val
+ * @param {string} type
+ * @returns {boolean}
  */
-const flattenArray = function (arr) {
-    const result = [];
-
-    arr.forEach(item => {
-        if (Array.isArray(item)) {
-            result.push(...flattenArray(item));
-        } else {
-            result.push(item);
-        }
-    });
-
-    return result;
-};
-
+const isTypeOf = (val, type) => typeof val === type;
+/**
+ * Checks if a value is undefined
+ *
+ * @param {*} val
+ * @returns {boolean}
+ */
+const isUndefined = (val) => isTypeOf(val, "undefined");
 /**
  * Checks if a value is not undefined
- * @param {Mixed} val
- * @returns {Boolean}
+ *
+ * @param {*} val
+ * @returns {boolean}
  */
-const isDefined = val => typeof val !== "undefined";
-
+const isDefined = (val) => !isUndefined(val);
+/**
+ * Checks if a value is an array
+ *
+ * @param {*} val
+ * @returns {boolean}
+ */
+const isArray = (val) => Array.isArray(val);
+/**
+ * Iterate over each value of an array
+ *
+ * @param {Array<any>} arr
+ * @param {ForEachIterator} fn
+ */
+const forEach = (arr, fn) => arr.forEach(fn);
+/**
+ * Creates a new array with the values of the input array
+ *
+ * @param {Array<any>} arr
+ * @returns {Array<any>}
+ */
+const arrClone = (arr) => Array.from(arr);
+/**
+ * Recursively flattens an array
+ *
+ * @param {Array<any>} arr
+ * @returns {Array<any>}
+ */
+const arrFlattenDeep = (arr) => {
+    const result = [];
+    forEach(arr, val => {
+        if (isArray(val)) {
+            result.push(...arrFlattenDeep(val));
+        }
+        else {
+            result.push(val);
+        }
+    });
+    return result;
+};
+/**
+ * Returns an array of the objects entries
+ *
+ * @param {Object} obj
+ * @returns {Array<[string, any]>}
+ */
+const objEntries = (obj) => Object.entries(obj);
 /**
  * Creates a Map from an Object
  * @param {Object} obj
  * @returns {Map}
  */
-const mapFromObject = obj => new Map(Object.entries(obj));
+const mapFromObject = (obj) => new Map(objEntries(obj));
 
 /**
  *
@@ -48,7 +90,7 @@ const mapFromObject = obj => new Map(Object.entries(obj));
  * @returns {Node|Array}
  */
 const query = function (selector, context = document, all = false) {
-    return all ? cloneArray(context.querySelectorAll(selector)) : context.querySelector(selector);
+    return all ? arrClone(context.querySelectorAll(selector)) : context.querySelector(selector);
 };
 
 const DOM_ATTR_PREFIX = "x-";
@@ -94,7 +136,7 @@ const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
  * @param {Element} element
  * @returns {Array}
  */
-const getDirectives = element => cloneArray(element.attributes).filter(isDirective);
+const getDirectives = element => arrClone(element.attributes).filter(isDirective);
 
 /**
  * Checks if the element has any directives
@@ -153,7 +195,7 @@ const getSubNodes = function (node, children, AxonNode) {
      * @param {Array} children
      * @returns {Array}
      */
-    const mapSubNodes = children => flattenArray(cloneArray(children).map(recurseSubNodes).filter(val => val !== null));
+    const mapSubNodes = children => arrFlattenDeep(arrClone(children).map(recurseSubNodes).filter(val => val !== null));
 
     return mapSubNodes(children);
 };
@@ -446,7 +488,7 @@ const directiveForRender = function (directive, node, AxonNode) {
     const nodesNew = [];
 
     //Delete old nodes
-    cloneArray(element.parentElement.children).forEach(child => {
+    arrClone(element.parentElement.children).forEach(child => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }

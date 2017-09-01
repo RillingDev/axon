@@ -9,8 +9,8 @@ import {
     setDirective
 } from "../../dom/directive";
 import {
-    cloneArray,
-} from "../../util";
+    arrClone,
+} from "lightdash";
 import {
     setElementActive
 } from "../../dom/element";
@@ -37,7 +37,7 @@ const directiveForRender = function (directive, node, AxonNode) {
     const nodesNew = [];
 
     //Delete old nodes
-    cloneArray(element.parentElement.children).forEach(child => {
+    arrClone(element.parentElement.children).forEach(child => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }

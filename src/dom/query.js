@@ -1,8 +1,8 @@
 "use strict";
 
 import {
-    cloneArray
-} from "../util";
+    arrClone
+} from "lightdash";
 
 /**
  *
@@ -12,7 +12,7 @@ import {
  * @returns {Node|Array}
  */
 const query = function (selector, context = document, all = false) {
-    return all ? cloneArray(context.querySelectorAll(selector)) : context.querySelector(selector);
+    return all ? arrClone(context.querySelectorAll(selector)) : context.querySelector(selector);
 };
 
 export default query;

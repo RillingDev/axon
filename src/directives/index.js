@@ -2,7 +2,7 @@
 
 import {
     mapFromObject
-} from "../util";
+} from "lightdash";
 import {
     directiveModelInit,
     directiveModelRender
@@ -19,7 +19,7 @@ import {
 } from "./modules/directiveText";
 import {
     directiveHTMLRender
-} from "./modules/directiveHTML";
+} from "./modules/directiveHtml";
 import {
     directiveIfBoth
 } from "./modules/directiveIf";

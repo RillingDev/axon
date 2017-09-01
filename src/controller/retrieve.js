@@ -3,7 +3,7 @@
 import {
     isDefined,
     mapFromObject
-} from "../util";
+} from "lightdash";
 
 //@TODO test those
 const REGEX_IS_NUMBER = /^[\d.-]+$/;
