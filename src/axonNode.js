@@ -24,13 +24,16 @@ const AxonNode = class {
      * @param {Object} data
      */
     constructor($element = null, $parent = null, data = {}, returnAll = false) {
-        const proxy = new Proxy(this, nodeProxy);
+        let proxy;
 
         this.data = data;
         this.directives = parseDirectives($element);
 
         this.$element = $element;
         this.$parent = $parent;
+
+        proxy = new Proxy(this, nodeProxy);
+
         this.$children = getSubNodes(proxy, $element.children);
 
         /**
@@ -50,7 +53,7 @@ const AxonNode = class {
                 const mapDirectivesEntry = mapDirectives.get(directive.name);
 
                 if (mapDirectivesEntry[type]) {
-                    return mapDirectivesEntry[type](directive, this, AxonNode);
+                    return mapDirectivesEntry[type](directive, this);
                 }
             }
 

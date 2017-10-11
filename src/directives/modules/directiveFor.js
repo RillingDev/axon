@@ -1,3 +1,4 @@
+import AxonNode from "../../axonNode";
 import {
     retrieveProp
 } from "../../controller/retrieve";
@@ -9,6 +10,7 @@ import {
 import {
     forEach,
     arrClone,
+    objClone,
 } from "lightdash";
 import {
     setElementActive
@@ -16,7 +18,7 @@ import {
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
-const FOR_REGEX_ARR = /(\w+) in (\w+)/;
+const FOR_REGEX_ARR = /(.+) in (.+)/;
 
 const directiveForInit = function (directive, node) {
     const element = node.$element;
@@ -27,7 +29,7 @@ const directiveForInit = function (directive, node) {
     return false;
 };
 
-const directiveForRender = function (directive, node, AxonNode) {
+const directiveForRender = function (directive, node) {
     const element = node.$element;
     const directiveSplit = FOR_REGEX_ARR.exec(directive.content);
     const iteratorKey = directiveSplit[1];
@@ -43,7 +45,7 @@ const directiveForRender = function (directive, node, AxonNode) {
 
     for (let i of iterable) {
         const nodeElement = element.cloneNode(true);
-        const nodeData = Object.assign({}, node.data);
+        const nodeData = objClone(node.data);
         let elementInserted;
 
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, true);

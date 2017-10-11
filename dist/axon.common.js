@@ -87,6 +87,14 @@ const arrFlattenDeep = (arr) => {
 };
 
 /**
+ * Creates a new object with the entries of the input object
+ *
+ * @param {object} obj
+ * @returns {object}
+ */
+const objClone = (obj) => Object.assign({}, obj);
+
+/**
  * Creates a Map from an Object
  * @param {Object} obj
  * @returns {Map}
@@ -487,7 +495,7 @@ const directiveBindRender = function (directive, node) {
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
-const FOR_REGEX_ARR = /(\w+) in (\w+)/;
+const FOR_REGEX_ARR = /(.+) in (.+)/;
 
 const directiveForInit = function (directive, node) {
     const element = node.$element;
@@ -498,7 +506,7 @@ const directiveForInit = function (directive, node) {
     return false;
 };
 
-const directiveForRender = function (directive, node, AxonNode) {
+const directiveForRender = function (directive, node) {
     const element = node.$element;
     const directiveSplit = FOR_REGEX_ARR.exec(directive.content);
     const iteratorKey = directiveSplit[1];
@@ -514,7 +522,7 @@ const directiveForRender = function (directive, node, AxonNode) {
 
     for (let i of iterable) {
         const nodeElement = element.cloneNode(true);
-        const nodeData = Object.assign({}, node.data);
+        const nodeData = objClone(node.data);
         let elementInserted;
 
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, true);
@@ -602,13 +610,16 @@ const AxonNode = class {
      * @param {Object} data
      */
     constructor($element = null, $parent = null, data = {}, returnAll = false) {
-        const proxy = new Proxy(this, nodeProxy);
+        let proxy;
 
         this.data = data;
         this.directives = parseDirectives($element);
 
         this.$element = $element;
         this.$parent = $parent;
+
+        proxy = new Proxy(this, nodeProxy);
+
         this.$children = getSubNodes(proxy, $element.children);
 
         /**
@@ -628,7 +639,7 @@ const AxonNode = class {
                 const mapDirectivesEntry = directives.get(directive.name);
 
                 if (mapDirectivesEntry[type]) {
-                    return mapDirectivesEntry[type](directive, this, AxonNode);
+                    return mapDirectivesEntry[type](directive, this);
                 }
             }
 
