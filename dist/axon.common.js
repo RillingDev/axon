@@ -1,12 +1,13 @@
 'use strict';
 
 /**
- * Checks if two values are the same
+ * Checks if a value is an array
  *
- * @param {*} a
- * @param {*} b
+ * @param {*} val
  * @returns {boolean}
  */
+const isArray = (val) => Array.isArray(val);
+
 /**
  * Checks if the value is typeof the typestring
  *
@@ -15,6 +16,7 @@
  * @returns {boolean}
  */
 const isTypeOf = (val, type) => typeof val === type;
+
 /**
  * Checks if a value is undefined
  *
@@ -22,6 +24,7 @@ const isTypeOf = (val, type) => typeof val === type;
  * @returns {boolean}
  */
 const isUndefined = (val) => isTypeOf(val, "undefined");
+
 /**
  * Checks if a value is not undefined
  *
@@ -29,36 +32,40 @@ const isUndefined = (val) => isTypeOf(val, "undefined");
  * @returns {boolean}
  */
 const isDefined = (val) => !isUndefined(val);
+
 /**
- * Checks if a value is an array
+ * Returns an array of the objects entries
  *
- * @param {*} val
- * @returns {boolean}
+ * @param {Object} obj
+ * @returns {Entry[]}
  */
-const isArray = (val) => Array.isArray(val);
+const objEntries = (obj) => Object.entries(obj);
+
 /**
  * Iterate over each value of an array
  *
- * @param {Array<any>} arr
+ * @param {any[]} arr
  * @param {ForEachIterator} fn
  */
 const forEach = (arr, fn) => arr.forEach(fn);
+
 /**
  * Creates a new array with the values of the input array
  *
- * @param {Array<any>} arr
- * @returns {Array<any>}
+ * @param {any[]} arr
+ * @returns {any[]}
  */
 const arrClone = (arr) => Array.from(arr);
+
 /**
  * Recursively flattens an array
  *
- * @param {Array<any>} arr
- * @returns {Array<any>}
+ * @param {any[]} arr
+ * @returns {any[]}
  */
 const arrFlattenDeep = (arr) => {
     const result = [];
-    forEach(arr, val => {
+    forEach(arr, (val) => {
         if (isArray(val)) {
             result.push(...arrFlattenDeep(val));
         }
@@ -68,19 +75,15 @@ const arrFlattenDeep = (arr) => {
     });
     return result;
 };
-/**
- * Returns an array of the objects entries
- *
- * @param {Object} obj
- * @returns {Array<[string, any]>}
- */
-const objEntries = (obj) => Object.entries(obj);
+
 /**
  * Creates a Map from an Object
  * @param {Object} obj
  * @returns {Map}
  */
 const mapFromObject = (obj) => new Map(objEntries(obj));
+
+"use strict";
 
 /**
  *
@@ -93,6 +96,8 @@ const query = function (selector, context = document, all = false) {
     return all ? arrClone(context.querySelectorAll(selector)) : context.querySelector(selector);
 };
 
+"use strict";
+
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_DELIMITER = ":";
 const DOM_ATTR_HIDDEN = "hidden";
@@ -100,6 +105,8 @@ const DOM_ATTR_HIDDEN = "hidden";
 const DOM_PROP_VALUE = "value";
 const DOM_PROP_TEXT = "textContent";
 const DOM_PROP_HTML = "innerHTML";
+
+"use strict";
 
 /**
  * Sets a value as directive
@@ -165,6 +172,8 @@ const parseDirectives = function (element) {
     });
 };
 
+"use strict";
+
 /**
  * Recursively gets all subnodes
  * @param {AxonNode} node
@@ -199,6 +208,8 @@ const getSubNodes = function (node, children, AxonNode) {
 
     return mapSubNodes(children);
 };
+
+"use strict";
 
 /**
  * Handles node->node.data redirects
@@ -235,6 +246,8 @@ const nodeProxy = {
     }
 };
 
+"use strict";
+
 /**
  * addEventListener shorthand
  * @param {Element} node
@@ -244,6 +257,8 @@ const nodeProxy = {
 const bindEvent = function (element, eventType, eventFn) {
     element.addEventListener(eventType, eventFn, false);
 };
+
+"use strict";
 
 //@TODO test those
 const REGEX_IS_NUMBER = /^[\d.-]+$/;
@@ -416,6 +431,8 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
     }
 };
 
+"use strict";
+
 /**
  * Checks which type of content property an Element uses
  * @param {Element} element
@@ -432,6 +449,8 @@ const getElementContentProp = function (element) {
 };
 
 const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
+
+"use strict";
 
 const DOM_EVENT_MODEL = "input";
 
@@ -460,11 +479,15 @@ const directiveModelRender = function (directive, node) {
     return true;
 };
 
+"use strict";
+
 const directiveBindRender = function (directive, node) {
     node._element.setAttribute(directive._opt, retrieveExpression(directive._content, node)._val);
 
     return true;
 };
+
+"use strict";
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
@@ -514,17 +537,23 @@ const directiveForRender = function (directive, node, AxonNode) {
     return true;
 };
 
+"use strict";
+
 const directiveTextRender = function (directive, node) {
     node._element[DOM_PROP_TEXT] = String(retrieveExpression(directive._content, node)._val);
 
     return true;
 };
 
+"use strict";
+
 const directiveHTMLRender = function (directive, node) {
     node._element[DOM_PROP_HTML] = String(retrieveExpression(directive._content, node)._val);
 
     return true;
 };
+
+"use strict";
 
 const directiveIfBoth = function (directive, node) {
     const element = node._element;
@@ -535,11 +564,15 @@ const directiveIfBoth = function (directive, node) {
     return expressionValue;
 };
 
+"use strict";
+
 const directiveOnInit = function (directive, node) {
     bindEvent(node._element, directive._opt, () => applyMethodContext(retrieveMethod(directive._content, node)));
 
     return true;
 };
+
+"use strict";
 
 const directives = mapFromObject({
     "model": {
@@ -567,6 +600,8 @@ const directives = mapFromObject({
         _init: directiveOnInit,
     },
 });
+
+"use strict";
 
 /**
  * Axon Node
