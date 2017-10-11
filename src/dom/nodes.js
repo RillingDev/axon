@@ -1,3 +1,4 @@
+import AxonNode from "../axonNode";
 import {
     arrClone,
     arrFlattenDeep
@@ -11,10 +12,9 @@ import {
  *
  * @param {AxonNode} node
  * @param {ElementList} children
- * @param {class} AxonNode
  * @returns {Array}
  */
-const getSubNodes = function (node, children, AxonNode) {
+const getSubNodes = function (node, children) {
     /**
      * Iterate over a single child DOM element
      *

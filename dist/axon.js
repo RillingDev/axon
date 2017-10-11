@@ -170,10 +170,9 @@ const parseDirectives = function (element) {
  *
  * @param {AxonNode} node
  * @param {ElementList} children
- * @param {class} AxonNode
  * @returns {Array}
  */
-const getSubNodes = function (node, children, AxonNode) {
+const getSubNodes = function (node, children) {
     /**
      * Iterate over a single child DOM element
      *
@@ -611,7 +610,7 @@ const AxonNode = class {
 
         this.$element = $element;
         this.$parent = $parent;
-        this.$children = getSubNodes(proxy, $element.children, AxonNode);
+        this.$children = getSubNodes(proxy, $element.children);
 
         /**
          * The root-node requires the direct access to the node as well as the proxy
