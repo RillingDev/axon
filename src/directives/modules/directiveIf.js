@@ -1,5 +1,3 @@
-"use strict";
-
 import {
     retrieveExpression
 } from "../../controller/retrieve";
@@ -11,7 +9,7 @@ const directiveIfBoth = function (directive, node) {
     const element = node._element;
     const expressionValue = Boolean(retrieveExpression(directive._content, node, true)._val);
 
-    setElementActive(element,expressionValue);
+    setElementActive(element, expressionValue);
 
     return expressionValue;
 };

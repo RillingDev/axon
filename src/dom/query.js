@@ -1,10 +1,9 @@
-"use strict";
-
 import {
     arrClone
 } from "lightdash";
 
 /**
+ * Querys by selector
  *
  * @param {String} selector
  * @param {Node} [context=document]

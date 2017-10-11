@@ -1,5 +1,3 @@
-"use strict";
-
 import {
     arrClone,
     arrFlattenDeep
@@ -10,6 +8,7 @@ import {
 
 /**
  * Recursively gets all subnodes
+ *
  * @param {AxonNode} node
  * @param {ElementList} children
  * @param {class} AxonNode
@@ -18,6 +17,7 @@ import {
 const getSubNodes = function (node, children, AxonNode) {
     /**
      * Iterate over a single child DOM element
+     *
      * @param {Element} child
      * @returns {AxonNode|null}
      */
@@ -35,6 +35,7 @@ const getSubNodes = function (node, children, AxonNode) {
     };
     /**
      * Maps and processes Array of children
+     *
      * @param {Array} children
      * @returns {Array}
      */

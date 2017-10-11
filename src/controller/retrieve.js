@@ -1,5 +1,3 @@
-"use strict";
-
 import {
     isDefined,
     mapFromObject
@@ -19,6 +17,7 @@ const mapLiterals = mapFromObject({
 
 /**
  * Parses Literal String
+ *
  * @param {String} expression
  * @param {AxonNode} node
  * @returns {Mixed}
@@ -39,6 +38,7 @@ const parseLiteral = function (expression, node) {
 
 /**
  * Finds a string-path as object property
+ *
  * @param {Object} obj
  * @param {String} path
  * @returns {Object|false}
@@ -72,6 +72,7 @@ const findPath = function (obj, path) {
 
 /**
  * Creates a new missing-prop error
+ *
  * @param {String} propName
  * @returns {Error}
  */
@@ -79,6 +80,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
 
 /**
  * Runs a method in the given context
+ *
  * @param {Object} methodProp
  * @returns {Mixed}
  */
@@ -86,6 +88,7 @@ const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node,
 
 /**
  * Gets the topmost node
+ *
  * @param {Node} node
  * @returns {Node}
  */
@@ -101,6 +104,7 @@ const getNodeRoot = function (node) {
 
 /**
  * Redirects to fitting retriever and returns
+ *
  * @param {String} name
  * @param {Axon} node
  * @param {Boolean} allowUndefined
@@ -122,6 +126,7 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
 
 /**
  * Retrieves a prop from the data container
+ *
  * @param {String} expression
  * @param {AxonNode} node
  * @param {Boolean} allowUndefined
@@ -151,6 +156,7 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
 
 /**
  * Retrieves a method from the method container
+ *
  * @param {String} expression
  * @param {AxonNode} node
  * @param {Boolean} allowUndefined

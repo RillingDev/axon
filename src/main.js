@@ -1,5 +1,3 @@
-"use strict";
-
 import query from "./dom/query";
 import {
     parseDirectives
@@ -14,13 +12,16 @@ import mapDirectives from "./directives/index";
 
 /**
  * Axon Node
+ *
  * @class
  */
 const AxonNode = class {
     /**
      * Axon Element Node Constructor
+     *
+     * @constructor
      * @param {Element} _element
-     * @param {Element} _parent´
+     * @param {Element} _parent
      * @param {Object} data
      */
     constructor(_element = null, _parent = null, data = {}, returnAll = false) {
@@ -40,6 +41,7 @@ const AxonNode = class {
     }
     /**
      * Runs directives on the node and all subnodes
+     *
      * @param {"init"|"render"} type
      * @returns {Array|false}
      */
@@ -80,11 +82,13 @@ const AxonNode = class {
 
 /**
  * Axon Root Node
+ *
  * @class
  */
 const AxonNodeRoot = class extends AxonNode {
     /**
      * Basic Axon Constructor
+     *
      * @constructor
      * @param {Object} cfg Config data for the Axon instance
      */

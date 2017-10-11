@@ -1,5 +1,3 @@
-"use strict";
-
 import {
     retrieveExpression
 } from "../../controller/retrieve";

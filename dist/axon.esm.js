@@ -81,9 +81,8 @@ const arrFlattenDeep = (arr) => {
  */
 const mapFromObject = (obj) => new Map(objEntries(obj));
 
-"use strict";
-
 /**
+ * Querys by selector
  *
  * @param {String} selector
  * @param {Node} [context=document]
@@ -104,10 +103,9 @@ const DOM_PROP_VALUE = "value";
 const DOM_PROP_TEXT = "textContent";
 const DOM_PROP_HTML = "innerHTML";
 
-"use strict";
-
 /**
  * Sets a value as directive
+ *
  * @param {Element} element
  * @param {String} key
  * @param {String} value
@@ -116,6 +114,7 @@ const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREF
 
 /**
  * Checks a value as directive
+ *
  * @param {Element} element
  * @param {String} key
  * @returns {Boolean}
@@ -124,6 +123,7 @@ const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + ke
 
 /**
  * Removes a directive
+ *
  * @param {Element} element
  * @param {String} key
  */
@@ -131,6 +131,7 @@ const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFI
 
 /**
  * Checks if an attribute is an axon directive
+ *
  * @param {Attribute} attr
  * @returns {Boolean}
  */
@@ -138,6 +139,7 @@ const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
 
 /**
  * Returns array of all directives
+ *
  * @param {Element} element
  * @returns {Array}
  */
@@ -145,6 +147,7 @@ const getDirectives = element => arrClone(element.attributes).filter(isDirective
 
 /**
  * Checks if the element has any directives
+ *
  * @param {Element} element
  * @returns {Boolean}
  */
@@ -152,6 +155,7 @@ const hasDirectives = element => getDirectives(element).length > 0;
 
 /**
  * Returns directives on node with name parsed
+ *
  * @param {Element} element
  * @returns {Array}
  */
@@ -170,10 +174,9 @@ const parseDirectives = function (element) {
     });
 };
 
-"use strict";
-
 /**
  * Recursively gets all subnodes
+ *
  * @param {AxonNode} node
  * @param {ElementList} children
  * @param {class} AxonNode
@@ -182,6 +185,7 @@ const parseDirectives = function (element) {
 const getSubNodes = function (node, children, AxonNode) {
     /**
      * Iterate over a single child DOM element
+     *
      * @param {Element} child
      * @returns {AxonNode|null}
      */
@@ -199,6 +203,7 @@ const getSubNodes = function (node, children, AxonNode) {
     };
     /**
      * Maps and processes Array of children
+     *
      * @param {Array} children
      * @returns {Array}
      */
@@ -207,14 +212,13 @@ const getSubNodes = function (node, children, AxonNode) {
     return mapSubNodes(children);
 };
 
-"use strict";
-
 /**
  * Handles node->node.data redirects
  */
 const nodeProxy = {
     /**
      * Redirects prop lookup
+     *
      * @param {Object} target
      * @param {String} key
      * @returns {Mixed}
@@ -228,6 +232,7 @@ const nodeProxy = {
     },
     /**
      * Redirect setting to data
+     *
      * @param {Object} target
      * @param {String} key
      * @param {Mixed} val
@@ -244,10 +249,9 @@ const nodeProxy = {
     }
 };
 
-"use strict";
-
 /**
  * addEventListener shorthand
+ *
  * @param {Element} node
  * @param {String} eventType
  * @param {Function} eventFn
@@ -255,8 +259,6 @@ const nodeProxy = {
 const bindEvent = function (element, eventType, eventFn) {
     element.addEventListener(eventType, eventFn, false);
 };
-
-"use strict";
 
 //@TODO test those
 const REGEX_IS_NUMBER = /^[\d.-]+$/;
@@ -272,6 +274,7 @@ const mapLiterals = mapFromObject({
 
 /**
  * Parses Literal String
+ *
  * @param {String} expression
  * @param {AxonNode} node
  * @returns {Mixed}
@@ -292,6 +295,7 @@ const parseLiteral = function (expression, node) {
 
 /**
  * Finds a string-path as object property
+ *
  * @param {Object} obj
  * @param {String} path
  * @returns {Object|false}
@@ -325,6 +329,7 @@ const findPath = function (obj, path) {
 
 /**
  * Creates a new missing-prop error
+ *
  * @param {String} propName
  * @returns {Error}
  */
@@ -332,6 +337,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
 
 /**
  * Runs a method in the given context
+ *
  * @param {Object} methodProp
  * @returns {Mixed}
  */
@@ -339,6 +345,7 @@ const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node,
 
 /**
  * Gets the topmost node
+ *
  * @param {Node} node
  * @returns {Node}
  */
@@ -354,6 +361,7 @@ const getNodeRoot = function (node) {
 
 /**
  * Redirects to fitting retriever and returns
+ *
  * @param {String} name
  * @param {Axon} node
  * @param {Boolean} allowUndefined
@@ -375,6 +383,7 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
 
 /**
  * Retrieves a prop from the data container
+ *
  * @param {String} expression
  * @param {AxonNode} node
  * @param {Boolean} allowUndefined
@@ -404,6 +413,7 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
 
 /**
  * Retrieves a method from the method container
+ *
  * @param {String} expression
  * @param {AxonNode} node
  * @param {Boolean} allowUndefined
@@ -429,10 +439,9 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
     }
 };
 
-"use strict";
-
 /**
  * Checks which type of content property an Element uses
+ *
  * @param {Element} element
  * @returns {String}
  */
@@ -446,9 +455,13 @@ const getElementContentProp = function (element) {
     }
 };
 
+/**
+ * Toggles element active mode
+ *
+ * @param {Node} element
+ * @param {Boolean} mode
+ */
 const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
-
-"use strict";
 
 const DOM_EVENT_MODEL = "input";
 
@@ -477,15 +490,11 @@ const directiveModelRender = function (directive, node) {
     return true;
 };
 
-"use strict";
-
 const directiveBindRender = function (directive, node) {
     node._element.setAttribute(directive._opt, retrieveExpression(directive._content, node)._val);
 
     return true;
 };
-
-"use strict";
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
@@ -535,15 +544,11 @@ const directiveForRender = function (directive, node, AxonNode) {
     return true;
 };
 
-"use strict";
-
 const directiveTextRender = function (directive, node) {
     node._element[DOM_PROP_TEXT] = String(retrieveExpression(directive._content, node)._val);
 
     return true;
 };
-
-"use strict";
 
 const directiveHTMLRender = function (directive, node) {
     node._element[DOM_PROP_HTML] = String(retrieveExpression(directive._content, node)._val);
@@ -551,26 +556,20 @@ const directiveHTMLRender = function (directive, node) {
     return true;
 };
 
-"use strict";
-
 const directiveIfBoth = function (directive, node) {
     const element = node._element;
     const expressionValue = Boolean(retrieveExpression(directive._content, node, true)._val);
 
-    setElementActive(element,expressionValue);
+    setElementActive(element, expressionValue);
 
     return expressionValue;
 };
-
-"use strict";
 
 const directiveOnInit = function (directive, node) {
     bindEvent(node._element, directive._opt, () => applyMethodContext(retrieveMethod(directive._content, node)));
 
     return true;
 };
-
-"use strict";
 
 const directives = mapFromObject({
     "model": {
@@ -599,17 +598,18 @@ const directives = mapFromObject({
     },
 });
 
-"use strict";
-
 /**
  * Axon Node
+ *
  * @class
  */
 const AxonNode = class {
     /**
      * Axon Element Node Constructor
+     *
+     * @constructor
      * @param {Element} _element
-     * @param {Element} _parent´
+     * @param {Element} _parent
      * @param {Object} data
      */
     constructor(_element = null, _parent = null, data = {}, returnAll = false) {
@@ -629,6 +629,7 @@ const AxonNode = class {
     }
     /**
      * Runs directives on the node and all subnodes
+     *
      * @param {"init"|"render"} type
      * @returns {Array|false}
      */
@@ -669,11 +670,13 @@ const AxonNode = class {
 
 /**
  * Axon Root Node
+ *
  * @class
  */
 const AxonNodeRoot = class extends AxonNode {
     /**
      * Basic Axon Constructor
+     *
      * @constructor
      * @param {Object} cfg Config data for the Axon instance
      */

@@ -1,11 +1,10 @@
-"use strict";
-
 /**
  * Handles node->node.data redirects
  */
 const nodeProxy = {
     /**
      * Redirects prop lookup
+     *
      * @param {Object} target
      * @param {String} key
      * @returns {Mixed}
@@ -19,6 +18,7 @@ const nodeProxy = {
     },
     /**
      * Redirect setting to data
+     *
      * @param {Object} target
      * @param {String} key
      * @param {Mixed} val

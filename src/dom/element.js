@@ -1,5 +1,3 @@
-"use strict";
-
 import {
     isDefined
 } from "lightdash";
@@ -12,6 +10,7 @@ import {
 
 /**
  * Checks which type of content property an Element uses
+ *
  * @param {Element} element
  * @returns {String}
  */
@@ -25,6 +24,12 @@ const getElementContentProp = function (element) {
     }
 };
 
+/**
+ * Toggles element active mode
+ *
+ * @param {Node} element
+ * @param {Boolean} mode
+ */
 const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
 
 export {

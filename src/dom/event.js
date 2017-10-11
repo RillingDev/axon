@@ -1,7 +1,6 @@
-"use strict";
-
 /**
  * addEventListener shorthand
+ *
  * @param {Element} node
  * @param {String} eventType
  * @param {Function} eventFn
