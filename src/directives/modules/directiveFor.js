@@ -19,19 +19,19 @@ const DOM_DIR_FOR_DYNAMIC = "dyn";
 const FOR_REGEX_ARR = /(\w+) in (\w+)/;
 
 const directiveForInit = function (directive, node) {
-    const element = node._element;
+    const element = node.$element;
 
-    setDirective(node._element, DOM_DIR_FOR_BASE, true);
+    setDirective(node.$element, DOM_DIR_FOR_BASE, true);
     setElementActive(element, false);
 
     return false;
 };
 
 const directiveForRender = function (directive, node, AxonNode) {
-    const element = node._element;
-    const directiveSplit = FOR_REGEX_ARR.exec(directive._content);
+    const element = node.$element;
+    const directiveSplit = FOR_REGEX_ARR.exec(directive.content);
     const iteratorKey = directiveSplit[1];
-    const iterable = retrieveProp(directiveSplit[2], node)._val;
+    const iterable = retrieveProp(directiveSplit[2], node).val;
     const nodesNew = [];
 
     //Delete old nodes
@@ -54,10 +54,10 @@ const directiveForRender = function (directive, node, AxonNode) {
         nodeData[iteratorKey] = i;
         elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
 
-        nodesNew.push(new AxonNode(elementInserted, node._parent, nodeData));
+        nodesNew.push(new AxonNode(elementInserted, node.$parent, nodeData));
     }
 
-    node._children = nodesNew;
+    node.$children = nodesNew;
 
     return true;
 };

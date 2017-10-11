@@ -1,4 +1,3 @@
-import query from "./dom/query";
 import {
     parseDirectives
 } from "./dom/directive";
@@ -20,19 +19,19 @@ const AxonNode = class {
      * Axon Element Node Constructor
      *
      * @constructor
-     * @param {Element} _element
-     * @param {Element} _parent
+     * @param {Element} $element
+     * @param {Element} $parent
      * @param {Object} data
      */
-    constructor(_element = null, _parent = null, data = {}, returnAll = false) {
+    constructor($element = null, $parent = null, data = {}, returnAll = false) {
         const proxy = new Proxy(this, nodeProxy);
 
         this.data = data;
-        this.directives = parseDirectives(_element);
+        this.directives = parseDirectives($element);
 
-        this._element = _element;
-        this._parent = _parent;
-        this._children = getSubNodes(proxy, _element.children, AxonNode);
+        this.$element = $element;
+        this.$parent = $parent;
+        this.$children = getSubNodes(proxy, $element.children, AxonNode);
 
         /**
          * The root-node requires the direct access to the node as well as the proxy
@@ -47,8 +46,8 @@ const AxonNode = class {
      */
     run(type) {
         const runDirective = directive => {
-            if (mapDirectives.has(directive._name)) {
-                const mapDirectivesEntry = mapDirectives.get(directive._name);
+            if (mapDirectives.has(directive.name)) {
+                const mapDirectivesEntry = mapDirectives.get(directive.name);
 
                 if (mapDirectivesEntry[type]) {
                     return mapDirectivesEntry[type](directive, this, AxonNode);
@@ -61,7 +60,7 @@ const AxonNode = class {
 
         //Recurse if all directives return true
         if (this.directives.map(runDirective).every(directiveResult => directiveResult === true)) {
-            return this._children.map(child => child.run(type));
+            return this.$children.map(child => child.run(type));
         } else {
             return false;
         }
@@ -70,13 +69,13 @@ const AxonNode = class {
      * Initializes directives
      */
     init() {
-        return this.run("_init");
+        return this.run("init");
     }
     /**
      * Renders directives
      */
     render() {
-        return this.run("_render");
+        return this.run("render");
     }
 };
 
@@ -93,7 +92,7 @@ const AxonNodeRoot = class extends AxonNode {
      * @param {Object} cfg Config data for the Axon instance
      */
     constructor(cfg = {}) {
-        const node = super(query(cfg.el), null, cfg.data, true);
+        const node = super(cfg.el, null, cfg.data, true);
 
         /**
          * node[0] is the direct node access

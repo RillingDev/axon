@@ -6,7 +6,7 @@
     <title>AxonJS Demo</title>
     <meta name="description" content="AxonJS Demo">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link type="text/css" href="https://necolas.github.io/normalize.css/5.0.0/normalize.css" rel="stylesheet">
+    <link rel='stylesheet prefetch' href='https://cdn.rawgit.com/FelixRilling/graphite.css/6e3ebe5a/dist/graphite.css'>
 </head>
 
 <body>
@@ -19,7 +19,7 @@
         <div>
             <label>Bar:</label>
             <input type="text" x-model="bar">
-            <button x-on:click="setBar('bar')">Reset Bar</button>
+            <button class="btn btn-primary" x-on:click="setBar('bar')">Reset Bar</button>
         </div>
         <div x-if="name.length">
             <div>

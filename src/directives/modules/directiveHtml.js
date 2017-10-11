@@ -6,7 +6,7 @@ import {
 } from "../../constants";
 
 const directiveHTMLRender = function (directive, node) {
-    node._element[DOM_PROP_HTML] = String(retrieveExpression(directive._content, node)._val);
+    node.$element[DOM_PROP_HTML] = String(retrieveExpression(directive.content, node).val);
 
     return true;
 };

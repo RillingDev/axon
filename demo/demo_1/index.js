@@ -2,13 +2,13 @@
 
 //Axon({el,data,methods})
 const app = new Axon({
-    el: "#myApp", //Query for the root element
+    el: document.querySelector("#myApp"), //Query for the root element
     data: {
         name: "Lorem ipsum",
         bar: "bar"
     },
     methods: {
-        setBar(val){
+        setBar(val) {
             this.bar = val;
             this.render();
         }

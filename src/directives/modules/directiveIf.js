@@ -6,8 +6,8 @@ import {
 } from "../../dom/element";
 
 const directiveIfBoth = function (directive, node) {
-    const element = node._element;
-    const expressionValue = Boolean(retrieveExpression(directive._content, node, true)._val);
+    const element = node.$element;
+    const expressionValue = Boolean(retrieveExpression(directive.content, node, true).val);
 
     setElementActive(element, expressionValue);
 

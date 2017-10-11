@@ -57,9 +57,9 @@ const findPath = function (obj, path) {
                 last = current;
             } else {
                 return {
-                    _val: current,
-                    _container: last,
-                    _key: keys[index]
+                    val: current,
+                    container: last,
+                    key: keys[index]
                 };
             }
         }
@@ -84,7 +84,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node, methodProp._args);
+const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node, methodProp.args);
 
 /**
  * Gets the topmost node
@@ -95,8 +95,8 @@ const applyMethodContext = methodProp => methodProp._val.apply(methodProp._node,
 const getNodeRoot = function (node) {
     let result = node;
 
-    while (result._parent !== null) {
-        result = result._parent;
+    while (result.$parent !== null) {
+        result = result.$parent;
     }
 
     return result;
@@ -116,8 +116,8 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
         const methodResult = applyMethodContext(method);
 
         return {
-            _node: method.node,
-            _val: methodResult
+            node: method.node,
+            val: methodResult
         };
     } else {
         return retrieveProp(name, node, allowUndefined);
@@ -135,15 +135,15 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
 const retrieveProp = function (expression, node, allowUndefined = false) {
     let current = node;
 
-    while (current && current._parent !== false) {
+    while (current && current.$parent !== false) {
         const data = findPath(current.data, expression);
 
         if (data !== false) {
-            data._node = current;
+            data.node = current;
 
             return data;
         } else {
-            current = current._parent;
+            current = current.$parent;
         }
     }
 
@@ -165,12 +165,12 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
 const retrieveMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
-    const _root = getNodeRoot(node);
-    const data = findPath(_root.methods, matched[1]);
+    const root = getNodeRoot(node);
+    const data = findPath(root.methods, matched[1]);
 
     if (data !== false) {
-        data._args = args.map(arg => parseLiteral(arg, node));
-        data._node = _root;
+        data.args = args.map(arg => parseLiteral(arg, node));
+        data.node = root;
 
         return data;
     } else {

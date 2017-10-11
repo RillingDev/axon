@@ -1,7 +1,7 @@
 "use strict";
 
 const app = new Axon({
-    el: "#myApp",
+    el: document.querySelector("#myApp"),
     data: {
         newItem: "Foo",
         list: ["Foo", "Bar", "Fizz"]
