@@ -10,7 +10,6 @@ const app = new Axon({
     methods: {
         setBar(val) {
             this.bar = val;
-            this.render();
         }
     }
 });

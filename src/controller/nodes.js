@@ -5,7 +5,7 @@ import {
 } from "lightdash";
 import {
     hasDirectives
-} from "./directive";
+} from "../dom/directive";
 
 /**
  * Recursively gets all subnodes
@@ -14,7 +14,7 @@ import {
  * @param {ElementList} children
  * @returns {Array}
  */
-const getSubNodes = function (node, children) {
+const getSubNodes = function (children, node) {
     /**
      * Iterate over a single child DOM element
      *
@@ -24,7 +24,7 @@ const getSubNodes = function (node, children) {
     const recurseSubNodes = function (child) {
         if (hasDirectives(child)) {
             //-> Recurse
-            return new AxonNode(child, node, {});
+            return new AxonNode(child, node);
         } else if (child.children.length > 0) {
             //-> Enter Children
             return mapSubNodes(child.children);
@@ -33,6 +33,7 @@ const getSubNodes = function (node, children) {
             return null;
         }
     };
+
     /**
      * Maps and processes Array of children
      *
@@ -44,6 +45,23 @@ const getSubNodes = function (node, children) {
     return mapSubNodes(children);
 };
 
+/**
+ * Gets the topmost node
+ *
+ * @param {Node} node
+ * @returns {Node}
+ */
+const getNodeRoot = function (node) {
+    let result = node;
+
+    while (result.$parent !== null) {
+        result = result.$parent;
+    }
+
+    return result;
+};
+
 export {
-    getSubNodes
+    getSubNodes,
+    getNodeRoot
 };

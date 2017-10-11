@@ -5,6 +5,9 @@ import {
     isDefined,
     mapFromObject
 } from "lightdash";
+import {
+    getNodeRoot,
+} from "./nodes";
 
 //@TODO test those
 const REGEX_IS_NUMBER = /^[\d.-]+$/;
@@ -53,23 +56,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node, methodProp.args);
-
-/**
- * Gets the topmost node
- *
- * @param {Node} node
- * @returns {Node}
- */
-const getNodeRoot = function (node) {
-    let result = node;
-
-    while (result.$parent !== null) {
-        result = result.$parent;
-    }
-
-    return result;
-};
+const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
 
 /**
  * Redirects to fitting retriever and returns

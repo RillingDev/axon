@@ -3,9 +3,9 @@ import {
 } from "./dom/directive";
 import {
     getSubNodes
-} from "./dom/nodes";
+} from "./controller/nodes";
 import {
-    nodeProxy
+    dataProxyFactory
 } from "./controller/proxy";
 import mapDirectives from "./directives/index";
 
@@ -23,23 +23,16 @@ const AxonNode = class {
      * @param {Element} $parent
      * @param {Object} data
      */
-    constructor($element = null, $parent = null, data = {}, returnAll = false) {
-        let proxy;
+    constructor($element = null, $parent = null, data = {}, methods = {}) {
+        const dataStorage = data;
 
-        this.data = data;
         this.directives = parseDirectives($element);
+        this.data = new Proxy(dataStorage, dataProxyFactory(this));
+        this.methods = methods;
 
         this.$element = $element;
         this.$parent = $parent;
-
-        proxy = new Proxy(this, nodeProxy);
-
-        this.$children = getSubNodes(proxy, $element.children);
-
-        /**
-         * The root-node requires the direct access to the node as well as the proxy
-         */
-        return returnAll ? [this, proxy] : proxy;
+        this.$children = getSubNodes($element.children, this);
     }
     /**
      * Runs directives on the node and all subnodes

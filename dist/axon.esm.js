@@ -194,7 +194,7 @@ const parseDirectives = function (element) {
  * @param {ElementList} children
  * @returns {Array}
  */
-const getSubNodes = function (node, children) {
+const getSubNodes = function (children, node) {
     /**
      * Iterate over a single child DOM element
      *
@@ -204,7 +204,7 @@ const getSubNodes = function (node, children) {
     const recurseSubNodes = function (child) {
         if (hasDirectives(child)) {
             //-> Recurse
-            return new AxonNode(child, node, {});
+            return new AxonNode(child, node);
         } else if (child.children.length > 0) {
             //-> Enter Children
             return mapSubNodes(child.children);
@@ -213,6 +213,7 @@ const getSubNodes = function (node, children) {
             return null;
         }
     };
+
     /**
      * Maps and processes Array of children
      *
@@ -225,40 +226,36 @@ const getSubNodes = function (node, children) {
 };
 
 /**
- * Handles node->node.data redirects
+ * Gets the topmost node
+ *
+ * @param {Node} node
+ * @returns {Node}
  */
-const nodeProxy = {
-    /**
-     * Redirects prop lookup
-     *
-     * @param {Object} target
-     * @param {String} key
-     * @returns {Mixed}
-     */
-    get: (target, key) => {
-        if (key in target.data) {
-            return target.data[key];
-        } else {
-            return target[key];
-        }
-    },
-    /**
-     * Redirect setting to data
-     *
-     * @param {Object} target
-     * @param {String} key
-     * @param {Mixed} val
-     * @returns {Boolean}
-     */
-    set: (target, key, val) => {
-        if (!(key in target)) {
-            target.data[key] = val;
-        } else {
-            target[key] = val;
-        }
+const getNodeRoot = function (node) {
+    let result = node;
 
-        return true;
+    while (result.$parent !== null) {
+        result = result.$parent;
     }
+
+    return result;
+};
+
+const dataProxyFactory = function (node) {
+    return {
+        set: (target, key, val) => {
+            if (val !== target[key]) {
+                target[key] = val;
+                console.log({
+                    node,
+                    target
+                });
+                node.render();
+            }
+
+            return true;
+        }
+    };
 };
 
 /**
@@ -269,7 +266,7 @@ const nodeProxy = {
  * @param {Function} eventFn
  */
 const bindEvent = function (element, eventType, eventFn) {
-    element.addEventListener(eventType, eventFn, false);
+    element.addEventListener(eventType, eventFn);
 };
 
 const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
@@ -402,23 +399,7 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node, methodProp.args);
-
-/**
- * Gets the topmost node
- *
- * @param {Node} node
- * @returns {Node}
- */
-const getNodeRoot = function (node) {
-    let result = node;
-
-    while (result.$parent !== null) {
-        result = result.$parent;
-    }
-
-    return result;
-};
+const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
 
 /**
  * Redirects to fitting retriever and returns
@@ -529,14 +510,12 @@ const DOM_EVENT_MODEL = "input";
 const directiveModelInit = function (directive, node) {
     const element = node.$element;
     const elementContentProp = getElementContentProp(element);
-    const eventFn = function () {
+
+    bindEvent(element, DOM_EVENT_MODEL, () => {
         const targetProp = retrieveProp(directive.content, node);
 
         targetProp.container[targetProp.key] = element[elementContentProp];
-        targetProp.node.render();
-    };
-
-    bindEvent(element, DOM_EVENT_MODEL, eventFn);
+    });
 
     return true;
 };
@@ -673,23 +652,16 @@ const AxonNode = class {
      * @param {Element} $parent
      * @param {Object} data
      */
-    constructor($element = null, $parent = null, data = {}, returnAll = false) {
-        let proxy;
+    constructor($element = null, $parent = null, data = {}, methods = {}) {
+        const dataStorage = data;
 
-        this.data = data;
         this.directives = parseDirectives($element);
+        this.data = new Proxy(dataStorage, dataProxyFactory(this));
+        this.methods = methods;
 
         this.$element = $element;
         this.$parent = $parent;
-
-        proxy = new Proxy(this, nodeProxy);
-
-        this.$children = getSubNodes(proxy, $element.children);
-
-        /**
-         * The root-node requires the direct access to the node as well as the proxy
-         */
-        return returnAll ? [this, proxy] : proxy;
+        this.$children = getSubNodes($element.children, this);
     }
     /**
      * Runs directives on the node and all subnodes
@@ -739,24 +711,16 @@ const AxonNode = class {
  */
 const AxonNodeRoot = class extends AxonNode {
     /**
-     * Basic Axon Constructor
+     * Axon Root Constructor
      *
      * @constructor
      * @param {Object} cfg Config data for the Axon instance
      */
     constructor(cfg = {}) {
-        const node = super(cfg.el, null, cfg.data, true);
+        super(cfg.el, null, cfg.data, cfg.methods);
 
-        /**
-         * node[0] is the direct node access
-         * node[1] is the proxied access
-         */
-        node[0].methods = cfg.methods || {};
-
-        node[0].init();
-        node[0].render();
-
-        return node[1];
+        this.init();
+        this.render();
     }
 };
 

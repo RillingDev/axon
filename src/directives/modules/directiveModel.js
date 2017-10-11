@@ -13,14 +13,12 @@ const DOM_EVENT_MODEL = "input";
 const directiveModelInit = function (directive, node) {
     const element = node.$element;
     const elementContentProp = getElementContentProp(element);
-    const eventFn = function () {
+
+    bindEvent(element, DOM_EVENT_MODEL, () => {
         const targetProp = retrieveProp(directive.content, node);
 
         targetProp.container[targetProp.key] = element[elementContentProp];
-        targetProp.node.render();
-    };
-
-    bindEvent(element, DOM_EVENT_MODEL, eventFn);
+    });
 
     return true;
 };

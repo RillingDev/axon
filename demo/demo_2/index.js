@@ -11,20 +11,21 @@ const app = new Axon({
             const vm = this;
 
             vm.list.push(vm.newItem);
+        },
+        addItemReal() {
+            const vm = this;
 
-            vm.render();
+            vm.list = Array.from(vm.list).concat(vm.newItem);
         },
         swap() {
             const vm = this;
 
             vm.list = vm.list.reverse();
-            vm.render();
         },
         sort() {
             const vm = this;
 
             vm.list = vm.list.sort();
-            vm.render();
         }
     }
 });

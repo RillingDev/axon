@@ -6,7 +6,7 @@
  * @param {Function} eventFn
  */
 const bindEvent = function (element, eventType, eventFn) {
-    element.addEventListener(eventType, eventFn, false);
+    element.addEventListener(eventType, eventFn);
 };
 
 export {
