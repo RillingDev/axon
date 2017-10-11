@@ -42,6 +42,14 @@ const isUndefined = (val) => isTypeOf(val, "undefined");
 const isDefined = (val) => !isUndefined(val);
 
 /**
+ * Checks if a value is either undefined or null
+ *
+ * @param {*} val
+ * @returns {boolean}
+ */
+const isNil = (val) => isUndefined(val) || val === null;
+
+/**
  * Returns an array of the objects entries
  *
  * @param {Object} obj
@@ -56,6 +64,15 @@ const objEntries = (obj) => Object.entries(obj);
  * @param {ForEachIterator} fn
  */
 const forEach = (arr, fn) => arr.forEach(fn);
+
+/**
+ * Checks if a target has a certain key
+ *
+ * @param {any} target
+ * @param {string} key
+ * @returns {boolean}
+ */
+const hasKey = (target, key) => isDefined(target[key]);
 
 /**
  * Creates a new array with the values of the input array
@@ -255,6 +272,89 @@ const bindEvent = function (element, eventType, eventFn) {
     element.addEventListener(eventType, eventFn, false);
 };
 
+const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
+
+const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
+
+/**
+ * Returns a string literal as "normal" string
+ *
+ * @param {string} str
+ * @param {string}
+ */
+const getStringLiteral = str => str.substr(1, str.length - 2);
+
+/**
+ * Accesses a target by a path of keys. If the path doesn't exist, null is returned
+ *
+ * @param {any} target
+ * @param {string} path
+ * @param {boolean} [getContaining=false]
+ * @returns {boolean}
+ */
+const getPath$1 = (target, path, getContaining = false) => {
+    const pathArr = path.split(REGEX_PATH_SPLIT).map(item => REGEX_IS_STRING_LITERAL.test(item) ? getStringLiteral(item) : item);
+    let targetCurrent = target;
+    let targetLast = null;
+    let keyCurrent = null;
+    let index = 0;
+
+    while (!isNil(targetCurrent) && index < pathArr.length) {
+        keyCurrent = pathArr[index];
+
+        if (hasKey(targetCurrent, keyCurrent)) {
+            targetLast = targetCurrent;
+            targetCurrent = targetCurrent[keyCurrent];
+            index++;
+        } else {
+            return null;
+        }
+    }
+
+    return getContaining ? {
+        val: targetCurrent,
+        container: targetLast,
+        key: keyCurrent,
+        index
+    } : targetCurrent;
+};
+
+/**
+ * Utility function for returns
+ *
+ * @private
+ * @param {any} val
+ * @returns {Object}
+ */
+
+const mapComparison = mapFromObject({
+    "===": (a, b) => a === b,
+    "!==": (a, b) => a !== b,
+    ">=": (a, b) => a >= b,
+    "<=": (a, b) => a <= b,
+    ">": (a, b) => a > b,
+    "<": (a, b) => a < b,
+    "&&": (a, b) => a && b,
+    "||": (a, b) => a || b,
+});
+
+const mapMath = mapFromObject({
+    "+": (a, b) => a + b,
+    "-": (a, b) => a - b,
+    "*": (a, b) => a * b,
+    "/": (a, b) => a / b,
+    "%": (a, b) => a % b,
+    "**": (a, b) => a ** b,
+});
+
+const mapLiterals$1 = mapFromObject({
+    "false": false,
+    "true": true,
+    "null": null,
+    "undefined": undefined,
+    "Infinity": Infinity
+});
+
 //@TODO test those
 const REGEX_IS_NUMBER = /^[\d.-]+$/;
 const REGEX_IS_STRING = /^["'`].*["'`]$/;
@@ -284,42 +384,8 @@ const parseLiteral = function (expression, node) {
     } else if (mapLiterals.has(expression)) {
         return mapLiterals.get(expression);
     } else {
-        return retrieveProp(expression, node)._val;
+        return retrieveProp(expression, node).val;
     }
-};
-
-/**
- * Finds a string-path as object property
- *
- * @param {Object} obj
- * @param {String} path
- * @returns {Object|false}
- */
-const findPath = function (obj, path) {
-    const keys = path.split(".");
-    let last = obj;
-    let current;
-    let index = 0;
-
-    while (index < keys.length) {
-        current = last[keys[index]];
-
-        if (isDefined(current)) {
-            if (index < keys.length - 1) {
-                last = current;
-            } else {
-                return {
-                    val: current,
-                    container: last,
-                    key: keys[index]
-                };
-            }
-        }
-
-        index++;
-    }
-
-    return false;
 };
 
 /**
@@ -388,9 +454,9 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
     let current = node;
 
     while (current && current.$parent !== false) {
-        const data = findPath(current.data, expression);
+        const data = getPath$1(current.data, expression, true);
 
-        if (data !== false) {
+        if (data !== null) {
             data.node = current;
 
             return data;
@@ -418,9 +484,9 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
-    const data = findPath(root.methods, matched[1]);
+    const data = getPath$1(root.methods, matched[1], true);
 
-    if (data !== false) {
+    if (data !== null) {
         data.args = args.map(arg => parseLiteral(arg, node));
         data.node = root;
 

@@ -1,4 +1,7 @@
 import {
+    getPath
+} from "pseudo-eval/src/main";
+import {
     isDefined,
     mapFromObject
 } from "lightdash";
@@ -32,42 +35,8 @@ const parseLiteral = function (expression, node) {
     } else if (mapLiterals.has(expression)) {
         return mapLiterals.get(expression);
     } else {
-        return retrieveProp(expression, node)._val;
+        return retrieveProp(expression, node).val;
     }
-};
-
-/**
- * Finds a string-path as object property
- *
- * @param {Object} obj
- * @param {String} path
- * @returns {Object|false}
- */
-const findPath = function (obj, path) {
-    const keys = path.split(".");
-    let last = obj;
-    let current;
-    let index = 0;
-
-    while (index < keys.length) {
-        current = last[keys[index]];
-
-        if (isDefined(current)) {
-            if (index < keys.length - 1) {
-                last = current;
-            } else {
-                return {
-                    val: current,
-                    container: last,
-                    key: keys[index]
-                };
-            }
-        }
-
-        index++;
-    }
-
-    return false;
 };
 
 /**
@@ -136,9 +105,9 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
     let current = node;
 
     while (current && current.$parent !== false) {
-        const data = findPath(current.data, expression);
+        const data = getPath(current.data, expression, true);
 
-        if (data !== false) {
+        if (data !== null) {
             data.node = current;
 
             return data;
@@ -166,9 +135,9 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
-    const data = findPath(root.methods, matched[1]);
+    const data = getPath(root.methods, matched[1], true);
 
-    if (data !== false) {
+    if (data !== null) {
         data.args = args.map(arg => parseLiteral(arg, node));
         data.node = root;
 
