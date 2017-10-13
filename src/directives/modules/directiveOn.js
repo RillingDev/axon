@@ -9,9 +9,7 @@ import {
 } from "../../controller/retrieve";
 
 const directiveOnInit = function (directive, node) {
-    const method = evalMethod(directive.content, node);
-
-    bindEvent(node.$element, directive.opt, e => applyMethodContext(method, [e]));
+    bindEvent(node.$element, directive.opt, e => applyMethodContext(evalMethod(directive.content, node), [e]));
 
     return true;
 };

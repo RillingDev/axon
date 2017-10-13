@@ -547,7 +547,7 @@ const directiveBindRender = function (directive, node) {
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
-const FOR_REGEX_ARR = /(.+) in (.+)/;
+const FOR_REGEX_ARR = /(.+) of (.+)/;
 
 const directiveForInit = function (directive, node) {
     const element = node.$element;
@@ -560,10 +560,11 @@ const directiveForInit = function (directive, node) {
 
 const directiveForRender = function (directive, node) {
     const element = node.$element;
-    const directiveSplit = FOR_REGEX_ARR.exec(directive.content);
+    const directiveSplit = directive.content.match(FOR_REGEX_ARR);
     const iteratorKey = directiveSplit[1];
     const iterable = evalProp(directiveSplit[2], node).val;
-    const nodesNew = [];
+
+    node.$children = [];
 
     //Delete old nodes
     forEach(arrClone(element.parentElement.children), child => {
@@ -585,10 +586,9 @@ const directiveForRender = function (directive, node) {
         nodeData[iteratorKey] = i;
         elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
 
-        nodesNew.push(new AxonNode(elementInserted, node.$parent, nodeData));
+        //creates AxonNode for the new element and adds to node children
+        node.$children.push(new AxonNode(elementInserted, node.$parent, nodeData));
     }
-
-    node.$children = nodesNew;
 
     return true;
 };
@@ -615,9 +615,7 @@ const directiveIfBoth = function (directive, node) {
 };
 
 const directiveOnInit = function (directive, node) {
-    const method = evalMethod(directive.content, node);
-
-    bindEvent(node.$element, directive.opt, e => applyMethodContext(method, [e]));
+    bindEvent(node.$element, directive.opt, e => applyMethodContext(evalMethod(directive.content, node), [e]));
 
     return true;
 };
