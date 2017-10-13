@@ -364,8 +364,7 @@ const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
 const mapLiterals = mapFromObject({
     "false": false,
-    "true": true,
-    "null": null
+    "true": true
 });
 
 /**
@@ -533,7 +532,7 @@ const directiveModelRender = function (directive, node) {
     const elementContentProp = getElementContentProp(element);
     const targetProp = evalProp(directive.content, node);
 
-    element[elementContentProp] = String(targetProp.val);
+    element[elementContentProp] = targetProp.val;
 
     return true;
 };

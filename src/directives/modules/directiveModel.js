@@ -28,7 +28,7 @@ const directiveModelRender = function (directive, node) {
     const elementContentProp = getElementContentProp(element);
     const targetProp = evalProp(directive.content, node);
 
-    element[elementContentProp] = String(targetProp.val);
+    element[elementContentProp] = targetProp.val;
 
     return true;
 };

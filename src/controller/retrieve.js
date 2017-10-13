@@ -15,8 +15,7 @@ const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
 const mapLiterals = mapFromObject({
     "false": false,
-    "true": true,
-    "null": null
+    "true": true
 });
 
 /**
