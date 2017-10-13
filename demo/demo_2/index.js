@@ -7,11 +7,11 @@ const app = new Axon({
         list: ["Buy Milk", "Go for a Walk", "Learn Python", "Read a Book", "Pet Cat"]
     },
     methods: {
-        addItem() {
+        addItem(item) {
             const vm = this;
 
-            if (vm.newItem !== "") {
-                vm.list.push(vm.newItem);
+            if (item !== "") {
+                vm.list.push(item);
                 vm.newItem = "";
             }
         },

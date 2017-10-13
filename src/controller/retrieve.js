@@ -25,7 +25,7 @@ const mapLiterals = mapFromObject({
  * @param {String} propName
  * @returns {Error}
  */
-const missingPropErrorFactory = propName => new Error(`missing prop/method '${propName}'`);
+const missingPropErrorTextFactory = propName => `missing prop/method '${propName}'`;
 
 /**
  * Runs a method in the given context
@@ -91,26 +91,24 @@ const evalDirective = function (name, node, allowUndefined = false) {
  * @returns {Mixed|null}
  */
 const evalProp = function (expression, node, allowUndefined = false) {
-    let result = null;
     let current = node;
 
-    while (current && result === null) {
+    while (current) {
         const data = getPath(current.data, expression, true);
 
         if (data !== null) {
             data.node = current;
-            result = data;
+
+            return data;
         } else {
             current = current.$parent;
         }
     }
 
-    if (result !== null) {
-        return result;
-    } else if (allowUndefined) {
+    if (allowUndefined) {
         return null;
     } else {
-        throw missingPropErrorFactory(expression);
+        throw new Error(missingPropErrorTextFactory(expression));
     }
 };
 
@@ -133,12 +131,12 @@ const evalMethod = function (expression, node, allowUndefined = false) {
         data.node = root;
 
         return data;
+    }
+
+    if (allowUndefined) {
+        return null;
     } else {
-        if (allowUndefined) {
-            return null;
-        } else {
-            throw missingPropErrorFactory(expression);
-        }
+        throw new Error(missingPropErrorTextFactory(expression));
     }
 };
 
