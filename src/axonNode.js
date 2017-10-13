@@ -2,7 +2,7 @@ import {
     parseDirectives
 } from "./dom/directive";
 import {
-    getSubNodes
+    mapSubNodes
 } from "./controller/nodes";
 import {
     bindDeepDataProxy
@@ -32,7 +32,7 @@ const AxonNode = class {
 
         this.$element = $element;
         this.$parent = $parent;
-        this.$children = getSubNodes($element.children, this);
+        this.$children = mapSubNodes($element.children, this);
     }
     /**
      * Runs directives on the node and all subnodes

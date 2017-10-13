@@ -208,48 +208,10 @@ const parseDirectives = function (element) {
 };
 
 /**
- * Recursively gets all subnodes
- *
- * @param {AxonNode} node
- * @param {ElementList} children
- * @returns {Array}
- */
-const getSubNodes = function (children, node) {
-    /**
-     * Iterate over a single child DOM element
-     *
-     * @param {Element} child
-     * @returns {AxonNode|null}
-     */
-    const recurseSubNodes = function (child) {
-        if (hasDirectives(child)) {
-            //-> Recurse
-            return new AxonNode(child, node);
-        } else if (child.children.length > 0) {
-            //-> Enter Children
-            return mapSubNodes(child.children);
-        } else {
-            //-> Exit dead-end
-            return null;
-        }
-    };
-
-    /**
-     * Maps and processes Array of children
-     *
-     * @param {Array} children
-     * @returns {Array}
-     */
-    const mapSubNodes = children => arrFlattenDeep(arrClone(children).map(recurseSubNodes).filter(val => val !== null));
-
-    return mapSubNodes(children);
-};
-
-/**
  * Gets the topmost node
  *
- * @param {Node} node
- * @returns {Node}
+ * @param {AxonNode} node
+ * @returns {AxonNode}
  */
 const getNodeRoot = function (node) {
     let result = node;
@@ -260,6 +222,28 @@ const getNodeRoot = function (node) {
 
     return result;
 };
+
+/**
+ * Maps and processes Array of element children
+ *
+ * @param {Array} children
+ * @param {AxonNode} node
+ * @returns {Array}
+ */
+const mapSubNodes = (children, node) => arrFlattenDeep(arrClone(children)
+    .map(child => {
+        if (hasDirectives(child)) {
+            //-> Recurse
+            return new AxonNode(child, node);
+        } else if (child.children.length > 0) {
+            //-> Enter Children
+            return mapSubNodes(child.children, node);
+        } else {
+            //-> Exit dead-end
+            return null;
+        }
+    })
+    .filter(val => val !== null));
 
 /**
  * Creates a Proxy object with the node render method bound
@@ -680,7 +664,7 @@ const AxonNode = class {
 
         this.$element = $element;
         this.$parent = $parent;
-        this.$children = getSubNodes($element.children, this);
+        this.$children = mapSubNodes($element.children, this);
     }
     /**
      * Runs directives on the node and all subnodes
