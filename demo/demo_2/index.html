@@ -13,25 +13,26 @@
     <div class="container" id="myApp">
         <h1>Demo 2</h1>
         <div>
-            <h2>List</h2>
+            <h2>TODO</h2>
             <div>
-                <h3>Input</h3>
+                <h3>Add</h3>
                 <div>
                     <input type="text" x-model="newItem">
                     <button class="btn btn-primary" x-on:click="addItem()">Add</button>
-                    <button class="btn btn-primary" x-on:click="addItemReal()">Add Real</button>
                 </div>
             </div>
             <hr>
             <div>
-                <h3>Content</h3>
+                <h3>Items</h3>
                 <ul>
                     <li x-for="i in list">
                         <span x-text="i"></span>
                     </li>
                 </ul>
-                <button class="btn btn-primary" x-on:click="swap()">Reverse</button>
+                <h4>Order</h4>
                 <button class="btn btn-primary" x-on:click="sort()">Sort</button>
+                <button class="btn btn-primary" x-on:click="reverse()">Reverse</button>
+                <button class="btn btn-primary" x-on:click="randomize()">Randomize</button>
             </div>
             <hr>
         </div>

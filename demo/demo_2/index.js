@@ -3,29 +3,32 @@
 const app = new Axon({
     el: document.querySelector("#myApp"),
     data: {
-        newItem: "Foo",
-        list: ["Foo", "Bar", "Fizz"]
+        newItem: "Walk Dogs",
+        list: ["Buy Milk", "Go for a Walk", "Learn Python", "Read a Book", "Pet Cat"]
     },
     methods: {
         addItem() {
             const vm = this;
 
-            vm.list.push(vm.newItem);
-        },
-        addItemReal() {
-            const vm = this;
-
-            vm.list = Array.from(vm.list).concat(vm.newItem);
-        },
-        swap() {
-            const vm = this;
-
-            vm.list = vm.list.reverse();
+            if (vm.newItem !== "") {
+                vm.list.push(vm.newItem);
+                vm.newItem = "";
+            }
         },
         sort() {
             const vm = this;
 
-            vm.list = vm.list.sort();
-        }
+            vm.list = Array.from(vm.list.sort());
+        },
+        reverse() {
+            const vm = this;
+
+            vm.list = Array.from(vm.list.reverse());
+        },
+        randomize() {
+            const vm = this;
+
+            vm.list = Array.from(vm.list.sort(() => Math.random() > 0.5));
+        },
     }
 });

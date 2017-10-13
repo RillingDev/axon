@@ -5,7 +5,7 @@ import {
     getSubNodes
 } from "./controller/nodes";
 import {
-    dataProxyFactory
+    bindDeepDataProxy
 } from "./controller/proxy";
 import mapDirectives from "./directives/index";
 
@@ -27,7 +27,7 @@ const AxonNode = class {
         const dataStorage = data;
 
         this.directives = parseDirectives($element);
-        this.data = new Proxy(dataStorage, dataProxyFactory(this));
+        this.data = bindDeepDataProxy(dataStorage, this);
         this.methods = methods;
 
         this.$element = $element;

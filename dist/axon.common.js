@@ -52,6 +52,14 @@ const isDefined = (val) => !isUndefined(val);
 const isNil = (val) => isUndefined(val) || val === null;
 
 /**
+ * Checks if a value is not nil and has a typeof object
+ *
+ * @param {*} val
+ * @returns {boolean}
+ */
+const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
+
+/**
  * Returns an array of the objects entries
  *
  * @param {Object} obj
@@ -66,6 +74,18 @@ const objEntries = (obj) => Object.entries(obj);
  * @param {ForEachIterator} fn
  */
 const forEach = (arr, fn) => arr.forEach(fn);
+
+/**
+ * Iterate over each entry of an object
+ *
+ * @param {object} obj
+ * @param {ForEachEntryIterator} fn
+ */
+const forEachEntry = (obj, fn) => {
+    forEach(objEntries(obj), (entry, index) => {
+        fn(entry[1], entry[0], index, obj);
+    });
+};
 
 /**
  * Checks if a target has a certain key
@@ -243,21 +263,31 @@ const getNodeRoot = function (node) {
     return result;
 };
 
-const dataProxyFactory = function (node) {
-    return {
+const bindDeepDataProxy = function (obj, node) {
+    const proxySetter = {
         set: (target, key, val) => {
             if (val !== target[key]) {
                 target[key] = val;
-                console.log({
-                    node,
-                    target
-                });
+
                 node.render();
             }
 
             return true;
         }
     };
+    const mapProxy = (obj) => {
+        const result = obj;
+
+        forEachEntry(result, (val, key) => {
+            if (isObjectLike(val)) {
+                result[key] = mapProxy(val);
+            }
+        });
+
+        return new Proxy(obj, proxySetter);
+    };
+
+    return mapProxy(obj);
 };
 
 /**
@@ -608,7 +638,9 @@ const directiveIfBoth = function (directive, node) {
 };
 
 const directiveOnInit = function (directive, node) {
-    bindEvent(node.$element, directive.opt, () => applyMethodContext(retrieveMethod(directive.content, node)));
+    const method = retrieveMethod(directive.content, node);
+
+    bindEvent(node.$element, directive.opt, e => method.val.apply(method.node.data, [...method.args, e]));
 
     return true;
 };
@@ -658,7 +690,7 @@ const AxonNode = class {
         const dataStorage = data;
 
         this.directives = parseDirectives($element);
-        this.data = new Proxy(dataStorage, dataProxyFactory(this));
+        this.data = bindDeepDataProxy(dataStorage, this);
         this.methods = methods;
 
         this.$element = $element;
