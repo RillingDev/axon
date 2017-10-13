@@ -18,11 +18,10 @@
         }
     },
     "scripts": {
-        "start": "npm-run-all lint build test",
+        "start": "npm-run-all lint build",
         "build": "node tasks/jsDev.js",
         "dist": "node tasks/jsDist.js",
-        "lint": "eslint src/",
-        "test": "jasmine"
+        "lint": "eslint src/"
     },
     "repository": {
         "type": "git",

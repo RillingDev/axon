@@ -22,9 +22,7 @@
             <button class="btn btn-primary" x-on:click="setBar('bar')">Reset Bar</button>
         </div>
         <div x-if="name.length">
-            <div>
-                <p>Hello <span x-text="name"></span>! The value of `bar` is <span x-text="bar"></span></p>
-            </div>
+            <p>Hello <span x-text="name"></span>! The value of `bar` is <span x-text="bar"></span></p>
         </div>
     </div>
     <script src="../../dist/axon.js"></script>
