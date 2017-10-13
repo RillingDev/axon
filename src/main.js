@@ -13,7 +13,9 @@ const AxonNodeRoot = class extends AxonNode {
      * @param {Object} cfg Config data for the Axon instance
      */
     constructor(cfg = {}) {
-        super(cfg.el, null, cfg.data, cfg.methods);
+        super(cfg.el, null, cfg.data);
+
+        this.methods = cfg.methods || {};
 
         this.init();
         this.render();

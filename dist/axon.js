@@ -98,6 +98,14 @@ const forEachEntry = (obj, fn) => {
 const hasKey = (target, key) => isDefined(target[key]);
 
 /**
+ * Checks if a value is a number as a string
+ *
+ * @param {*} val
+ * @returns {boolean}
+ */
+const isStringNumber = (val) => !isNaN(Number(val));
+
+/**
  * Creates a new array with the values of the input array
  *
  * @param {any[]} arr
@@ -309,9 +317,9 @@ const bindEvent = function (element, eventType, eventFn) {
     element.addEventListener(eventType, eventFn);
 };
 
-const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
-
 const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
+
+const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
 
 /**
  * Returns a string literal as "normal" string
@@ -357,8 +365,6 @@ const getPath$1 = (target, path, getContaining = false) => {
 };
 
 //@TODO test those
-const REGEX_IS_NUMBER = /^[\d.-]+$/;
-const REGEX_IS_STRING = /^["'`].*["'`]$/;
 const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
 const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
@@ -367,27 +373,6 @@ const mapLiterals = mapFromObject({
     "true": true,
     "null": null
 });
-
-/**
- * Parses Literal String
- *
- * @param {String} expression
- * @param {AxonNode} node
- * @returns {Mixed}
- */
-const parseLiteral = function (expression, node) {
-    if (REGEX_IS_NUMBER.test(expression)) {
-        //Cast to number
-        return Number(expression);
-    } else if (REGEX_IS_STRING.test(expression)) {
-        //Cut of quotes
-        return expression.substr(1, expression.length - 2);
-    } else if (mapLiterals.has(expression)) {
-        return mapLiterals.get(expression);
-    } else {
-        return evalProp(expression, node).val;
-    }
-};
 
 /**
  * Creates a new missing-prop error
@@ -406,6 +391,29 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
 const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(
     methodProp.node.data, [...methodProp.args, ...additionalArgs]
 );
+
+/**
+ * Parses Literal String
+ *
+ * @param {String} expression
+ * @param {AxonNode} node
+ * @returns {Mixed}
+ */
+const evalLiteralFromNode = function (expression, node) {
+    let result = null;
+
+    if (isStringNumber(expression)) {
+        result = Number(expression);
+    } else if (REGEX_IS_STRING_LITERAL.test(expression)) {
+        result = getStringLiteral(expression);
+    } else if (mapLiterals.has(expression)) {
+        result = mapLiterals.get(expression);
+    } else {
+        result = evalProp(expression, node).val;
+    }
+
+    return result;
+};
 
 /**
  * Redirects to fitting retriever and returns
@@ -437,16 +445,15 @@ const evalDirective = function (name, node, allowUndefined = false) {
  * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const evalProp = function (expression, node, allowUndefined = false, queryMethods = false) {
+const evalProp = function (expression, node, allowUndefined = false) {
     let result = null;
     let current = node;
 
     while (current && result === null) {
-        const data = getPath$1(queryMethods ? current.methods : current.data, expression, true);
+        const data = getPath$1(current.data, expression, true);
 
         if (data !== null) {
             data.node = current;
-
             result = data;
         } else {
             current = current.$parent;
@@ -477,7 +484,7 @@ const evalMethod = function (expression, node, allowUndefined = false) {
     const data = getPath$1(root.methods, matched[1], true);
 
     if (data !== null) {
-        data.args = args.map(arg => parseLiteral(arg, node));
+        data.args = args.map(arg => evalLiteralFromNode(arg, node));
         data.node = root;
 
         return data;
@@ -663,12 +670,11 @@ const AxonNode = class {
      * @param {Element} $parent
      * @param {Object} data
      */
-    constructor($element = null, $parent = null, data = {}, methods = {}) {
+    constructor($element = null, $parent = null, data = {}) {
         const dataStorage = data;
 
         this.directives = parseDirectives($element);
         this.data = bindDeepDataProxy(dataStorage, this);
-        this.methods = methods;
 
         this.$element = $element;
         this.$parent = $parent;
@@ -728,7 +734,9 @@ const AxonNodeRoot = class extends AxonNode {
      * @param {Object} cfg Config data for the Axon instance
      */
     constructor(cfg = {}) {
-        super(cfg.el, null, cfg.data, cfg.methods);
+        super(cfg.el, null, cfg.data);
+
+        this.methods = cfg.methods || {};
 
         this.init();
         this.render();

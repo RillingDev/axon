@@ -23,12 +23,11 @@ const AxonNode = class {
      * @param {Element} $parent
      * @param {Object} data
      */
-    constructor($element = null, $parent = null, data = {}, methods = {}) {
+    constructor($element = null, $parent = null, data = {}) {
         const dataStorage = data;
 
         this.directives = parseDirectives($element);
         this.data = bindDeepDataProxy(dataStorage, this);
-        this.methods = methods;
 
         this.$element = $element;
         this.$parent = $parent;
