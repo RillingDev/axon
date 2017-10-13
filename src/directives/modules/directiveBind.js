@@ -2,7 +2,14 @@ import {
     evalDirective
 } from "../../controller/retrieve";
 
-const directiveBindRender = function (directive, node) {
+/**
+ * v-bind render directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
+const directiveBindRender = (directive, node) => {
     node.$element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
 
     return true;

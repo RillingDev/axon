@@ -10,7 +10,7 @@ import {
  * @param {AxonNode} node
  * @returns {Object}
  */
-const dataProxyFactory = function (node) {
+const dataProxyFactory = node => {
     return {
         set: (target, key, val) => {
             if (val !== target[key]) {
@@ -47,6 +47,7 @@ const mapProxy = (obj, proxyObj) => {
 /**
  * Binds data-proxy
  *
+ * @private
  * @param {Object} obj
  * @param {AxonNode} node
  * @returns {Proxy}

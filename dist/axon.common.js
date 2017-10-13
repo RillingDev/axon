@@ -149,60 +149,67 @@ const mapFromObject = (obj) => new Map(objEntries(obj));
 /**
  * Sets a value as directive
  *
+ * @private
  * @param {Element} element
- * @param {String} key
- * @param {String} value
+ * @param {string} key
+ * @param {string} value
  */
 const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREFIX + key, value);
 
 /**
  * Checks a value as directive
  *
+ * @private
  * @param {Element} element
- * @param {String} key
- * @returns {Boolean}
+ * @param {string} key
+ * @returns {boolean}
  */
 const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + key);
 
 /**
  * Removes a directive
  *
+ * @private
  * @param {Element} element
- * @param {String} key
+ * @param {string} key
  */
 const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFIX + key);
 
 /**
  * Checks if an attribute is an axon directive
  *
+ * @private
  * @param {Attribute} attr
- * @returns {Boolean}
+ * @returns {boolean}
  */
 const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
 
 /**
  * Returns array of all directives
  *
+ * @private
  * @param {Element} element
- * @returns {Array}
+ * @returns {Array<Directive>}
  */
 const getDirectives = element => arrClone(element.attributes).filter(isDirective);
 
 /**
  * Checks if the element has any directives
  *
+ * @private
  * @param {Element} element
- * @returns {Boolean}
+ * @returns {boolean}
  */
 const hasDirectives = element => getDirectives(element).length > 0;
 
 /**
  * Returns directives on node with name parsed
  *
+ * @private
  * @param {Element} element
- * @returns {Array}
+ * @returns {Array<Object>}
  */
-const parseDirectives = function (element) {
+const parseDirectives = element => {
     return getDirectives(element).map(attr => {
         /**
          * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
@@ -220,10 +227,11 @@ const parseDirectives = function (element) {
 /**
  * Gets the topmost node
  *
+ * @private
  * @param {AxonNode} node
  * @returns {AxonNode}
  */
-const getNodeRoot = function (node) {
+const getNodeRoot = node => {
     let result = node;
 
     while (result.$parent !== null) {
@@ -236,9 +244,10 @@ const getNodeRoot = function (node) {
 /**
  * Maps and processes Array of element children
  *
- * @param {Array} children
+ * @private
+ * @param {NodeList} children
  * @param {AxonNode} node
- * @returns {Array}
+ * @returns {Array<Object>}
  */
 const mapSubNodes = (children, node) => arrFlattenDeep(arrClone(children)
     .map(child => {
@@ -262,7 +271,7 @@ const mapSubNodes = (children, node) => arrFlattenDeep(arrClone(children)
  * @param {AxonNode} node
  * @returns {Object}
  */
-const dataProxyFactory = function (node) {
+const dataProxyFactory = node => {
     return {
         set: (target, key, val) => {
             if (val !== target[key]) {
@@ -299,6 +308,7 @@ const mapProxy = (obj, proxyObj) => {
 /**
  * Binds data-proxy
  *
+ * @private
  * @param {Object} obj
  * @param {AxonNode} node
  * @returns {Proxy}
@@ -308,8 +318,9 @@ const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
 /**
  * addEventListener shorthand
  *
+ * @private
  * @param {Element} node
- * @param {String} eventType
+ * @param {string} eventType
  * @param {Function} eventFn
  */
 const bindEvent = (element, eventType, eventFn) => element.addEventListener(eventType, eventFn);
@@ -372,7 +383,8 @@ const mapLiterals = mapFromObject({
 /**
  * Creates a new missing-prop error
  *
- * @param {String} propName
+ * @private
+ * @param {string} propName
  * @returns {Error}
  */
 const missingPropErrorTextFactory = propName => `missing prop/method '${propName}'`;
@@ -380,8 +392,9 @@ const missingPropErrorTextFactory = propName => `missing prop/method '${propName
 /**
  * Runs a method in the given context
  *
+ * @private
  * @param {Object} methodProp
- * @returns {Mixed}
+ * @returns {any}
  */
 const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(
     methodProp.node.data, [...methodProp.args, ...additionalArgs]
@@ -390,11 +403,12 @@ const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.a
 /**
  * Parses Literal String
  *
- * @param {String} expression
+ * @private
+ * @param {string} expression
  * @param {AxonNode} node
- * @returns {Mixed}
+ * @returns {any}
  */
-const evalLiteralFromNode = function (expression, node) {
+const evalLiteralFromNode = (expression, node) => {
     let result = null;
 
     if (isStringNumber(expression)) {
@@ -413,12 +427,13 @@ const evalLiteralFromNode = function (expression, node) {
 /**
  * Redirects to fitting retriever and returns
  *
- * @param {String} name
- * @param {Axon} node
- * @param {Boolean} allowUndefined
- * @returns {Mixed}
+ * @private
+ * @param {string} name
+ * @param {AxonNode} node
+ * @param {boolean} [allowUndefined=false]
+ * @returns {any}
  */
-const evalDirective = function (name, node, allowUndefined = false) {
+const evalDirective = (name, node, allowUndefined = false) => {
     if (REGEX_IS_FUNCTION.test(name)) {
         const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
@@ -435,12 +450,13 @@ const evalDirective = function (name, node, allowUndefined = false) {
 /**
  * Retrieves a prop from the data container
  *
- * @param {String} expression
+ * @private
+ * @param {string} expression
  * @param {AxonNode} node
- * @param {Boolean} allowUndefined
- * @returns {Mixed|null}
+ * @param {boolean} [allowUndefined=false]
+ * @returns {any|null}
  */
-const evalProp = function (expression, node, allowUndefined = false) {
+const evalProp = (expression, node, allowUndefined = false) => {
     let current = node;
 
     while (current) {
@@ -465,12 +481,13 @@ const evalProp = function (expression, node, allowUndefined = false) {
 /**
  * Retrieves a method from the method container
  *
- * @param {String} expression
+ * @private
+ * @param {string} expression
  * @param {AxonNode} node
- * @param {Boolean} allowUndefined
- * @returns {Mixed|null}
+ * @param {boolean} [allowUndefined=false]
+ * @returns {any|null}
  */
-const evalMethod = function (expression, node, allowUndefined = false) {
+const evalMethod = (expression, node, allowUndefined = false) => {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
@@ -493,10 +510,11 @@ const evalMethod = function (expression, node, allowUndefined = false) {
 /**
  * Checks which type of content property an Element uses
  *
+ * @private
  * @param {Element} element
- * @returns {String}
+ * @returns {string}
  */
-const getElementContentProp = function (element) {
+const getElementContentProp = element => {
     if (isDefined(element[DOM_PROP_VALUE])) {
         return DOM_PROP_VALUE;
     } else if (isDefined(element[DOM_PROP_TEXT])) {
@@ -509,13 +527,21 @@ const getElementContentProp = function (element) {
 /**
  * Toggles element active mode
  *
- * @param {Node} element
- * @param {Boolean} mode
+ * @private
+ * @param {Element} element
+ * @param {boolean} mode
  */
 const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
 
 const DOM_EVENT_MODEL = "input";
 
+/**
+ * v-model init directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveModelInit = function (directive, node) {
     const element = node.$element;
     const elementContentProp = getElementContentProp(element);
@@ -529,6 +555,13 @@ const directiveModelInit = function (directive, node) {
     return true;
 };
 
+/**
+ * v-model render directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveModelRender = function (directive, node) {
     const element = node.$element;
     const elementContentProp = getElementContentProp(element);
@@ -539,7 +572,14 @@ const directiveModelRender = function (directive, node) {
     return true;
 };
 
-const directiveBindRender = function (directive, node) {
+/**
+ * v-bind render directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
+const directiveBindRender = (directive, node) => {
     node.$element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
 
     return true;
@@ -549,6 +589,13 @@ const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
 const FOR_REGEX_ARR = /(.+) of (.+)/;
 
+/**
+ * v-for init directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveForInit = function (directive, node) {
     const element = node.$element;
 
@@ -558,6 +605,13 @@ const directiveForInit = function (directive, node) {
     return false;
 };
 
+/**
+ * v-for render directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveForRender = function (directive, node) {
     const element = node.$element;
     const directiveSplit = directive.content.match(FOR_REGEX_ARR);
@@ -593,18 +647,39 @@ const directiveForRender = function (directive, node) {
     return true;
 };
 
+/**
+ * v-text render directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveTextRender = function (directive, node) {
     node.$element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
 
     return true;
 };
 
+/**
+ * v-html render directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveHTMLRender = function (directive, node) {
     node.$element[DOM_PROP_HTML] = String(evalDirective(directive.content, node).val);
 
     return true;
 };
 
+/**
+ * v-if directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveIfBoth = function (directive, node) {
     const element = node.$element;
     const expressionValue = Boolean(evalDirective(directive.content, node, true).val);
@@ -614,6 +689,13 @@ const directiveIfBoth = function (directive, node) {
     return expressionValue;
 };
 
+/**
+ * v-on init directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveOnInit = function (directive, node) {
     bindEvent(node.$element, directive.opt, e => applyMethodContext(evalMethod(directive.content, node), [e]));
 
@@ -657,9 +739,9 @@ const AxonNode = class {
      * Axon Element Node Constructor
      *
      * @constructor
-     * @param {Element} $element
-     * @param {Element} $parent
-     * @param {Object} data
+     * @param {Element} [$element=null]
+     * @param {Element} [$parent=null]
+     * @param {Object} [data={}]
      */
     constructor($element = null, $parent = null, data = {}) {
         const dataStorage = data;
@@ -678,21 +760,22 @@ const AxonNode = class {
      * @returns {Array|false}
      */
     run(type) {
-        const runDirective = directive => {
-            if (directives.has(directive.name)) {
-                const mapDirectivesEntry = directives.get(directive.name);
+        const directiveResults = this.directives
+            .map(directive => {
+                if (directives.has(directive.name)) {
+                    const mapDirectivesEntry = directives.get(directive.name);
 
-                if (mapDirectivesEntry[type]) {
-                    return mapDirectivesEntry[type](directive, this);
+                    if (mapDirectivesEntry[type]) {
+                        return mapDirectivesEntry[type](directive, this);
+                    }
                 }
-            }
 
-            //Ignore non-existant diretcive types
-            return true;
-        };
+                //Ignore non-existant directive types
+                return true;
+            });
 
         //Recurse if all directives return true
-        if (this.directives.map(runDirective).every(directiveResult => directiveResult === true)) {
+        if (directiveResults.every(directiveResult => directiveResult === true)) {
             return this.$children.map(child => child.run(type));
         } else {
             return false;

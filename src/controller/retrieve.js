@@ -21,7 +21,8 @@ const mapLiterals = mapFromObject({
 /**
  * Creates a new missing-prop error
  *
- * @param {String} propName
+ * @private
+ * @param {string} propName
  * @returns {Error}
  */
 const missingPropErrorTextFactory = propName => `missing prop/method '${propName}'`;
@@ -29,8 +30,9 @@ const missingPropErrorTextFactory = propName => `missing prop/method '${propName
 /**
  * Runs a method in the given context
  *
+ * @private
  * @param {Object} methodProp
- * @returns {Mixed}
+ * @returns {any}
  */
 const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(
     methodProp.node.data, [...methodProp.args, ...additionalArgs]
@@ -39,11 +41,12 @@ const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.a
 /**
  * Parses Literal String
  *
- * @param {String} expression
+ * @private
+ * @param {string} expression
  * @param {AxonNode} node
- * @returns {Mixed}
+ * @returns {any}
  */
-const evalLiteralFromNode = function (expression, node) {
+const evalLiteralFromNode = (expression, node) => {
     let result = null;
 
     if (isStringNumber(expression)) {
@@ -62,12 +65,13 @@ const evalLiteralFromNode = function (expression, node) {
 /**
  * Redirects to fitting retriever and returns
  *
- * @param {String} name
- * @param {Axon} node
- * @param {Boolean} allowUndefined
- * @returns {Mixed}
+ * @private
+ * @param {string} name
+ * @param {AxonNode} node
+ * @param {boolean} [allowUndefined=false]
+ * @returns {any}
  */
-const evalDirective = function (name, node, allowUndefined = false) {
+const evalDirective = (name, node, allowUndefined = false) => {
     if (REGEX_IS_FUNCTION.test(name)) {
         const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
@@ -84,12 +88,13 @@ const evalDirective = function (name, node, allowUndefined = false) {
 /**
  * Retrieves a prop from the data container
  *
- * @param {String} expression
+ * @private
+ * @param {string} expression
  * @param {AxonNode} node
- * @param {Boolean} allowUndefined
- * @returns {Mixed|null}
+ * @param {boolean} [allowUndefined=false]
+ * @returns {any|null}
  */
-const evalProp = function (expression, node, allowUndefined = false) {
+const evalProp = (expression, node, allowUndefined = false) => {
     let current = node;
 
     while (current) {
@@ -114,12 +119,13 @@ const evalProp = function (expression, node, allowUndefined = false) {
 /**
  * Retrieves a method from the method container
  *
- * @param {String} expression
+ * @private
+ * @param {string} expression
  * @param {AxonNode} node
- * @param {Boolean} allowUndefined
- * @returns {Mixed|null}
+ * @param {boolean} [allowUndefined=false]
+ * @returns {any|null}
  */
-const evalMethod = function (expression, node, allowUndefined = false) {
+const evalMethod = (expression, node, allowUndefined = false) => {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);

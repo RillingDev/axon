@@ -52,5 +52,4 @@ const directives = mapFromObject({
     },
 });
 
-
 export default directives;

@@ -9,69 +9,77 @@ import {
 /**
  * Sets a value as directive
  *
+ * @private
  * @param {Element} element
- * @param {String} key
- * @param {String} value
+ * @param {string} key
+ * @param {string} value
  */
 const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREFIX + key, value);
 
 /**
  * Gets a value as directive
  *
+ * @private
  * @param {Element} element
- * @param {String} key
- * @returns {String}
+ * @param {string} key
+ * @returns {string}
  */
 const getDirective = (element, key) => element.getAttribute(DOM_ATTR_PREFIX + key);
 
 /**
  * Checks a value as directive
  *
+ * @private
  * @param {Element} element
- * @param {String} key
- * @returns {Boolean}
+ * @param {string} key
+ * @returns {boolean}
  */
 const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + key);
 
 /**
  * Removes a directive
  *
+ * @private
  * @param {Element} element
- * @param {String} key
+ * @param {string} key
  */
 const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFIX + key);
 
 /**
  * Checks if an attribute is an axon directive
  *
+ * @private
  * @param {Attribute} attr
- * @returns {Boolean}
+ * @returns {boolean}
  */
 const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
 
 /**
  * Returns array of all directives
  *
+ * @private
  * @param {Element} element
- * @returns {Array}
+ * @returns {Array<Directive>}
  */
 const getDirectives = element => arrClone(element.attributes).filter(isDirective);
 
 /**
  * Checks if the element has any directives
  *
+ * @private
  * @param {Element} element
- * @returns {Boolean}
+ * @returns {boolean}
  */
 const hasDirectives = element => getDirectives(element).length > 0;
 
 /**
  * Returns directives on node with name parsed
  *
+ * @private
  * @param {Element} element
- * @returns {Array}
+ * @returns {Array<Object>}
  */
-const parseDirectives = function (element) {
+const parseDirectives = element => {
     return getDirectives(element).map(attr => {
         /**
          * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"

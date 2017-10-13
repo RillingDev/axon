@@ -10,6 +10,13 @@ import {
 
 const DOM_EVENT_MODEL = "input";
 
+/**
+ * v-model init directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveModelInit = function (directive, node) {
     const element = node.$element;
     const elementContentProp = getElementContentProp(element);
@@ -23,6 +30,13 @@ const directiveModelInit = function (directive, node) {
     return true;
 };
 
+/**
+ * v-model render directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveModelRender = function (directive, node) {
     const element = node.$element;
     const elementContentProp = getElementContentProp(element);

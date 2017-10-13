@@ -20,6 +20,13 @@ const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
 const FOR_REGEX_ARR = /(.+) of (.+)/;
 
+/**
+ * v-for init directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveForInit = function (directive, node) {
     const element = node.$element;
 
@@ -29,6 +36,13 @@ const directiveForInit = function (directive, node) {
     return false;
 };
 
+/**
+ * v-for render directive
+ *
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
 const directiveForRender = function (directive, node) {
     const element = node.$element;
     const directiveSplit = directive.content.match(FOR_REGEX_ARR);

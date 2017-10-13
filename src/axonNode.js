@@ -19,9 +19,9 @@ const AxonNode = class {
      * Axon Element Node Constructor
      *
      * @constructor
-     * @param {Element} $element
-     * @param {Element} $parent
-     * @param {Object} data
+     * @param {Element} [$element=null]
+     * @param {Element} [$parent=null]
+     * @param {Object} [data={}]
      */
     constructor($element = null, $parent = null, data = {}) {
         const dataStorage = data;
@@ -40,21 +40,22 @@ const AxonNode = class {
      * @returns {Array|false}
      */
     run(type) {
-        const runDirective = directive => {
-            if (mapDirectives.has(directive.name)) {
-                const mapDirectivesEntry = mapDirectives.get(directive.name);
+        const directiveResults = this.directives
+            .map(directive => {
+                if (mapDirectives.has(directive.name)) {
+                    const mapDirectivesEntry = mapDirectives.get(directive.name);
 
-                if (mapDirectivesEntry[type]) {
-                    return mapDirectivesEntry[type](directive, this);
+                    if (mapDirectivesEntry[type]) {
+                        return mapDirectivesEntry[type](directive, this);
+                    }
                 }
-            }
 
-            //Ignore non-existant diretcive types
-            return true;
-        };
+                //Ignore non-existant directive types
+                return true;
+            });
 
         //Recurse if all directives return true
-        if (this.directives.map(runDirective).every(directiveResult => directiveResult === true)) {
+        if (directiveResults.every(directiveResult => directiveResult === true)) {
             return this.$children.map(child => child.run(type));
         } else {
             return false;

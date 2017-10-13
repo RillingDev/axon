@@ -11,10 +11,11 @@ import {
 /**
  * Checks which type of content property an Element uses
  *
+ * @private
  * @param {Element} element
- * @returns {String}
+ * @returns {string}
  */
-const getElementContentProp = function (element) {
+const getElementContentProp = element => {
     if (isDefined(element[DOM_PROP_VALUE])) {
         return DOM_PROP_VALUE;
     } else if (isDefined(element[DOM_PROP_TEXT])) {
@@ -27,8 +28,9 @@ const getElementContentProp = function (element) {
 /**
  * Toggles element active mode
  *
- * @param {Node} element
- * @param {Boolean} mode
+ * @private
+ * @param {Element} element
+ * @param {boolean} mode
  */
 const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
 

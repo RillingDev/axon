@@ -10,10 +10,11 @@ import {
 /**
  * Gets the topmost node
  *
+ * @private
  * @param {AxonNode} node
  * @returns {AxonNode}
  */
-const getNodeRoot = function (node) {
+const getNodeRoot = node => {
     let result = node;
 
     while (result.$parent !== null) {
@@ -26,9 +27,10 @@ const getNodeRoot = function (node) {
 /**
  * Maps and processes Array of element children
  *
- * @param {Array} children
+ * @private
+ * @param {NodeList} children
  * @param {AxonNode} node
- * @returns {Array}
+ * @returns {Array<Object>}
  */
 const mapSubNodes = (children, node) => arrFlattenDeep(arrClone(children)
     .map(child => {

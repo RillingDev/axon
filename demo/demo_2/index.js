@@ -18,23 +18,19 @@ const app = new Axon({
         sort() {
             const vm = this;
 
-            console.log(vm);
-
             vm.list.sort();
         },
         reverse() {
             const vm = this;
-
-            console.log(vm);
 
             vm.list.reverse();
         },
         randomize() {
             const vm = this;
 
-            console.log(vm);
-
             vm.list.sort(() => Math.random() > 0.5);
         },
     }
 });
+
+console.log(app);
