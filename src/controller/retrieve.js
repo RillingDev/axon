@@ -54,7 +54,9 @@ const missingPropErrorFactory = propName => new Error(`missing prop/method '${pr
  * @param {Object} methodProp
  * @returns {Mixed}
  */
-const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.data, methodProp.args);
+const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(
+    methodProp.node.data, [...methodProp.args, ...additionalArgs]
+);
 
 /**
  * Redirects to fitting retriever and returns
@@ -86,23 +88,26 @@ const evalDirective = function (name, node, allowUndefined = false) {
  * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const evalProp = function (expression, node, allowUndefined = false) {
+const evalProp = function (expression, node, allowUndefined = false, queryMethods = false) {
+    let result = null;
     let current = node;
 
-    while (current && current.$parent !== false) {
-        const data = getPath(current.data, expression, true);
+    while (current && result === null) {
+        const data = getPath(queryMethods ? current.methods : current.data, expression, true);
 
         if (data !== null) {
             data.node = current;
 
-            return data;
+            result = data;
         } else {
             current = current.$parent;
         }
     }
 
-    if (allowUndefined) {
-        return false;
+    if (result !== null) {
+        return result;
+    } else if (allowUndefined) {
+        return null;
     } else {
         throw missingPropErrorFactory(expression);
     }
@@ -129,7 +134,7 @@ const evalMethod = function (expression, node, allowUndefined = false) {
         return data;
     } else {
         if (allowUndefined) {
-            return false;
+            return null;
         } else {
             throw missingPropErrorFactory(expression);
         }
