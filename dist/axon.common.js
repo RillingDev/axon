@@ -703,30 +703,30 @@ const directiveOnInit = function (directive, node) {
 };
 
 const directives = mapFromObject({
-    "model": {
-        init: directiveModelInit,
-        render: directiveModelRender
-    },
-    "bind": {
-        render: directiveBindRender
-    },
-    "for": {
-        init: directiveForInit,
-        render: directiveForRender
-    },
-    "text": {
-        render: directiveTextRender
-    },
-    "html": {
-        render: directiveHTMLRender
-    },
-    "if": {
+    if: {
         init: directiveIfBoth,
         render: directiveIfBoth
     },
-    "on": {
+    on: {
         init: directiveOnInit,
     },
+    model: {
+        init: directiveModelInit,
+        render: directiveModelRender
+    },
+    bind: {
+        render: directiveBindRender
+    },
+    text: {
+        render: directiveTextRender
+    },
+    html: {
+        render: directiveHTMLRender
+    },
+    for: {
+        init: directiveForInit,
+        render: directiveForRender
+    }
 });
 
 /**
