@@ -10,7 +10,6 @@ import {
 import getPath from "pseudo-eval/src/lib/getPath";
 import getStringLiteral from "pseudo-eval/src/lib/getStringLiteral";
 
-//@TODO test those
 const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
 const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
@@ -89,7 +88,7 @@ const evalDirective = function (name, node, allowUndefined = false) {
  * @param {String} expression
  * @param {AxonNode} node
  * @param {Boolean} allowUndefined
- * @returns {Mixed|false}
+ * @returns {Mixed|null}
  */
 const evalProp = function (expression, node, allowUndefined = false) {
     let result = null;
@@ -121,7 +120,7 @@ const evalProp = function (expression, node, allowUndefined = false) {
  * @param {String} expression
  * @param {AxonNode} node
  * @param {Boolean} allowUndefined
- * @returns {Mixed|false}
+ * @returns {Mixed|null}
  */
 const evalMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);

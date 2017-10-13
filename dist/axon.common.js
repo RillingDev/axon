@@ -312,9 +312,7 @@ const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
  * @param {String} eventType
  * @param {Function} eventFn
  */
-const bindEvent = function (element, eventType, eventFn) {
-    element.addEventListener(eventType, eventFn);
-};
+const bindEvent = (element, eventType, eventFn) => element.addEventListener(eventType, eventFn);
 
 const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
 
@@ -363,7 +361,6 @@ const getPath$1 = (target, path, getContaining = false) => {
     } : targetCurrent;
 };
 
-//@TODO test those
 const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
 const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
 
@@ -442,7 +439,7 @@ const evalDirective = function (name, node, allowUndefined = false) {
  * @param {String} expression
  * @param {AxonNode} node
  * @param {Boolean} allowUndefined
- * @returns {Mixed|false}
+ * @returns {Mixed|null}
  */
 const evalProp = function (expression, node, allowUndefined = false) {
     let result = null;
@@ -474,7 +471,7 @@ const evalProp = function (expression, node, allowUndefined = false) {
  * @param {String} expression
  * @param {AxonNode} node
  * @param {Boolean} allowUndefined
- * @returns {Mixed|false}
+ * @returns {Mixed|null}
  */
 const evalMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);

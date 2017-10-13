@@ -5,9 +5,7 @@
  * @param {String} eventType
  * @param {Function} eventFn
  */
-const bindEvent = function (element, eventType, eventFn) {
-    element.addEventListener(eventType, eventFn);
-};
+const bindEvent = (element, eventType, eventFn) => element.addEventListener(eventType, eventFn);
 
 export {
     bindEvent

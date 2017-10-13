@@ -20,17 +20,21 @@ const app = new Axon({
 
             console.log(vm);
 
-            vm.list = Array.from(vm.list.sort());
+            vm.list.sort();
         },
         reverse() {
             const vm = this;
+
             console.log(vm);
-            vm.list = Array.from(vm.list.reverse());
+
+            vm.list.reverse();
         },
         randomize() {
             const vm = this;
+
             console.log(vm);
-            vm.list = Array.from(vm.list.sort(() => Math.random() > 0.5));
+
+            vm.list.sort(() => Math.random() > 0.5);
         },
     }
 });

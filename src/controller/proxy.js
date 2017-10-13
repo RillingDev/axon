@@ -3,7 +3,6 @@ import {
     forEachEntry,
 } from "lightdash";
 
-
 /**
  * Creates a Proxy object with the node render method bound
  *
