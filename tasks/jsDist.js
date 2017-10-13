@@ -2,11 +2,11 @@
 
 const bundle = require("./lib/bundle");
 const resolve = require("rollup-plugin-node-resolve");
-const babel = require("rollup-plugin-babel");
+//const babel = require("rollup-plugin-babel");
 const uglify = require("rollup-plugin-uglify-es");
-const targets = require("../package.json").constants.js.targets;
+//const targets = require("../package.json").constants.js.targets;
 
-const options_babel = {
+/* const options_babel = {
     presets: [
         ["env", {
             modules: false,
@@ -16,8 +16,7 @@ const options_babel = {
     plugins: [
         "external-helpers"
     ]
-};
-
+}; */
 
 bundle([{
     id: "es",
