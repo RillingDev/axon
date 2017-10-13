@@ -384,7 +384,7 @@ const parseLiteral = function (expression, node) {
     } else if (mapLiterals.has(expression)) {
         return mapLiterals.get(expression);
     } else {
-        return retrieveProp(expression, node).val;
+        return evalProp(expression, node).val;
     }
 };
 
@@ -412,9 +412,9 @@ const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.da
  * @param {Boolean} allowUndefined
  * @returns {Mixed}
  */
-const retrieveExpression = function (name, node, allowUndefined = false) {
+const evalDirective = function (name, node, allowUndefined = false) {
     if (REGEX_IS_FUNCTION.test(name)) {
-        const method = retrieveMethod(name, node, allowUndefined);
+        const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
 
         return {
@@ -422,7 +422,7 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
             val: methodResult
         };
     } else {
-        return retrieveProp(name, node, allowUndefined);
+        return evalProp(name, node, allowUndefined);
     }
 };
 
@@ -434,7 +434,7 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
  * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const retrieveProp = function (expression, node, allowUndefined = false) {
+const evalProp = function (expression, node, allowUndefined = false) {
     let current = node;
 
     while (current && current.$parent !== false) {
@@ -464,7 +464,7 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
  * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const retrieveMethod = function (expression, node, allowUndefined = false) {
+const evalMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
@@ -515,7 +515,7 @@ const directiveModelInit = function (directive, node) {
     const elementContentProp = getElementContentProp(element);
 
     bindEvent(element, DOM_EVENT_MODEL, () => {
-        const targetProp = retrieveProp(directive.content, node);
+        const targetProp = evalProp(directive.content, node);
 
         targetProp.container[targetProp.key] = element[elementContentProp];
     });
@@ -526,7 +526,7 @@ const directiveModelInit = function (directive, node) {
 const directiveModelRender = function (directive, node) {
     const element = node.$element;
     const elementContentProp = getElementContentProp(element);
-    const targetProp = retrieveProp(directive.content, node);
+    const targetProp = evalProp(directive.content, node);
 
     element[elementContentProp] = String(targetProp.val);
 
@@ -534,7 +534,7 @@ const directiveModelRender = function (directive, node) {
 };
 
 const directiveBindRender = function (directive, node) {
-    node.$element.setAttribute(directive.opt, retrieveExpression(directive.content, node).val);
+    node.$element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
 
     return true;
 };
@@ -556,7 +556,7 @@ const directiveForRender = function (directive, node) {
     const element = node.$element;
     const directiveSplit = FOR_REGEX_ARR.exec(directive.content);
     const iteratorKey = directiveSplit[1];
-    const iterable = retrieveProp(directiveSplit[2], node).val;
+    const iterable = evalProp(directiveSplit[2], node).val;
     const nodesNew = [];
 
     //Delete old nodes
@@ -588,20 +588,20 @@ const directiveForRender = function (directive, node) {
 };
 
 const directiveTextRender = function (directive, node) {
-    node.$element[DOM_PROP_TEXT] = String(retrieveExpression(directive.content, node).val);
+    node.$element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
 
     return true;
 };
 
 const directiveHTMLRender = function (directive, node) {
-    node.$element[DOM_PROP_HTML] = String(retrieveExpression(directive.content, node).val);
+    node.$element[DOM_PROP_HTML] = String(evalDirective(directive.content, node).val);
 
     return true;
 };
 
 const directiveIfBoth = function (directive, node) {
     const element = node.$element;
-    const expressionValue = Boolean(retrieveExpression(directive.content, node, true).val);
+    const expressionValue = Boolean(evalDirective(directive.content, node, true).val);
 
     setElementActive(element, expressionValue);
 
@@ -609,7 +609,7 @@ const directiveIfBoth = function (directive, node) {
 };
 
 const directiveOnInit = function (directive, node) {
-    const method = retrieveMethod(directive.content, node);
+    const method = evalMethod(directive.content, node);
 
     bindEvent(node.$element, directive.opt, e => method.val.apply(method.node.data, [...method.args, e]));
 

@@ -1,9 +1,9 @@
 import {
-    retrieveExpression
+    evalDirective
 } from "../../controller/retrieve";
 
 const directiveBindRender = function (directive, node) {
-    node.$element.setAttribute(directive.opt, retrieveExpression(directive.content, node).val);
+    node.$element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
 
     return true;
 };

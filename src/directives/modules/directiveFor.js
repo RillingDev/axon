@@ -1,6 +1,6 @@
 import AxonNode from "../../axonNode";
 import {
-    retrieveProp
+    evalProp
 } from "../../controller/retrieve";
 import {
     hasDirective,
@@ -33,7 +33,7 @@ const directiveForRender = function (directive, node) {
     const element = node.$element;
     const directiveSplit = FOR_REGEX_ARR.exec(directive.content);
     const iteratorKey = directiveSplit[1];
-    const iterable = retrieveProp(directiveSplit[2], node).val;
+    const iterable = evalProp(directiveSplit[2], node).val;
     const nodesNew = [];
 
     //Delete old nodes

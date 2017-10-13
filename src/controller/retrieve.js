@@ -36,7 +36,7 @@ const parseLiteral = function (expression, node) {
     } else if (mapLiterals.has(expression)) {
         return mapLiterals.get(expression);
     } else {
-        return retrieveProp(expression, node).val;
+        return evalProp(expression, node).val;
     }
 };
 
@@ -64,9 +64,9 @@ const applyMethodContext = methodProp => methodProp.val.apply(methodProp.node.da
  * @param {Boolean} allowUndefined
  * @returns {Mixed}
  */
-const retrieveExpression = function (name, node, allowUndefined = false) {
+const evalDirective = function (name, node, allowUndefined = false) {
     if (REGEX_IS_FUNCTION.test(name)) {
-        const method = retrieveMethod(name, node, allowUndefined);
+        const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
 
         return {
@@ -74,7 +74,7 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
             val: methodResult
         };
     } else {
-        return retrieveProp(name, node, allowUndefined);
+        return evalProp(name, node, allowUndefined);
     }
 };
 
@@ -86,7 +86,7 @@ const retrieveExpression = function (name, node, allowUndefined = false) {
  * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const retrieveProp = function (expression, node, allowUndefined = false) {
+const evalProp = function (expression, node, allowUndefined = false) {
     let current = node;
 
     while (current && current.$parent !== false) {
@@ -116,7 +116,7 @@ const retrieveProp = function (expression, node, allowUndefined = false) {
  * @param {Boolean} allowUndefined
  * @returns {Mixed|false}
  */
-const retrieveMethod = function (expression, node, allowUndefined = false) {
+const evalMethod = function (expression, node, allowUndefined = false) {
     const matched = expression.match(REGEX_CONTENT_METHOD);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
@@ -138,7 +138,7 @@ const retrieveMethod = function (expression, node, allowUndefined = false) {
 
 export {
     applyMethodContext,
-    retrieveExpression,
-    retrieveMethod,
-    retrieveProp
+    evalDirective,
+    evalMethod,
+    evalProp
 };

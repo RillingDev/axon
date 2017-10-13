@@ -2,11 +2,11 @@ import {
     bindEvent
 } from "../../dom/event";
 import {
-    retrieveMethod
+    evalMethod
 } from "../../controller/retrieve";
 
 const directiveOnInit = function (directive, node) {
-    const method = retrieveMethod(directive.content, node);
+    const method = evalMethod(directive.content, node);
 
     bindEvent(node.$element, directive.opt, e => method.val.apply(method.node.data, [...method.args, e]));
 
