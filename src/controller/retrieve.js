@@ -1,6 +1,4 @@
-import {
-    getPath
-} from "pseudo-eval/src/main";
+import getPath from "pseudo-eval/src/lib/getPath";
 import {
     isDefined,
     mapFromObject
