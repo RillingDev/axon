@@ -1,5 +1,3 @@
-"use strict";
-
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_DELIMITER = ":";
 const DOM_ATTR_HIDDEN = "hidden";
