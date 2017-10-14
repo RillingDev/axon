@@ -740,11 +740,11 @@ const AxonNode = class {
      * Axon Element Node Constructor
      *
      * @constructor
-     * @param {Element} [$element=null]
-     * @param {Element} [$parent=null]
+     * @param {Element} $element
+     * @param {Element|null} $parent
      * @param {Object} [data={}]
      */
-    constructor($element = null, $parent = null, data = {}) {
+    constructor($element, $parent, data = {}) {
         const dataStorage = data;
 
         this.directives = parseDirectives($element);

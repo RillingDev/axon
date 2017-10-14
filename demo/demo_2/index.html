@@ -45,13 +45,13 @@
             <hr>
             <div x-if="listHasItems()">
                 <h3>Items <small>(<span x-text="getTodoLength()"></span> Items)</small></h3>
-                <ol class="todo-list">
+                <ul class="todo-list">
                     <li class="todo-item" x-for="item of list">
                         <span x-text="item.name" x-bind:style="getGrayscaleColorFromPriority(item.priority)"></span>
                         <small>(Priority: <span x-text="item.priority"></span>)</small>
                         <small><button class="btn btn-primary btn-small" x-on:click="removeItem(item)">Done</button></small>
                     </li>
-                </ol>
+                </ul>
                 <h4>Order</h4>
                 <button class="btn btn-primary" x-on:click="sortOrder()">Sort</button>
                 <button class="btn btn-primary" x-on:click="reverseOrder()">Reverse</button>
