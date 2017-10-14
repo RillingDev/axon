@@ -7,6 +7,24 @@
     <meta name="description" content="AxonJS Demo">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='stylesheet prefetch' href='https://rawgit.com/FelixRilling/graphite.css/master/dist/graphite.min.css'>
+    <style>
+        .todo-list {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .todo-item {
+            padding-top: 0.4em;
+            padding-bottom: 0.4em;
+            border-bottom: 1px solid #999;
+        }
+
+        .todo-item .btn-small {
+            padding: 0 4px;
+            float: right;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -15,26 +33,30 @@
         <div>
             <h2>TODO</h2>
             <div>
-                <h3>Add</h3>
+                <h3>Add Item</h3>
                 <div>
-                    <input type="text" x-model="newItem">
+                    <label>Name</label>
+                    <input type="text" placeholder="Item Name" x-model="newItem.name">
+                    <label>Priority</label>
+                    <input type="number" min="0" max="10" x-model="newItem.priority">
                     <button class="btn btn-primary" x-on:click="addItem(newItem)">Add</button>
                 </div>
             </div>
             <hr>
             <div>
-                <h3>Items</h3>
-                <ul>
-                    <li x-for="i of list">
-                        <span x-text="i"></span>
+                <h3>Items <small>(<span x-text="getTodoLength()"></span> Items)</small></h3>
+                <ol class="todo-list">
+                    <li class="todo-item" x-for="item of list">
+                        <span x-text="item.name"></span>
+                        <small>(Priority: <span x-text="item.priority"></span>)</small>
+                        <small><button class="btn btn-primary btn-small" x-on:click="removeItem(item)">Done</button></small>
                     </li>
-                </ul>
+                </ol>
                 <h4>Order</h4>
-                <button class="btn btn-primary" x-on:click="sort()">Sort</button>
-                <button class="btn btn-primary" x-on:click="reverse()">Reverse</button>
-                <button class="btn btn-primary" x-on:click="randomize()">Randomize</button>
+                <button class="btn btn-primary" x-on:click="sortOrder()">Sort</button>
+                <button class="btn btn-primary" x-on:click="reverseOrder()">Reverse</button>
+                <button class="btn btn-primary" x-on:click="randomizeOrder()">Randomize</button>
             </div>
-            <hr>
         </div>
     </div>
     <script src="../../dist/axon.js"></script>

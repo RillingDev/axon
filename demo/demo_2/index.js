@@ -3,33 +3,53 @@
 const app = new Axon({
     el: document.querySelector("#myApp"),
     data: {
-        newItem: "Walk Dogs",
-        list: ["Buy Milk", "Go for a Walk", "Learn Python", "Read a Book", "Pet Cat"]
+        newItem: {
+            name: "Walk Dogs",
+            priority: 2,
+        },
+        list: [{
+            name: "Buy Milk",
+            priority: 1
+        }, {
+            name: "Go for a Walk",
+            priority: 3
+        }, {
+            name: "Learn Python",
+            priority: 2
+        }, {
+            name: "Read a Book",
+            priority: 1
+        }, {
+            name: "Pet Cat",
+            priority: 7
+        }]
     },
     methods: {
         addItem(item) {
-            const vm = this;
-
-            if (item !== "") {
-                vm.list.push(item);
-                vm.newItem = "";
+            if (item.name !== "") {
+                this.list.push({
+                    name: item.name,
+                    priority: item.priority
+                });
+                this.newItem.name = "";
+                this.newItem.priority = 1;
             }
         },
-        sort() {
-            const vm = this;
-
-            vm.list.sort();
+        removeItem(itemTarget) {
+            this.list = this.list.filter(item => item.name !== itemTarget.name);
         },
-        reverse() {
-            const vm = this;
-
-            vm.list.reverse();
+        sortOrder() {
+            this.list.sort((a, b) => a.priority < b.priority);
         },
-        randomize() {
-            const vm = this;
-
-            vm.list.sort(() => Math.random() > 0.5);
+        reverseOrder() {
+            this.list.reverse();
         },
+        randomizeOrder() {
+            this.list.sort(() => Math.random() > 0.5);
+        },
+        getTodoLength() {
+            return this.list.length;
+        }
     }
 });
 

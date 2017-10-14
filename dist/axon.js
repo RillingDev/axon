@@ -632,6 +632,7 @@ const directiveForRender = function (directive, node) {
         const nodeElement = element.cloneNode(true);
         const nodeData = objClone(node.data);
         let elementInserted;
+        let nodeNew;
 
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, true);
         removeDirective(nodeElement, DOM_DIR_FOR_BASE);
@@ -642,7 +643,9 @@ const directiveForRender = function (directive, node) {
         elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
 
         //creates AxonNode for the new element and adds to node children
-        node.$children.push(new AxonNode(elementInserted, node.$parent, nodeData));
+        nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
+        node.$children.push(nodeNew);
+        nodeNew.init();
     }
 
     return true;
