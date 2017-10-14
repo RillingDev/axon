@@ -12,16 +12,16 @@ const app = new Axon({
             priority: 1
         }, {
             name: "Go for a Walk",
-            priority: 3
+            priority: 6
         }, {
             name: "Learn Python",
-            priority: 2
+            priority: 8
         }, {
             name: "Read a Book",
-            priority: 1
+            priority: 2
         }, {
             name: "Pet Cat",
-            priority: 7
+            priority: 10
         }]
     },
     methods: {
@@ -49,6 +49,15 @@ const app = new Axon({
         },
         getTodoLength() {
             return this.list.length;
+        },
+        listHasItems() {
+            return this.list.length > 0;
+        },
+        getGrayscaleColorFromPriority(priority) {
+            const val = 14 + Math.floor(1.4 * -priority);
+            const color = "#" + (val < 0 ? 0 : val).toString(16).padEnd(2, "0").repeat(3);
+
+            return `color:${color};`;
         }
     }
 });
