@@ -12,57 +12,149 @@ const DOM_PROP_HTML = "innerHTML";
 /**
  * Checks if a value is an array
  *
- * @param {*} val
+ * @since 1.0.0
+ * @param {any} val
  * @returns {boolean}
+ * @example
+ * // returns true
+ * isArray([]);
+ * isArray([1, 2, 3]);
+ *
+ * @example
+ * // returns false
+ * isArray({});
  */
 const isArray = (val) => Array.isArray(val);
 
 /**
- * Checks if the value is typeof the typestring
+ * Checks if the value has a certain typestring
  *
- * @param {*} val
+ * @since 1.0.0
+ * @param {any} val
  * @param {string} type
  * @returns {boolean}
+ * @example
+ * //returns true
+ * isTypeOf({},"object")
+ * isTypeOf([],"object")
+ * isTypeOf("foo","string")
+ *
+ * @example
+ * //returns false
+ * isTypeOf("foo","number")
  */
 const isTypeOf = (val, type) => typeof val === type;
 
 /**
  * Checks if a value is undefined
  *
- * @param {*} val
+ * @since 1.0.0
+ * @param {any} val
  * @returns {boolean}
+ * @example
+ * //returns false
+ * const a = {};
+ *
+ * isUndefined(a.b)
+ * isUndefined(undefined)
+ *
+ * @example
+ * //returns false
+ * const a = {};
+ *
+ * isUndefined(1)
+ * isUndefined(a)
  */
 const isUndefined = (val) => isTypeOf(val, "undefined");
 
 /**
  * Checks if a value is not undefined
  *
- * @param {*} val
+ * @since 1.0.0
+ * @param {any} val
  * @returns {boolean}
+ * @example
+ * //returns true
+ * const a = {};
+ *
+ * isDefined(1)
+ * isDefined(a)
+ *
+ * @example
+ * //returns false
+ * const a = {};
+ *
+ * isDefined(a.b)
+ * isDefined(undefined)
  */
 const isDefined = (val) => !isUndefined(val);
 
 /**
+ * Checks if a target has a certain key
+ *
+ * @since 1.0.0
+ * @param {any} target
+ * @param {string} key
+ * @returns {boolean}
+ * @example
+ * //returns true
+ * hasKey([1,2,3],"0")
+ * hasKey({length:0},"length")
+ * hasKey("foo","replace")
+ *
+ * @example
+ * //returns false
+ * hasKey({},"foo")
+ * hasKey(null,"foo")
+ * hasKey(1,"foo")
+ */
+const hasKey = (target, key) => isDefined(target[key]);
+
+/**
  * Checks if a value is either undefined or null
  *
- * @param {*} val
+ * @since 1.0.0
+ * @param {any} val
  * @returns {boolean}
+ * @example
+ * //returns true
+ * isNil(null)
+ * isNil(undefined)
+ *
+ * @example
+ * //returns false
+ * isNil(0)
+ * isNil({})
  */
 const isNil = (val) => isUndefined(val) || val === null;
 
 /**
  * Checks if a value is not nil and has a typeof object
  *
- * @param {*} val
+ * @since 1.0.0
+ * @param {any} val
  * @returns {boolean}
+ * @example
+ * //returns true
+ * isObjectLike({})
+ * isObjectLike([])
+ *
+ * @example
+ * //returns false
+ * isObjectLike(null)
+ * isObjectLike(1)
  */
 const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
 
 /**
  * Returns an array of the objects entries
  *
+ * @since 1.0.0
  * @param {Object} obj
- * @returns {Entry[]}
+ * @returns {any[]} Array<[key: any, val: any]>]
+ * @example
+ * //returns [["a",1],["b",2],["c",3]]
+ * objEntries({a:1,b:2,c:3})
  */
 const objEntries = (obj) => Object.entries(obj);
 
@@ -70,7 +162,12 @@ const objEntries = (obj) => Object.entries(obj);
  * Iterate over each value of an array
  *
  * @param {any[]} arr
- * @param {ForEachIterator} fn
+ * @param {function} fn fn(val: any, index: number, arr: any[])
+ * @example
+ * //returns a = [0,2,6]
+ * const a = [1,2,3];
+ *
+ * forEach(a,(val,index)=>a[index]=val*index)
  */
 const forEach = (arr, fn) => arr.forEach(fn);
 
@@ -78,7 +175,12 @@ const forEach = (arr, fn) => arr.forEach(fn);
  * Iterate over each entry of an object
  *
  * @param {object} obj
- * @param {ForEachEntryIterator} fn
+ * @param {function} fn fn(val: any, key: any, index: number, arr: any[])
+ * @example
+ * //returns a = {a:0, b: 2}
+ * const a = {a:1, b:2};
+ *
+ * forEachEntry(a,(val,key,index)=>a[key]=val*index)
  */
 const forEachEntry = (obj, fn) => {
     forEach(objEntries(obj), (entry, index) => {
@@ -87,35 +189,50 @@ const forEachEntry = (obj, fn) => {
 };
 
 /**
- * Checks if a target has a certain key
- *
- * @param {any} target
- * @param {string} key
- * @returns {boolean}
- */
-const hasKey = (target, key) => isDefined(target[key]);
-
-/**
  * Checks if a value is a number as a string
  *
- * @param {*} val
+ * @since 1.0.0
+ * @param {string} val
  * @returns {boolean}
+ * @example
+ * //returns true
+ * isStringNumber("123")
+ * isStringNumber("0b010")
+ *
+ * @example
+ * //returns false
+ * isStringNumber("foo")
  */
 const isStringNumber = (val) => !isNaN(Number(val));
 
 /**
  * Creates a new array with the values of the input array
  *
+ * @since 1.0.0
  * @param {any[]} arr
  * @returns {any[]}
+ * @example
+ * //returns a = [1,2,3], b = [1,10,3]
+ * const a = [1,2,3];
+ * const b = arrClone(a);
+ *
+ * b[1] = 10;
  */
 const arrClone = (arr) => Array.from(arr);
 
 /**
  * Recursively flattens an array
  *
+ * @since 1.0.0
  * @param {any[]} arr
  * @returns {any[]}
+ * @example
+ * //returns [1,2,3]
+ * arrFlattenDeep([1,2,[3]])
+ *
+ * @example
+ * //returns [1,2,3,5,6,6]
+ * arrFlattenDeep([1,2,[3,[[[5]]],[6,[6]]])
  */
 const arrFlattenDeep = (arr) => {
     const result = [];
@@ -133,15 +250,27 @@ const arrFlattenDeep = (arr) => {
 /**
  * Creates a new object with the entries of the input object
  *
+ * @since 1.0.0
  * @param {object} obj
  * @returns {object}
+ * @example
+ * //returns a = {a:4, b:2}, b = {a:10, b:2}
+ * const a = {a:4, b:2};
+ * const b = objClone(a);
+ *
+ * b.a = 10;
  */
 const objClone = (obj) => Object.assign({}, obj);
 
 /**
  * Creates a Map from an Object
+ *
+ * @since 1.0.0
  * @param {Object} obj
  * @returns {Map}
+ * @example
+ * //returns Map{a:1, b:4, c:5}
+ * mapFromObject({a:1,b:4,c:5})
  */
 const mapFromObject = (obj) => new Map(objEntries(obj));
 
@@ -326,6 +455,10 @@ const bindEvent = (element, eventType, eventFn) => element.addEventListener(even
 
 const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
 
+const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
+
+const REGEX_FUNCTION_CALL_CONTENT = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
+
 const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
 
 /**
@@ -371,12 +504,11 @@ const getPath$1 = (target, path, getContaining = false) => {
     } : targetCurrent;
 };
 
-const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
-const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
-
 const mapLiterals = mapFromObject({
     "false": false,
-    "true": true
+    "true": true,
+    "null": null,
+    "Infinity": Infinity
 });
 
 /**
@@ -487,7 +619,7 @@ const evalProp = (expression, node, allowUndefined = false) => {
  * @returns {any|null}
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
-    const matched = expression.match(REGEX_CONTENT_METHOD);
+    const matched = expression.match(REGEX_FUNCTION_CALL_CONTENT);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
     const data = getPath$1(root.methods, matched[1], true);

@@ -1,7 +1,8 @@
 import REGEX_IS_STRING_LITERAL from "pseudo-eval/src/lib/regexIsStringLiteral";
+import REGEX_IS_FUNCTION from "pseudo-eval/src/lib/regexIsFunction";
+import REGEX_FUNCTION_CALL_CONTENT from "pseudo-eval/src/lib/regexFunctionCallContent";
 import {
     isDefined,
-    mapFromObject,
     isStringNumber
 } from "lightdash";
 import {
@@ -9,14 +10,7 @@ import {
 } from "./nodes";
 import getPath from "pseudo-eval/src/lib/getPath";
 import getStringLiteral from "pseudo-eval/src/lib/getStringLiteral";
-
-const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
-const REGEX_CONTENT_METHOD = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
-
-const mapLiterals = mapFromObject({
-    "false": false,
-    "true": true
-});
+import mapLiteral from "pseudo-eval/src/lib/mapLiteral";
 
 /**
  * Creates a new missing-prop error
@@ -53,8 +47,8 @@ const evalLiteralFromNode = (expression, node) => {
         result = Number(expression);
     } else if (REGEX_IS_STRING_LITERAL.test(expression)) {
         result = getStringLiteral(expression);
-    } else if (mapLiterals.has(expression)) {
-        result = mapLiterals.get(expression);
+    } else if (mapLiteral.has(expression)) {
+        result = mapLiteral.get(expression);
     } else {
         result = evalProp(expression, node).val;
     }
@@ -126,7 +120,7 @@ const evalProp = (expression, node, allowUndefined = false) => {
  * @returns {any|null}
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
-    const matched = expression.match(REGEX_CONTENT_METHOD);
+    const matched = expression.match(REGEX_FUNCTION_CALL_CONTENT);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
     const data = getPath(root.methods, matched[1], true);
