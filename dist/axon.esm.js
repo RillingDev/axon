@@ -885,7 +885,7 @@ const AxonNode = class {
         this.$children = mapSubNodes($element.children, this);
     }
     /**
-     * Runs directives on the node and all subnodes
+     * Runs directives on the node and all sub-nodes
      *
      * @param {"init"|"render"} type
      * @returns {Array|false}
@@ -901,7 +901,7 @@ const AxonNode = class {
                     }
                 }
 
-                //Ignore non-existant directive types
+                //Ignore non-existent directive types
                 return true;
             });
 

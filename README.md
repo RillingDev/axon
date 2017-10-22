@@ -11,8 +11,8 @@ Instead of using the `v-` namespace for directives, axon uses `x-`.
 
 This framework is **not** supposed or able to be "the next big framework", this is just a hobby project of mine.
 You _will_ encounter bugs and should never use this in production.
-Functionality and Compability is much more limited than in Vue, due to the difference in complexity of the codebase.
-Most of the API is either the same or very simmilar as in Vue, however make sure to read the docs.
+Functionality and compatibility is much more limited than in Vue, due to the difference in complexity of the codebase.
+Most of the API is either the same or very similar as in Vue, however make sure to read the docs.
 
 ### Core Differences to Vue
 
@@ -26,7 +26,7 @@ Disadvantages:
 + No "mustache"(`{{}}`) expressions
 + Less built-in directives
 + No JSX/VDOM
-+ Limited directive expressions (`x-if="foo.bar>=getBar()"` for example doesnt work, only `x-if="isBiggerEqual(foo.bar)` would)
++ Limited directive expressions (`x-if="foo.bar>=getBar()"` for example doesn't work, only `x-if="isBiggerEqual(foo.bar)` would)
 + Much more
 
 ## Usage
@@ -80,8 +80,8 @@ const app = new Axon({
 
 Axon currently has the following directives:
 
-+ `x-if="#expression#"`: if the value evaluates to true, this node and childnodes will render, else they will be ignored and hidden
-+ `x-on:#event#="method()"`: attaches the given method as eventhandler for the given event
++ `x-if="#expression#"`: if the value evaluates to true, this node and child-nodes will render, else they will be ignored and hidden
++ `x-on:#event#="method()"`: attaches the given method as event-handler for the given event
 + `x-model="#property#"`: binds the property to the node and attaches an event to update
 + `x-bind:#attr#="#expression#"`: binds the value of the expression as the given attribute
 + `x-text="#expression#"`: inserts expression content as text
@@ -91,4 +91,4 @@ Axon currently has the following directives:
 ## Changes from v1.x to v2.x
 
 + `x-for="i in array"` is now `x-for="i of array"`
-+ `el` is no longer queried automaticaly (`el: "#app"` ->  `el: document.querySelector("#myApp"`))
++ `el` is no longer queried automatically (`el: "#app"` ->  `el: document.querySelector("#myApp"`))
