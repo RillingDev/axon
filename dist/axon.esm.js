@@ -24,7 +24,7 @@ const DOM_PROP_HTML = "innerHTML";
 const isArray = (val) => Array.isArray(val);
 
 /**
- * Checks if the value has a certain typestring
+ * Checks if the value has a certain type-string
  *
  * @since 1.0.0
  * @param {any} val
@@ -108,7 +108,7 @@ const isDefined = (val) => !isUndefined(val);
 const hasKey = (target, key) => isDefined(target[key]);
 
 /**
- * Checks if a value is either undefined or null
+ * Checks if a value is undefined or null
  *
  * @since 1.0.0
  * @param {any} val
@@ -126,7 +126,7 @@ const hasKey = (target, key) => isDefined(target[key]);
 const isNil = (val) => isUndefined(val) || val === null;
 
 /**
- * Checks if a value is not nil and has a typeof object
+ * Checks if a value is not nil and has a type of object
  *
  * @since 1.0.0
  * @param {any} val
@@ -156,7 +156,7 @@ const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
 const objEntries = (obj) => Object.entries(obj);
 
 /**
- * Iterate over each value of an array
+ * Iterates over each element in an array
  *
  * @param {any[]} arr
  * @param {function} fn fn(val: any, index: number, arr: any[])
@@ -169,7 +169,7 @@ const objEntries = (obj) => Object.entries(obj);
 const forEach = (arr, fn) => arr.forEach(fn);
 
 /**
- * Iterate over each entry of an object
+ * Iterates over each entry of an object
  *
  * @param {object} obj
  * @param {function} fn fn(val: any, key: any, index: number, arr: any[])
@@ -186,7 +186,7 @@ const forEachEntry = (obj, fn) => {
 };
 
 /**
- * Checks if a value is a number as a string
+ * Checks if a value is a string containing a number
  *
  * @since 1.0.0
  * @param {string} val
@@ -203,10 +203,10 @@ const forEachEntry = (obj, fn) => {
 const isStringNumber = (val) => !isNaN(Number(val));
 
 /**
- * Creates a new array with the values of the input array
+ * Creates a new array with the values of the input iterable
  *
  * @since 1.0.0
- * @param {any[]} arr
+ * @param {any} arr
  * @returns {any[]}
  * @example
  * //returns a = [1,2,3], b = [1,10,3]
@@ -260,7 +260,7 @@ const arrFlattenDeep = (arr) => {
 const objClone = (obj) => Object.assign({}, obj);
 
 /**
- * Creates a Map from an Object
+ * Creates a map from an object
  *
  * @since 1.0.0
  * @param {Object} obj
