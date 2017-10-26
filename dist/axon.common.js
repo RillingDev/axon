@@ -11,6 +11,8 @@ const DOM_PROP_HTML = "innerHTML";
 /**
  * Checks if a value is an array
  *
+ * @function isArray
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -23,11 +25,13 @@ const DOM_PROP_HTML = "innerHTML";
  * // returns false
  * isArray({});
  */
-const isArray = (val) => Array.isArray(val);
+const isArray = Array.isArray;
 
 /**
  * Checks if the value has a certain type-string
  *
+ * @function isTypeOf
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @param {string} type
@@ -47,6 +51,8 @@ const isTypeOf = (val, type) => typeof val === type;
 /**
  * Checks if a value is undefined
  *
+ * @function isUndefined
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -69,6 +75,8 @@ const isUndefined = (val) => isTypeOf(val, "undefined");
 /**
  * Checks if a value is not undefined
  *
+ * @function isDefined
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -91,6 +99,8 @@ const isDefined = (val) => !isUndefined(val);
 /**
  * Checks if a target has a certain key
  *
+ * @function hasKey
+ * @memberof Has
  * @since 1.0.0
  * @param {any} target
  * @param {string} key
@@ -112,6 +122,8 @@ const hasKey = (target, key) => isDefined(target[key]);
 /**
  * Checks if a value is undefined or null
  *
+ * @function isNil
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -130,6 +142,8 @@ const isNil = (val) => isUndefined(val) || val === null;
 /**
  * Checks if a value is not nil and has a type of object
  *
+ * @function isObjectLike
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -148,6 +162,8 @@ const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
 /**
  * Returns an array of the objects entries
  *
+ * @function objEntries
+ * @memberof Object
  * @since 1.0.0
  * @param {Object} obj
  * @returns {any[]} Array<[key: any, val: any]>]
@@ -155,11 +171,13 @@ const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
  * //returns [["a",1],["b",2],["c",3]]
  * objEntries({a:1,b:2,c:3})
  */
-const objEntries = (obj) => Object.entries(obj);
+const objEntries = Object.entries;
 
 /**
  * Iterates over each element in an array
  *
+ * @function forEach
+ * @memberof For
  * @param {any[]} arr
  * @param {function} fn fn(val: any, index: number, arr: any[])
  * @example
@@ -173,6 +191,8 @@ const forEach = (arr, fn) => arr.forEach(fn);
 /**
  * Iterates over each entry of an object
  *
+ * @function forEachEntry
+ * @memberof For
  * @param {object} obj
  * @param {function} fn fn(val: any, key: any, index: number, arr: any[])
  * @example
@@ -190,6 +210,8 @@ const forEachEntry = (obj, fn) => {
 /**
  * Checks if a value is a string containing a number
  *
+ * @function isStringNumber
+ * @memberof Is
  * @since 1.0.0
  * @param {string} val
  * @returns {boolean}
@@ -207,6 +229,8 @@ const isStringNumber = (val) => !isNaN(Number(val));
 /**
  * Creates a new array with the values of the input iterable
  *
+ * @function arrClone
+ * @memberof Array
  * @since 1.0.0
  * @param {any} arr
  * @returns {any[]}
@@ -217,11 +241,13 @@ const isStringNumber = (val) => !isNaN(Number(val));
  *
  * b[1] = 10;
  */
-const arrClone = (arr) => Array.from(arr);
+const arrClone = Array.from;
 
 /**
  * Recursively flattens an array
  *
+ * @function arrFlattenDeep
+ * @memberof Array
  * @since 1.0.0
  * @param {any[]} arr
  * @returns {any[]}
@@ -249,6 +275,8 @@ const arrFlattenDeep = (arr) => {
 /**
  * Creates a new object with the entries of the input object
  *
+ * @function objClone
+ * @memberof Object
  * @since 1.0.0
  * @param {object} obj
  * @returns {object}
@@ -264,6 +292,8 @@ const objClone = (obj) => Object.assign({}, obj);
 /**
  * Creates a map from an object
  *
+ * @function mapFromObject
+ * @memberof Map
  * @since 1.0.0
  * @param {Object} obj
  * @returns {Map}

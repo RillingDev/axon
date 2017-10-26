@@ -12,6 +12,8 @@ const DOM_PROP_HTML = "innerHTML";
 /**
  * Checks if a value is an array
  *
+ * @function isArray
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -24,11 +26,13 @@ const DOM_PROP_HTML = "innerHTML";
  * // returns false
  * isArray({});
  */
-const isArray = (val) => Array.isArray(val);
+const isArray = Array.isArray;
 
 /**
  * Checks if the value has a certain type-string
  *
+ * @function isTypeOf
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @param {string} type
@@ -48,6 +52,8 @@ const isTypeOf = (val, type) => typeof val === type;
 /**
  * Checks if a value is undefined
  *
+ * @function isUndefined
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -65,11 +71,13 @@ const isTypeOf = (val, type) => typeof val === type;
  * isUndefined(1)
  * isUndefined(a)
  */
-const isUndefined = (val) => isTypeOf(val, "undefined");
+const isUndefined = val => isTypeOf(val, "undefined");
 
 /**
  * Checks if a value is not undefined
  *
+ * @function isDefined
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -87,11 +95,13 @@ const isUndefined = (val) => isTypeOf(val, "undefined");
  * isDefined(a.b)
  * isDefined(undefined)
  */
-const isDefined = (val) => !isUndefined(val);
+const isDefined = val => !isUndefined(val);
 
 /**
  * Checks if a target has a certain key
  *
+ * @function hasKey
+ * @memberof Has
  * @since 1.0.0
  * @param {any} target
  * @param {string} key
@@ -113,6 +123,8 @@ const hasKey = (target, key) => isDefined(target[key]);
 /**
  * Checks if a value is undefined or null
  *
+ * @function isNil
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -126,11 +138,13 @@ const hasKey = (target, key) => isDefined(target[key]);
  * isNil(0)
  * isNil({})
  */
-const isNil = (val) => isUndefined(val) || val === null;
+const isNil = val => isUndefined(val) || val === null;
 
 /**
  * Checks if a value is not nil and has a type of object
  *
+ * @function isObjectLike
+ * @memberof Is
  * @since 1.0.0
  * @param {any} val
  * @returns {boolean}
@@ -144,11 +158,13 @@ const isNil = (val) => isUndefined(val) || val === null;
  * isObjectLike(null)
  * isObjectLike(1)
  */
-const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
+const isObjectLike = val => !isNil(val) && isTypeOf(val, "object");
 
 /**
  * Returns an array of the objects entries
  *
+ * @function objEntries
+ * @memberof Object
  * @since 1.0.0
  * @param {Object} obj
  * @returns {any[]} Array<[key: any, val: any]>]
@@ -156,11 +172,13 @@ const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
  * //returns [["a",1],["b",2],["c",3]]
  * objEntries({a:1,b:2,c:3})
  */
-const objEntries = (obj) => Object.entries(obj);
+const objEntries = Object.entries;
 
 /**
  * Iterates over each element in an array
  *
+ * @function forEach
+ * @memberof For
  * @param {any[]} arr
  * @param {function} fn fn(val: any, index: number, arr: any[])
  * @example
@@ -174,6 +192,8 @@ const forEach = (arr, fn) => arr.forEach(fn);
 /**
  * Iterates over each entry of an object
  *
+ * @function forEachEntry
+ * @memberof For
  * @param {object} obj
  * @param {function} fn fn(val: any, key: any, index: number, arr: any[])
  * @example
@@ -183,14 +203,16 @@ const forEach = (arr, fn) => arr.forEach(fn);
  * forEachEntry(a,(val,key,index)=>a[key]=val*index)
  */
 const forEachEntry = (obj, fn) => {
-    forEach(objEntries(obj), (entry, index) => {
-        fn(entry[1], entry[0], index, obj);
-    });
+  forEach(objEntries(obj), (entry, index) => {
+    fn(entry[1], entry[0], index, obj);
+  });
 };
 
 /**
  * Checks if a value is a string containing a number
  *
+ * @function isStringNumber
+ * @memberof Is
  * @since 1.0.0
  * @param {string} val
  * @returns {boolean}
@@ -203,11 +225,13 @@ const forEachEntry = (obj, fn) => {
  * //returns false
  * isStringNumber("foo")
  */
-const isStringNumber = (val) => !isNaN(Number(val));
+const isStringNumber = val => !isNaN(Number(val));
 
 /**
  * Creates a new array with the values of the input iterable
  *
+ * @function arrClone
+ * @memberof Array
  * @since 1.0.0
  * @param {any} arr
  * @returns {any[]}
@@ -218,11 +242,13 @@ const isStringNumber = (val) => !isNaN(Number(val));
  *
  * b[1] = 10;
  */
-const arrClone = (arr) => Array.from(arr);
+const arrClone = Array.from;
 
 /**
  * Recursively flattens an array
  *
+ * @function arrFlattenDeep
+ * @memberof Array
  * @since 1.0.0
  * @param {any[]} arr
  * @returns {any[]}
@@ -234,22 +260,23 @@ const arrClone = (arr) => Array.from(arr);
  * //returns [1,2,3,5,6,6]
  * arrFlattenDeep([1,2,[3,[[[5]]],[6,[6]]])
  */
-const arrFlattenDeep = (arr) => {
-    const result = [];
-    forEach(arr, (val) => {
-        if (isArray(val)) {
-            result.push(...arrFlattenDeep(val));
-        }
-        else {
-            result.push(val);
-        }
-    });
-    return result;
+const arrFlattenDeep = arr => {
+  const result = [];
+  forEach(arr, val => {
+    if (isArray(val)) {
+      result.push(...arrFlattenDeep(val));
+    } else {
+      result.push(val);
+    }
+  });
+  return result;
 };
 
 /**
  * Creates a new object with the entries of the input object
  *
+ * @function objClone
+ * @memberof Object
  * @since 1.0.0
  * @param {object} obj
  * @returns {object}
@@ -260,11 +287,13 @@ const arrFlattenDeep = (arr) => {
  *
  * b.a = 10;
  */
-const objClone = (obj) => Object.assign({}, obj);
+const objClone = obj => Object.assign({}, obj);
 
 /**
  * Creates a map from an object
  *
+ * @function mapFromObject
+ * @memberof Map
  * @since 1.0.0
  * @param {Object} obj
  * @returns {Map}
@@ -272,7 +301,7 @@ const objClone = (obj) => Object.assign({}, obj);
  * //returns Map{a:1, b:4, c:5}
  * mapFromObject({a:1,b:4,c:5})
  */
-const mapFromObject = (obj) => new Map(objEntries(obj));
+const mapFromObject = obj => new Map(objEntries(obj));
 
 /**
  * Sets a value as directive
@@ -338,18 +367,18 @@ const hasDirectives = element => getDirectives(element).length > 0;
  * @returns {Array<Object>}
  */
 const parseDirectives = element => {
-    return getDirectives(element).map(attr => {
-        /**
-         * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
-         */
-        const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
+  return getDirectives(element).map(attr => {
+    /**
+     * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
+     */
+    const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
 
-        return {
-            name: nameFull[0],
-            opt: nameFull[1] || false,
-            content: attr.value,
-        };
-    });
+    return {
+      name: nameFull[0],
+      opt: nameFull[1] || false,
+      content: attr.value
+    };
+  });
 };
 
 /**
@@ -377,20 +406,18 @@ const getNodeRoot = node => {
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = (children, node) => arrFlattenDeep(arrClone(children)
-    .map(child => {
-        if (hasDirectives(child)) {
-            //-> Recurse
-            return new AxonNode(child, node);
-        } else if (child.children.length > 0) {
-            //-> Enter Children
-            return mapSubNodes(child.children, node);
-        } else {
-            //-> Exit dead-end
-            return null;
-        }
-    })
-    .filter(val => val !== null));
+const mapSubNodes = (children, node) => arrFlattenDeep(arrClone(children).map(child => {
+    if (hasDirectives(child)) {
+        //-> Recurse
+        return new AxonNode(child, node);
+    } else if (child.children.length > 0) {
+        //-> Enter Children
+        return mapSubNodes(child.children, node);
+    } else {
+        //-> Exit dead-end
+        return null;
+    }
+}).filter(val => val !== null));
 
 /**
  * Creates a Proxy object with the node render method bound
@@ -527,9 +554,7 @@ const missingPropErrorTextFactory = propName => `missing prop/method '${propName
  * @param {Object} methodProp
  * @returns {any}
  */
-const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(
-    methodProp.node.data, [...methodProp.args, ...additionalArgs]
-);
+const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(methodProp.node.data, [...methodProp.args, ...additionalArgs]);
 
 /**
  * Parses Literal String
@@ -842,7 +867,7 @@ const directives = mapFromObject({
         render: directiveIfBoth
     },
     on: {
-        init: directiveOnInit,
+        init: directiveOnInit
     },
     model: {
         init: directiveModelInit,
@@ -894,19 +919,18 @@ const AxonNode = class {
      * @returns {Array|false}
      */
     run(type) {
-        const directiveResults = this.directives
-            .map(directive => {
-                if (directives.has(directive.name)) {
-                    const mapDirectivesEntry = directives.get(directive.name);
+        const directiveResults = this.directives.map(directive => {
+            if (directives.has(directive.name)) {
+                const mapDirectivesEntry = directives.get(directive.name);
 
-                    if (mapDirectivesEntry[type]) {
-                        return mapDirectivesEntry[type](directive, this);
-                    }
+                if (mapDirectivesEntry[type]) {
+                    return mapDirectivesEntry[type](directive, this);
                 }
+            }
 
-                //Ignore non-existent directive types
-                return true;
-            });
+            //Ignore non-existent directive types
+            return true;
+        });
 
         //Recurse if all directives return true
         if (directiveResults.every(directiveResult => directiveResult === true)) {
@@ -935,20 +959,20 @@ const AxonNode = class {
  * @class
  */
 const AxonNodeRoot = class extends AxonNode {
-    /**
-     * Axon Root Constructor
-     *
-     * @constructor
-     * @param {Object} cfg Config data for the Axon instance
-     */
-    constructor(cfg = {}) {
-        super(cfg.el, null, cfg.data);
+  /**
+   * Axon Root Constructor
+   *
+   * @constructor
+   * @param {Object} cfg Config data for the Axon instance
+   */
+  constructor(cfg = {}) {
+    super(cfg.el, null, cfg.data);
 
-        this.methods = cfg.methods || {};
+    this.methods = cfg.methods || {};
 
-        this.init();
-        this.render();
-    }
+    this.init();
+    this.render();
+  }
 };
 
 return AxonNodeRoot;
