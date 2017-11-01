@@ -204,6 +204,7 @@ const forEach = (arr, fn) => arr.forEach(fn);
  */
 const forEachEntry = (obj, fn) => {
   forEach(objEntries(obj), (entry, index) => {
+    // @ts-ignore
     fn(entry[1], entry[0], index, obj);
   });
 };
@@ -533,9 +534,7 @@ const getPath$1 = (target, path, getContaining = false) => {
 
 const mapLiterals = mapFromObject({
     "false": false,
-    "true": true,
-    "null": null,
-    "Infinity": Infinity
+    "true": true
 });
 
 /**
