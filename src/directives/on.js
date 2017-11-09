@@ -1,12 +1,12 @@
 import {
     bindEvent
-} from "../../dom/event";
+} from "../dom/event";
 import {
     applyMethodContext
-} from "../../controller/retrieve";
+} from "../vdom/controller";
 import {
     evalMethod
-} from "../../controller/retrieve";
+} from "../vdom/controller";
 
 /**
  * v-on init directive

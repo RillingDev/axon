@@ -1,9 +1,9 @@
 import {
     evalDirective
-} from "../../controller/retrieve";
+} from "../vdom/controller";
 import {
     DOM_PROP_TEXT
-} from "../../constants";
+} from "../constants";
 
 /**
  * v-text render directive

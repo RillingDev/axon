@@ -1,6 +1,6 @@
 import {
     evalDirective
-} from "../../controller/retrieve";
+} from "../vdom/controller";
 
 /**
  * v-bind render directive

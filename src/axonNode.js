@@ -3,10 +3,10 @@ import {
 } from "./dom/directive";
 import {
     mapSubNodes
-} from "./controller/nodes";
+} from "./vdom/nodes";
 import {
     bindDeepDataProxy
-} from "./controller/proxy";
+} from "./vdom/proxy";
 import mapDirectives from "./directives/index";
 
 /**

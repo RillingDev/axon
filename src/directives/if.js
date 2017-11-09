@@ -1,9 +1,9 @@
 import {
     evalDirective
-} from "../../controller/retrieve";
+} from "../vdom/controller";
 import {
     setElementActive
-} from "../../dom/element";
+} from "../dom/element";
 
 /**
  * v-if directive

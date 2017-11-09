@@ -1,9 +1,9 @@
 import {
     evalDirective
-} from "../../controller/retrieve";
+} from "../vdom/controller";
 import {
     DOM_PROP_HTML
-} from "../../constants";
+} from "../constants";
 
 /**
  * v-html render directive

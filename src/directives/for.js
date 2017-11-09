@@ -1,12 +1,12 @@
-import AxonNode from "../../axonNode";
+import AxonNode from "../axonNode";
 import {
     evalProp
-} from "../../controller/retrieve";
+} from "../vdom/controller";
 import {
     hasDirective,
     removeDirective,
     setDirective
-} from "../../dom/directive";
+} from "../dom/directive";
 import {
     forEach,
     arrClone,
@@ -14,7 +14,7 @@ import {
 } from "lightdash";
 import {
     setElementActive
-} from "../../dom/element";
+} from "../dom/element";
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";

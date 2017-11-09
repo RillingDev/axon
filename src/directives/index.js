@@ -4,26 +4,26 @@ import {
 import {
     directiveModelInit,
     directiveModelRender
-} from "./modules/directiveModel";
+} from "./model";
 import {
     directiveBindRender
-} from "./modules/directiveBind";
+} from "./bind";
 import {
     directiveForInit,
     directiveForRender
-} from "./modules/directiveFor";
+} from "./for";
 import {
     directiveTextRender
-} from "./modules/directiveText";
+} from "./text";
 import {
     directiveHTMLRender
-} from "./modules/directiveHtml";
+} from "./html";
 import {
     directiveIfBoth
-} from "./modules/directiveIf";
+} from "./if";
 import {
     directiveOnInit
-} from "./modules/directiveOn";
+} from "./on";
 
 const directives = mapFromObject({
     if: {

@@ -1,12 +1,12 @@
 import {
     bindEvent
-} from "../../dom/event";
+} from "../dom/event";
 import {
     evalProp
-} from "../../controller/retrieve";
+} from "../vdom/controller";
 import {
     getElementContentProp
-} from "../../dom/element";
+} from "../dom/element";
 
 const DOM_EVENT_MODEL = "input";
 
