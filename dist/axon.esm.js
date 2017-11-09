@@ -9,6 +9,8 @@ const DOM_PROP_HTML = "innerHTML";
 /**
  * Checks if a value is an array
  *
+ * Array.isArray shorthand
+ *
  * @function isArray
  * @memberof Is
  * @since 1.0.0
@@ -160,6 +162,8 @@ const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
 /**
  * Returns an array of the objects entries
  *
+ * Object.entries shorthand
+ *
  * @function objEntries
  * @memberof Object
  * @since 1.0.0
@@ -201,7 +205,6 @@ const forEach = (arr, fn) => arr.forEach(fn);
  */
 const forEachEntry = (obj, fn) => {
     forEach(objEntries(obj), (entry, index) => {
-        // @ts-ignore
         fn(entry[1], entry[0], index, obj);
     });
 };
@@ -227,6 +230,8 @@ const isStringNumber = (val) => !isNaN(Number(val));
 
 /**
  * Creates a new array with the values of the input iterable
+ *
+ * Array.from shorthand
  *
  * @function arrClone
  * @memberof Array
@@ -286,7 +291,7 @@ const arrFlattenDeep = (arr) => {
  *
  * b.a = 10;
  */
-const objClone = (obj) => Object.assign({}, obj);
+const objClone = (obj) => isArray(obj) ? arrClone(obj) : Object.assign({}, obj);
 
 /**
  * Creates a map from an object
@@ -485,7 +490,10 @@ const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
 
 const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
 
-const REGEX_FUNCTION_CALL_CONTENT = /([\w.]+)\s*\(((?:[^()]*)*)?\s*\)/;
+/**
+ * Does not work with nested function calls
+ */
+const REGEX_FUNCTION_CALL_CONTENT = /(.+)\s?\((.*)\)/;
 
 const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
 
@@ -506,7 +514,9 @@ const getStringLiteral = str => str.substr(1, str.length - 2);
  * @returns {boolean}
  */
 const getPath$1 = (target, path, getContaining = false) => {
-    const pathArr = path.split(REGEX_PATH_SPLIT).map(item => REGEX_IS_STRING_LITERAL.test(item) ? getStringLiteral(item) : item);
+    const pathArr = path
+        .split(REGEX_PATH_SPLIT)
+        .map(item => REGEX_IS_STRING_LITERAL.test(item) ? getStringLiteral(item) : item);
     let targetCurrent = target;
     let targetLast = null;
     let keyCurrent = null;

@@ -1,6 +1,6 @@
-import REGEX_IS_STRING_LITERAL from "pseudo-eval/src/lib/regexIsStringLiteral";
-import REGEX_IS_FUNCTION from "pseudo-eval/src/lib/regexIsFunction";
-import REGEX_FUNCTION_CALL_CONTENT from "pseudo-eval/src/lib/regexFunctionCallContent";
+import REGEX_IS_STRING_LITERAL from "pseudo-eval/src/lib/regex/regexIsStringLiteral";
+import REGEX_IS_FUNCTION from "pseudo-eval/src/lib/regex/regexIsFunction";
+import REGEX_FUNCTION_CALL_CONTENT from "pseudo-eval/src/lib/regex/regexFunctionCallContent";
 import {
     isDefined,
     isStringNumber
@@ -8,9 +8,9 @@ import {
 import {
     getNodeRoot,
 } from "./nodes";
-import getPath from "pseudo-eval/src/lib/getPath";
-import getStringLiteral from "pseudo-eval/src/lib/getStringLiteral";
-import mapLiteral from "pseudo-eval/src/lib/mapLiteral";
+import getPath from "pseudo-eval/src/lib/get/getPath";
+import getStringLiteral from "pseudo-eval/src/lib/get/getStringLiteral";
+import mapLiteral from "pseudo-eval/src/lib/map/mapLiteral";
 
 /**
  * Creates a new missing-prop error
