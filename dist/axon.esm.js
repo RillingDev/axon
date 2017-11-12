@@ -9,7 +9,7 @@ const DOM_PROP_HTML = "innerHTML";
 /**
  * Checks if a value is an array
  *
- * Array.isArray shorthand
+ * `Array.isArray` shorthand
  *
  * @function isArray
  * @memberof Is
@@ -142,6 +142,9 @@ const isNil = (val) => isUndefined(val) || val === null;
 /**
  * Checks if a value is not nil and has a type of object
  *
+ * The main difference to isObject is that functions are not considered object-like,
+ * because `typeof function(){}` does not return "function"
+ *
  * @function isObjectLike
  * @memberof Is
  * @since 1.0.0
@@ -154,15 +157,15 @@ const isNil = (val) => isUndefined(val) || val === null;
  *
  * @example
  * //returns false
- * isObjectLike(null)
  * isObjectLike(1)
+ * isObjectLike(()=>1))
  */
 const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
 
 /**
  * Returns an array of the objects entries
  *
- * Object.entries shorthand
+ * `Object.entries` shorthand
  *
  * @function objEntries
  * @memberof Object
@@ -231,7 +234,7 @@ const isStringNumber = (val) => !isNaN(Number(val));
 /**
  * Creates a new array with the values of the input iterable
  *
- * Array.from shorthand
+ * `Array.from` shorthand
  *
  * @function arrClone
  * @memberof Array
