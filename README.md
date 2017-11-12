@@ -23,9 +23,9 @@ Advantages:
 
 Disadvantages:
 
-+ No "mustache"(`{{}}`) expressions
++ No mustache (`{{}}`) expressions
 + Less built-in directives
-+ No JSX/VDOM
++ No component support
 + Limited directive expressions (`x-if="foo.bar>=getBar()"` for example doesn't work, only `x-if="isBiggerEqual(foo.bar)` would)
 + Much more
 
