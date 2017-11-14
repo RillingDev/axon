@@ -1,6 +1,6 @@
 import AxonNode from "../axonNode";
 import {
-    arrClone,
+    arrFrom,
     arrFlattenDeep
 } from "lightdash";
 import {
@@ -32,7 +32,7 @@ const getNodeRoot = node => {
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = (children, node) => arrFlattenDeep(arrClone(children)
+const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
     .map(child => {
         if (hasDirectives(child)) {
             //-> Recurse

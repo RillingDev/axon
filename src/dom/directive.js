@@ -3,7 +3,7 @@ import {
     DOM_ATTR_DELIMITER
 } from "../constants";
 import {
-    arrClone,
+    arrFrom,
 } from "lightdash";
 
 /**
@@ -61,7 +61,7 @@ const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
  * @param {Element} element
  * @returns {Array<Directive>}
  */
-const getDirectives = element => arrClone(element.attributes).filter(isDirective);
+const getDirectives = element => arrFrom(element.attributes).filter(isDirective);
 
 /**
  * Checks if the element has any directives

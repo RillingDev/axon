@@ -47,14 +47,14 @@
         "babel-preset-env": "^1.6.1",
         "eslint": "^4.11.0",
         "npm-run-all": "^4.1.2",
-        "rollup": "^0.50.1",
+        "rollup": "^0.51.5",
         "rollup-plugin-babel": "^3.0.2",
         "rollup-plugin-node-resolve": "^3.0.0",
         "rollup-plugin-uglify-es": "0.0.1",
         "uglify-es": "^3.1.9"
     },
     "dependencies": {
-        "lightdash": "^2.9.0",
-        "pseudo-eval": "^5.4.5"
+        "lightdash": "^3.0.1",
+        "pseudo-eval": "^5.4.6"
     }
 }

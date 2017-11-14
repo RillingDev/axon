@@ -3,7 +3,6 @@ import REGEX_IS_FUNCTION from "pseudo-eval/src/lib/regex/regexIsFunction";
 import REGEX_FUNCTION_CALL_CONTENT from "pseudo-eval/src/lib/regex/regexFunctionCallContent";
 import {
     isDefined,
-    isStringNumber
 } from "lightdash";
 import {
     getNodeRoot,
@@ -43,7 +42,7 @@ const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.a
 const evalLiteralFromNode = (expression, node) => {
     let result = null;
 
-    if (isStringNumber(expression)) {
+    if (!isNaN(Number(expression))) {
         result = Number(expression);
     } else if (REGEX_IS_STRING_LITERAL.test(expression)) {
         result = getStringLiteral(expression);

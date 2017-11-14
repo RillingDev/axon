@@ -9,8 +9,8 @@ import {
 } from "../dom/directive";
 import {
     forEach,
-    arrClone,
-    objClone,
+    arrFrom,
+    objFrom,
 } from "lightdash";
 import {
     setElementActive
@@ -52,7 +52,7 @@ const directiveForRender = function (directive, node) {
     node.$children = [];
 
     //Delete old nodes
-    forEach(arrClone(element.parentElement.children), child => {
+    forEach(arrFrom(element.parentElement.children), child => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }
@@ -60,7 +60,7 @@ const directiveForRender = function (directive, node) {
 
     for (let i of iterable) {
         const nodeElement = element.cloneNode(true);
-        const nodeData = objClone(node.data);
+        const nodeData = objFrom(node.data);
         let elementInserted;
         let nodeNew;
 

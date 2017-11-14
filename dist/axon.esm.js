@@ -7,27 +7,6 @@ const DOM_PROP_TEXT = "textContent";
 const DOM_PROP_HTML = "innerHTML";
 
 /**
- * Checks if a value is an array
- *
- * `Array.isArray` shorthand
- *
- * @function isArray
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * // returns true
- * isArray([]);
- * isArray([1, 2, 3]);
- *
- * @example
- * // returns false
- * isArray({});
- */
-const isArray = Array.isArray;
-
-/**
  * Checks if the value has a certain type-string
  *
  * @function isTypeOf
@@ -47,6 +26,27 @@ const isArray = Array.isArray;
  * isTypeOf("foo","number")
  */
 const isTypeOf = (val, type) => typeof val === type;
+
+/**
+ * Checks if a value is an array
+ *
+ * `Array.isArray` shorthand
+ *
+ * @function isArray
+ * @memberof Is
+ * @since 1.0.0
+ * @param {any} val
+ * @returns {boolean}
+ * @example
+ * // returns true
+ * isArray([]);
+ * isArray([1, 2, 3]);
+ *
+ * @example
+ * // returns false
+ * isArray({});
+ */
+const isArray = Array.isArray;
 
 /**
  * Checks if a value is undefined
@@ -73,53 +73,6 @@ const isTypeOf = (val, type) => typeof val === type;
 const isUndefined = (val) => isTypeOf(val, "undefined");
 
 /**
- * Checks if a value is not undefined
- *
- * @function isDefined
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * //returns true
- * const a = {};
- *
- * isDefined(1)
- * isDefined(a)
- *
- * @example
- * //returns false
- * const a = {};
- *
- * isDefined(a.b)
- * isDefined(undefined)
- */
-const isDefined = (val) => !isUndefined(val);
-
-/**
- * Checks if a target has a certain key
- *
- * @function hasKey
- * @memberof Has
- * @since 1.0.0
- * @param {any} target
- * @param {string} key
- * @returns {boolean}
- * @example
- * //returns true
- * hasKey([1,2,3],"0")
- * hasKey({length:0},"length")
- * hasKey("foo","replace")
- *
- * @example
- * //returns false
- * hasKey({},"foo")
- * hasKey(null,"foo")
- * hasKey(1,"foo")
- */
-const hasKey = (target, key) => isDefined(target[key]);
-
-/**
  * Checks if a value is undefined or null
  *
  * @function isNil
@@ -138,6 +91,48 @@ const hasKey = (target, key) => isDefined(target[key]);
  * isNil({})
  */
 const isNil = (val) => isUndefined(val) || val === null;
+
+/**
+ * Checks if a value is an object
+ *
+ * @function isObject
+ * @memberof Is
+ * @since 1.0.0
+ * @param {any} val
+ * @returns {boolean}
+ * @example
+ * //returns true
+ * isObject({})
+ * isObject([])
+ * isObject(()=>1))
+ *
+ * @example
+ * //returns false
+ * isObject(1)
+ */
+const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
+
+/**
+ * Checks if a target has a certain key
+ *
+ * @function hasKey
+ * @memberof Has
+ * @since 1.0.0
+ * @param {any} target
+ * @param {string} key
+ * @returns {boolean}
+ * @example
+ * //returns true
+ * hasKey([1,2,3],"0")
+ * hasKey({length:0},"length")
+ *
+ * @example
+ * //returns false
+ * hasKey({},"foo")
+ * hasKey(null,"foo")
+ * hasKey("foo","replace")
+ */
+const hasKey = (target, key) => isObject(target) && key in target;
 
 /**
  * Checks if a value is not nil and has a type of object
@@ -161,6 +156,30 @@ const isNil = (val) => isUndefined(val) || val === null;
  * isObjectLike(()=>1))
  */
 const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
+
+/**
+ * Checks if a value is not undefined
+ *
+ * @function isDefined
+ * @memberof Is
+ * @since 1.0.0
+ * @param {any} val
+ * @returns {boolean}
+ * @example
+ * //returns true
+ * const a = {};
+ *
+ * isDefined(1)
+ * isDefined(a)
+ *
+ * @example
+ * //returns false
+ * const a = {};
+ *
+ * isDefined(a.b)
+ * isDefined(undefined)
+ */
+const isDefined = (val) => !isUndefined(val);
 
 /**
  * Returns an array of the objects entries
@@ -213,44 +232,6 @@ const forEachEntry = (obj, fn) => {
 };
 
 /**
- * Checks if a value is a string containing a number
- *
- * @function isStringNumber
- * @memberof Is
- * @since 1.0.0
- * @param {string} val
- * @returns {boolean}
- * @example
- * //returns true
- * isStringNumber("123")
- * isStringNumber("0b010")
- *
- * @example
- * //returns false
- * isStringNumber("foo")
- */
-const isStringNumber = (val) => !isNaN(Number(val));
-
-/**
- * Creates a new array with the values of the input iterable
- *
- * `Array.from` shorthand
- *
- * @function arrClone
- * @memberof Array
- * @since 1.0.0
- * @param {any} arr
- * @returns {any[]}
- * @example
- * //returns a = [1,2,3], b = [1,10,3]
- * const a = [1,2,3];
- * const b = arrClone(a);
- *
- * b[1] = 10;
- */
-const arrClone = Array.from;
-
-/**
  * Recursively flattens an array
  *
  * @function arrFlattenDeep
@@ -280,9 +261,28 @@ const arrFlattenDeep = (arr) => {
 };
 
 /**
+ * Creates a new array with the values of the input iterable
+ *
+ * `Array.from` shorthand
+ *
+ * @function arrFrom
+ * @memberof Array
+ * @since 1.0.0
+ * @param {any} arr
+ * @returns {any[]}
+ * @example
+ * //returns a = [1,2,3], b = [1,10,3]
+ * const a = [1,2,3];
+ * const b = arrFrom(a);
+ *
+ * b[1] = 10;
+ */
+const arrFrom = Array.from;
+
+/**
  * Creates a new object with the entries of the input object
  *
- * @function objClone
+ * @function objFrom
  * @memberof Object
  * @since 1.0.0
  * @param {object} obj
@@ -290,11 +290,11 @@ const arrFlattenDeep = (arr) => {
  * @example
  * //returns a = {a:4, b:2}, b = {a:10, b:2}
  * const a = {a:4, b:2};
- * const b = objClone(a);
+ * const b = objFrom(a);
  *
  * b.a = 10;
  */
-const objClone = (obj) => isArray(obj) ? arrClone(obj) : Object.assign({}, obj);
+const objFrom = (obj) => isArray(obj) ? arrFrom(obj) : Object.assign({}, obj);
 
 /**
  * Creates a map from an object
@@ -355,7 +355,7 @@ const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
  * @param {Element} element
  * @returns {Array<Directive>}
  */
-const getDirectives = element => arrClone(element.attributes).filter(isDirective);
+const getDirectives = element => arrFrom(element.attributes).filter(isDirective);
 
 /**
  * Checks if the element has any directives
@@ -413,7 +413,7 @@ const getNodeRoot = node => {
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = (children, node) => arrFlattenDeep(arrClone(children)
+const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
     .map(child => {
         if (hasDirectives(child)) {
             //-> Recurse
@@ -450,7 +450,7 @@ const dataProxyFactory = node => {
 };
 
 /**
- * Recursively iterates over an object and attaches proxy on on all obvject-like props
+ * Recursively iterates over an object and attaches proxy on on all object-like props
  *
  * @private
  * @param {Object} obj
@@ -581,7 +581,7 @@ const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.a
 const evalLiteralFromNode = (expression, node) => {
     let result = null;
 
-    if (isStringNumber(expression)) {
+    if (!isNaN(Number(expression))) {
         result = Number(expression);
     } else if (REGEX_IS_STRING_LITERAL.test(expression)) {
         result = getStringLiteral(expression);
@@ -791,7 +791,7 @@ const directiveForRender = function (directive, node) {
     node.$children = [];
 
     //Delete old nodes
-    forEach(arrClone(element.parentElement.children), child => {
+    forEach(arrFrom(element.parentElement.children), child => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }
@@ -799,7 +799,7 @@ const directiveForRender = function (directive, node) {
 
     for (let i of iterable) {
         const nodeElement = element.cloneNode(true);
-        const nodeData = objClone(node.data);
+        const nodeData = objFrom(node.data);
         let elementInserted;
         let nodeNew;
 

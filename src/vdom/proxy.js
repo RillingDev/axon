@@ -25,7 +25,7 @@ const dataProxyFactory = node => {
 };
 
 /**
- * Recursively iterates over an object and attaches proxy on on all obvject-like props
+ * Recursively iterates over an object and attaches proxy on on all object-like props
  *
  * @private
  * @param {Object} obj
