@@ -1,5 +1,5 @@
 import {
-    isObjectLike,
+    isObject,
     forEachEntry,
 } from "lightdash";
 
@@ -36,7 +36,7 @@ const mapProxy = (obj, proxyObj) => {
     const result = obj;
 
     forEachEntry(result, (val, key) => {
-        if (isObjectLike(val)) {
+        if (isObject(val)) {
             result[key] = mapProxy(val, proxyObj);
         }
     });

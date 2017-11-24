@@ -79,10 +79,10 @@ const hasDirectives = element => getDirectives(element).length > 0;
  * @param {Element} element
  * @returns {Array<Object>}
  */
-const parseDirectives = element => {
-    return getDirectives(element).map(attr => {
+const parseDirectives = element => getDirectives(element)
+    .map(attr => {
         /**
-         * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
+         * 'x-bind:hidden="foo"' => nameFull = ["bind", "hidden"], val = "foo"
          */
         const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
 
@@ -92,7 +92,6 @@ const parseDirectives = element => {
             content: attr.value,
         };
     });
-};
 
 export {
     setDirective,

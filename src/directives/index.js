@@ -26,27 +26,27 @@ import {
 } from "./on";
 
 const directives = mapFromObject({
-    if: {
+    "if": {
         init: directiveIfBoth,
         render: directiveIfBoth
     },
-    on: {
+    "on": {
         init: directiveOnInit,
     },
-    model: {
+    "model": {
         init: directiveModelInit,
         render: directiveModelRender
     },
-    bind: {
+    "bind": {
         render: directiveBindRender
     },
-    text: {
+    "text": {
         render: directiveTextRender
     },
-    html: {
+    "html": {
         render: directiveHTMLRender
     },
-    for: {
+    "for": {
         init: directiveForInit,
         render: directiveForRender
     }

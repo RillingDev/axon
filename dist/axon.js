@@ -137,29 +137,6 @@ const isObject = val => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val,
 const hasKey = (target, key) => isObject(target) && key in target;
 
 /**
- * Checks if a value is not nil and has a type of object
- *
- * The main difference to isObject is that functions are not considered object-like,
- * because `typeof function(){}` does not return "function"
- *
- * @function isObjectLike
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * // returns true
- * isObjectLike({})
- * isObjectLike([])
- *
- * @example
- * // returns false
- * isObjectLike(1)
- * isObjectLike(() => 1))
- */
-const isObjectLike = val => !isNil(val) && isTypeOf(val, "object");
-
-/**
  * Checks if a value is not undefined
  *
  * @function isDefined
@@ -376,20 +353,18 @@ const hasDirectives = element => getDirectives(element).length > 0;
  * @param {Element} element
  * @returns {Array<Object>}
  */
-const parseDirectives = element => {
-  return getDirectives(element).map(attr => {
-    /**
-     * 'x-bind:hidden="foo"' => nameFull=["bind","hidden"] val="foo"
-     */
-    const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
+const parseDirectives = element => getDirectives(element).map(attr => {
+  /**
+   * 'x-bind:hidden="foo"' => nameFull = ["bind", "hidden"], val = "foo"
+   */
+  const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
 
-    return {
-      name: nameFull[0],
-      opt: nameFull[1] || false,
-      content: attr.value
-    };
-  });
-};
+  return {
+    name: nameFull[0],
+    opt: nameFull[1] || false,
+    content: attr.value
+  };
+});
 
 /**
  * Gets the topmost node
@@ -462,7 +437,7 @@ const mapProxy = (obj, proxyObj) => {
     const result = obj;
 
     forEachEntry(result, (val, key) => {
-        if (isObjectLike(val)) {
+        if (isObject(val)) {
             result[key] = mapProxy(val, proxyObj);
         }
     });
@@ -698,9 +673,9 @@ const getElementContentProp = element => {
  *
  * @private
  * @param {Element} element
- * @param {boolean} mode
+ * @param {boolean} active
  */
-const setElementActive = (element, mode) => mode ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
+const setElementActive = (element, active) => active ? element.removeAttribute(DOM_ATTR_HIDDEN) : element.setAttribute(DOM_ATTR_HIDDEN, true);
 
 const DOM_EVENT_MODEL = "input";
 
@@ -875,27 +850,27 @@ const directiveOnInit = function (directive, node) {
 };
 
 const directives = mapFromObject({
-    if: {
+    "if": {
         init: directiveIfBoth,
         render: directiveIfBoth
     },
-    on: {
+    "on": {
         init: directiveOnInit
     },
-    model: {
+    "model": {
         init: directiveModelInit,
         render: directiveModelRender
     },
-    bind: {
+    "bind": {
         render: directiveBindRender
     },
-    text: {
+    "text": {
         render: directiveTextRender
     },
-    html: {
+    "html": {
         render: directiveHTMLRender
     },
-    for: {
+    "for": {
         init: directiveForInit,
         render: directiveForRender
     }
