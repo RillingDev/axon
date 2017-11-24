@@ -44,7 +44,7 @@ npm install axonjs -S
 To start with Axon, you need to create a new Axon App:
 
 ```javascript
-//Axon({el,data,methods})
+//Axon({el, data, methods})
 const app = new Axon({
     el: document.querySelector("#myApp"), //Query for the root element
     data: {

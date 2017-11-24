@@ -25,6 +25,7 @@ const missingPropErrorTextFactory = propName => `missing prop/method '${propName
  *
  * @private
  * @param {Object} methodProp
+ * @param {Array<any>} [additionalArgs=[]]
  * @returns {any}
  */
 const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(

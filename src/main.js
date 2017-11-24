@@ -10,7 +10,7 @@ const AxonNodeRoot = class extends AxonNode {
      * Axon Root Constructor
      *
      * @constructor
-     * @param {Object} cfg Config data for the Axon instance
+     * @param {Object} [cfg={}] Config data for the Axon instance
      */
     constructor(cfg = {}) {
         super(cfg.el, null, cfg.data);

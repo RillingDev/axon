@@ -566,6 +566,7 @@ const missingPropErrorTextFactory = propName => `missing prop/method '${propName
  *
  * @private
  * @param {Object} methodProp
+ * @param {Array<any>} [additionalArgs=[]]
  * @returns {any}
  */
 const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(
@@ -980,7 +981,7 @@ const AxonNodeRoot = class extends AxonNode {
      * Axon Root Constructor
      *
      * @constructor
-     * @param {Object} cfg Config data for the Axon instance
+     * @param {Object} [cfg={}] Config data for the Axon instance
      */
     constructor(cfg = {}) {
         super(cfg.el, null, cfg.data);
