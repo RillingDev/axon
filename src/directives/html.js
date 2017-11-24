@@ -9,11 +9,12 @@ import {
  * v-html render directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveHTMLRender = function (directive, node) {
-    node.$element[DOM_PROP_HTML] = String(evalDirective(directive.content, node).val);
+const directiveHTMLRender = function (directive, element, node) {
+    element[DOM_PROP_HTML] = String(evalDirective(directive.content, node).val);
 
     return true;
 };

@@ -26,13 +26,12 @@ const FOR_REGEX_ARR = /(.+) of (.+)/;
  * v-for init directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveForInit = function (directive, node) {
-    const element = node.$element;
-
-    setDirective(node.$element, DOM_DIR_FOR_BASE, true);
+const directiveForInit = function (directive, element, node) {
+    setDirective(element, DOM_DIR_FOR_BASE, true);
     setElementActive(element, false);
 
     return false;
@@ -42,11 +41,11 @@ const directiveForInit = function (directive, node) {
  * v-for render directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveForRender = function (directive, node) {
-    const element = node.$element;
+const directiveForRender = function (directive, element, node) {
     const directiveSplit = directive.content.match(FOR_REGEX_ARR);
     const iteratorKey = directiveSplit[1];
     const iterable = evalProp(directiveSplit[2], node).val;

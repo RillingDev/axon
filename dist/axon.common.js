@@ -651,11 +651,11 @@ const DOM_EVENT_MODEL = "input";
  * v-model init directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelInit = function (directive, node) {
-    const element = node.$element;
+const directiveModelInit = function (directive, element, node) {
     const elementContentProp = getElementContentProp(element);
 
     bindEvent(element, DOM_EVENT_MODEL, () => {
@@ -674,8 +674,7 @@ const directiveModelInit = function (directive, node) {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelRender = function (directive, node) {
-    const element = node.$element;
+const directiveModelRender = function (directive, element, node) {
     const elementContentProp = getElementContentProp(element);
     const targetProp = evalProp(directive.content, node);
 
@@ -688,11 +687,12 @@ const directiveModelRender = function (directive, node) {
  * v-bind render directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveBindRender = (directive, node) => {
-    node.$element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
+const directiveBindRender = (directive, element, node) => {
+    element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
 
     return true;
 };
@@ -705,13 +705,12 @@ const FOR_REGEX_ARR = /(.+) of (.+)/;
  * v-for init directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveForInit = function (directive, node) {
-    const element = node.$element;
-
-    setDirective(node.$element, DOM_DIR_FOR_BASE, true);
+const directiveForInit = function (directive, element, node) {
+    setDirective(element, DOM_DIR_FOR_BASE, true);
     setElementActive(element, false);
 
     return false;
@@ -721,11 +720,11 @@ const directiveForInit = function (directive, node) {
  * v-for render directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveForRender = function (directive, node) {
-    const element = node.$element;
+const directiveForRender = function (directive, element, node) {
     const directiveSplit = directive.content.match(FOR_REGEX_ARR);
     const iteratorKey = directiveSplit[1];
     const iterable = evalProp(directiveSplit[2], node).val;
@@ -766,11 +765,12 @@ const directiveForRender = function (directive, node) {
  * v-text render directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveTextRender = function (directive, node) {
-    node.$element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
+const directiveTextRender = function (directive, element, node) {
+    element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
 
     return true;
 };
@@ -779,11 +779,12 @@ const directiveTextRender = function (directive, node) {
  * v-html render directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveHTMLRender = function (directive, node) {
-    node.$element[DOM_PROP_HTML] = String(evalDirective(directive.content, node).val);
+const directiveHTMLRender = function (directive, element, node) {
+    element[DOM_PROP_HTML] = String(evalDirective(directive.content, node).val);
 
     return true;
 };
@@ -792,11 +793,11 @@ const directiveHTMLRender = function (directive, node) {
  * v-if directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveIfBoth = function (directive, node) {
-    const element = node.$element;
+const directiveIfBoth = function (directive, element, node) {
     const expressionValue = Boolean(evalDirective(directive.content, node, true).val);
 
     setElementActive(element, expressionValue);
@@ -808,11 +809,12 @@ const directiveIfBoth = function (directive, node) {
  * v-on init directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveOnInit = function (directive, node) {
-    bindEvent(node.$element, directive.opt, e => applyMethodContext(evalMethod(directive.content, node), [e]));
+const directiveOnInit = function (directive, element, node) {
+    bindEvent(element, directive.opt, e => applyMethodContext(evalMethod(directive.content, node), [e]));
 
     return true;
 };
@@ -921,7 +923,7 @@ const AxonNode = class {
                     const mapDirectivesEntry = directives.get(directive.name);
 
                     if (mapDirectivesEntry[type]) {
-                        return mapDirectivesEntry[type](directive, this);
+                        return mapDirectivesEntry[type](directive, this.$element, this);
                     }
                 }
 

@@ -88,7 +88,7 @@ const AxonNode = class {
                     const mapDirectivesEntry = mapDirectives.get(directive.name);
 
                     if (mapDirectivesEntry[type]) {
-                        return mapDirectivesEntry[type](directive, this);
+                        return mapDirectivesEntry[type](directive, this.$element, this);
                     }
                 }
 
@@ -140,7 +140,6 @@ const AxonNodeRoot = class extends AxonNode {
 };
 
 export {
-    mapSubNodes,
     getNodeRoot,
 
     AxonNode,

@@ -14,11 +14,11 @@ const DOM_EVENT_MODEL = "input";
  * v-model init directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelInit = function (directive, node) {
-    const element = node.$element;
+const directiveModelInit = function (directive, element, node) {
     const elementContentProp = getElementContentProp(element);
 
     bindEvent(element, DOM_EVENT_MODEL, () => {
@@ -37,8 +37,7 @@ const directiveModelInit = function (directive, node) {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelRender = function (directive, node) {
-    const element = node.$element;
+const directiveModelRender = function (directive, element, node) {
     const elementContentProp = getElementContentProp(element);
     const targetProp = evalProp(directive.content, node);
 

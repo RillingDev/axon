@@ -12,11 +12,12 @@ import {
  * v-on init directive
  *
  * @param {Object} directive
+ * @param {Element} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveOnInit = function (directive, node) {
-    bindEvent(node.$element, directive.opt, e => applyMethodContext(evalMethod(directive.content, node), [e]));
+const directiveOnInit = function (directive, element, node) {
+    bindEvent(element, directive.opt, e => applyMethodContext(evalMethod(directive.content, node), [e]));
 
     return true;
 };
