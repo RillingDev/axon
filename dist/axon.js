@@ -19,14 +19,14 @@ const DOM_PROP_HTML = "innerHTML";
  * @param {string} type
  * @returns {boolean}
  * @example
- * //returns true
- * isTypeOf({},"object")
- * isTypeOf([],"object")
- * isTypeOf("foo","string")
+ * // returns true
+ * isTypeOf({}, "object")
+ * isTypeOf([], "object")
+ * isTypeOf("foo", "string")
  *
  * @example
- * //returns false
- * isTypeOf("foo","number")
+ * // returns false
+ * isTypeOf("foo", "number")
  */
 const isTypeOf = (val, type) => typeof val === type;
 
@@ -60,14 +60,14 @@ const isArray = Array.isArray;
  * @param {any} val
  * @returns {boolean}
  * @example
- * //returns false
+ * // returns false
  * const a = {};
  *
  * isUndefined(a.b)
  * isUndefined(undefined)
  *
  * @example
- * //returns false
+ * // returns false
  * const a = {};
  *
  * isUndefined(1)
@@ -84,12 +84,12 @@ const isUndefined = val => isTypeOf(val, "undefined");
  * @param {any} val
  * @returns {boolean}
  * @example
- * //returns true
+ * // returns true
  * isNil(null)
  * isNil(undefined)
  *
  * @example
- * //returns false
+ * // returns false
  * isNil(0)
  * isNil({})
  */
@@ -104,13 +104,13 @@ const isNil = val => isUndefined(val) || val === null;
  * @param {any} val
  * @returns {boolean}
  * @example
- * //returns true
+ * // returns true
  * isObject({})
  * isObject([])
- * isObject(()=>1))
+ * isObject(() => 1))
  *
  * @example
- * //returns false
+ * // returns false
  * isObject(1)
  */
 const isObject = val => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
@@ -125,15 +125,14 @@ const isObject = val => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val,
  * @param {string} key
  * @returns {boolean}
  * @example
- * //returns true
- * hasKey([1,2,3],"0")
- * hasKey({length:0},"length")
+ * // returns true
+ * hasKey([1, 2, 3], "0")
+ * hasKey({foo: 0}, "foo")
  *
  * @example
- * //returns false
- * hasKey({},"foo")
- * hasKey(null,"foo")
- * hasKey("foo","replace")
+ * // returns false
+ * hasKey({}, "foo")
+ * hasKey("foo", "replace")
  */
 const hasKey = (target, key) => isObject(target) && key in target;
 
@@ -149,14 +148,14 @@ const hasKey = (target, key) => isObject(target) && key in target;
  * @param {any} val
  * @returns {boolean}
  * @example
- * //returns true
+ * // returns true
  * isObjectLike({})
  * isObjectLike([])
  *
  * @example
- * //returns false
+ * // returns false
  * isObjectLike(1)
- * isObjectLike(()=>1))
+ * isObjectLike(() => 1))
  */
 const isObjectLike = val => !isNil(val) && isTypeOf(val, "object");
 
@@ -169,14 +168,14 @@ const isObjectLike = val => !isNil(val) && isTypeOf(val, "object");
  * @param {any} val
  * @returns {boolean}
  * @example
- * //returns true
+ * // returns true
  * const a = {};
  *
  * isDefined(1)
  * isDefined(a)
  *
  * @example
- * //returns false
+ * // returns false
  * const a = {};
  *
  * isDefined(a.b)
@@ -195,23 +194,25 @@ const isDefined = val => !isUndefined(val);
  * @param {Object} obj
  * @returns {any[]} Array<[key: any, val: any]>]
  * @example
- * //returns [["a",1],["b",2],["c",3]]
- * objEntries({a:1,b:2,c:3})
+ * // returns [["a", 1], ["b", 2], ["c", 3]]
+ * objEntries({a: 1, b: 2, c: 3})
  */
 const objEntries = Object.entries;
 
 /**
  * Iterates over each element in an array
  *
+ * Wrapper around arr.forEach to have a cleaner API and better minified code
+ *
  * @function forEach
  * @memberof For
  * @param {any[]} arr
  * @param {function} fn fn(val: any, index: number, arr: any[])
  * @example
- * //returns a = [0,2,6]
- * const a = [1,2,3];
+ * // returns a = [0, 2, 6]
+ * const a = [1, 2, 3];
  *
- * forEach(a,(val,index)=>a[index]=val*index)
+ * forEach(a, (val, index)=>a[index] = val * index)
  */
 const forEach = (arr, fn) => arr.forEach(fn);
 
@@ -223,10 +224,10 @@ const forEach = (arr, fn) => arr.forEach(fn);
  * @param {object} obj
  * @param {function} fn fn(val: any, key: any, index: number, arr: any[])
  * @example
- * //returns a = {a:0, b: 2}
- * const a = {a:1, b:2};
+ * // returns a = {a: 0, b: 2}
+ * const a = {a: 1, b: 2};
  *
- * forEachEntry(a,(val,key,index)=>a[key]=val*index)
+ * forEachEntry(a, (val, key, index) => a[key] = val * index)
  */
 const forEachEntry = (obj, fn) => {
   forEach(objEntries(obj), (entry, index) => {
@@ -243,12 +244,12 @@ const forEachEntry = (obj, fn) => {
  * @param {any[]} arr
  * @returns {any[]}
  * @example
- * //returns [1,2,3]
- * arrFlattenDeep([1,2,[3]])
+ * // returns [1, 2, 3]
+ * arrFlattenDeep([1, 2, [3]])
  *
  * @example
- * //returns [1,2,3,5,6,6]
- * arrFlattenDeep([1,2,[3,[[[5]]],[6,[6]]])
+ * // returns [1, 2, 3, 5, 6, 6]
+ * arrFlattenDeep([1, 2, [3, [[[5]]], [6, [6]]])
  */
 const arrFlattenDeep = arr => {
   const result = [];
@@ -273,8 +274,8 @@ const arrFlattenDeep = arr => {
  * @param {any} arr
  * @returns {any[]}
  * @example
- * //returns a = [1,2,3], b = [1,10,3]
- * const a = [1,2,3];
+ * // returns a = [1, 2, 3], b = [1, 10, 3]
+ * const a = [1, 2, 3];
  * const b = arrFrom(a);
  *
  * b[1] = 10;
@@ -290,8 +291,8 @@ const arrFrom = Array.from;
  * @param {object} obj
  * @returns {object}
  * @example
- * //returns a = {a:4, b:2}, b = {a:10, b:2}
- * const a = {a:4, b:2};
+ * // returns a = {a: 4, b: 2}, b = {a: 10, b: 2}
+ * const a = {a: 4, b: 2};
  * const b = objFrom(a);
  *
  * b.a = 10;
@@ -307,8 +308,8 @@ const objFrom = obj => isArray(obj) ? arrFrom(obj) : Object.assign({}, obj);
  * @param {Object} obj
  * @returns {Map}
  * @example
- * //returns Map{a:1, b:4, c:5}
- * mapFromObject({a:1,b:4,c:5})
+ * // returns Map{a: 1, b: 4, c: 5}
+ * mapFromObject({a: 1, b: 4, c: 5})
  */
 const mapFromObject = obj => new Map(objEntries(obj));
 
@@ -543,7 +544,8 @@ const getPath$1 = (target, path, getContaining = false) => {
     } : targetCurrent;
 };
 
-const mapLiterals = mapFromObject({
+// Infinity/null/undefined are omitted because you usually wont need them
+const mapLiteral = mapFromObject({
     "false": false,
     "true": true
 });
@@ -581,8 +583,8 @@ const evalLiteralFromNode = (expression, node) => {
         result = Number(expression);
     } else if (REGEX_IS_STRING_LITERAL.test(expression)) {
         result = getStringLiteral(expression);
-    } else if (mapLiterals.has(expression)) {
-        result = mapLiterals.get(expression);
+    } else if (mapLiteral.has(expression)) {
+        result = mapLiteral.get(expression);
     } else {
         result = evalProp(expression, node).val;
     }
