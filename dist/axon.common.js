@@ -1,13 +1,5 @@
 'use strict';
 
-const DOM_ATTR_PREFIX = "x-";
-const DOM_ATTR_DELIMITER = ":";
-const DOM_ATTR_HIDDEN = "hidden";
-
-const DOM_PROP_VALUE = "value";
-const DOM_PROP_TEXT = "textContent";
-const DOM_PROP_HTML = "innerHTML";
-
 /**
  * Checks if the value has a certain type-string
  *
@@ -290,6 +282,14 @@ const objFrom = (obj) => isArray(obj) ? arrFrom(obj) : Object.assign({}, obj);
  */
 const mapFromObject = (obj) => new Map(objEntries(obj));
 
+const DOM_ATTR_PREFIX = "x-";
+const DOM_ATTR_DELIMITER = ":";
+const DOM_ATTR_HIDDEN = "hidden";
+
+const DOM_PROP_VALUE = "value";
+const DOM_PROP_TEXT = "textContent";
+const DOM_PROP_HTML = "innerHTML";
+
 /**
  * Sets a value as directive
  *
@@ -366,46 +366,6 @@ const parseDirectives = element => getDirectives(element)
             content: attr.value,
         };
     });
-
-/**
- * Gets the topmost node
- *
- * @private
- * @param {AxonNode} node
- * @returns {AxonNode}
- */
-const getNodeRoot = node => {
-    let result = node;
-
-    while (result.$parent !== null) {
-        result = result.$parent;
-    }
-
-    return result;
-};
-
-/**
- * Maps and processes Array of element children
- *
- * @private
- * @param {NodeList} children
- * @param {AxonNode} node
- * @returns {Array<Object>}
- */
-const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
-    .map(child => {
-        if (hasDirectives(child)) {
-            //-> Recurse
-            return new AxonNode(child, node);
-        } else if (child.children.length > 0) {
-            //-> Enter Children
-            return mapSubNodes(child.children, node);
-        } else {
-            //-> Exit dead-end
-            return null;
-        }
-    })
-    .filter(val => val !== null));
 
 /**
  * Creates a Proxy object with the node render method bound
@@ -885,6 +845,46 @@ const directives = mapFromObject({
 });
 
 /**
+ * Gets the topmost node
+ *
+ * @private
+ * @param {AxonNode} node
+ * @returns {AxonNode}
+ */
+const getNodeRoot = node => {
+    let result = node;
+
+    while (result.$parent !== null) {
+        result = result.$parent;
+    }
+
+    return result;
+};
+
+/**
+ * Maps and processes Array of element children
+ *
+ * @private
+ * @param {NodeList} children
+ * @param {AxonNode} node
+ * @returns {Array<Object>}
+ */
+const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
+    .map(child => {
+        if (hasDirectives(child)) {
+            //-> Recurse
+            return new AxonNode(child, node);
+        } else if (child.children.length > 0) {
+            //-> Enter Children
+            return mapSubNodes(child.children, node);
+        } else {
+            //-> Exit dead-end
+            return null;
+        }
+    })
+    .filter(val => val !== null));
+
+/**
  * Axon Node
  *
  * @class
@@ -955,7 +955,7 @@ const AxonNode = class {
  *
  * @class
  */
-const AxonNodeRoot = class extends AxonNode {
+const AxonNodeRoot$1 = class extends AxonNode {
     /**
      * Axon Root Constructor
      *
@@ -972,4 +972,4 @@ const AxonNodeRoot = class extends AxonNode {
     }
 };
 
-module.exports = AxonNodeRoot;
+module.exports = AxonNodeRoot$1;

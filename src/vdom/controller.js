@@ -9,7 +9,7 @@ import {
 } from "lightdash";
 import {
     getNodeRoot,
-} from "./nodes";
+} from "./node";
 
 /**
  * Handles not-found properties

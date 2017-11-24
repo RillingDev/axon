@@ -1,13 +1,55 @@
 import {
-    parseDirectives
-} from "./dom/directive";
+    arrFrom,
+    arrFlattenDeep
+} from "lightdash";
 import {
-    mapSubNodes
-} from "./vdom/nodes";
+    hasDirectives,
+    parseDirectives
+} from "../dom/directive";
 import {
     bindDeepDataProxy
-} from "./vdom/proxy";
-import mapDirectives from "./directives/index";
+} from "./proxy";
+import mapDirectives from "../directives/index";
+
+/**
+ * Gets the topmost node
+ *
+ * @private
+ * @param {AxonNode} node
+ * @returns {AxonNode}
+ */
+const getNodeRoot = node => {
+    let result = node;
+
+    while (result.$parent !== null) {
+        result = result.$parent;
+    }
+
+    return result;
+};
+
+/**
+ * Maps and processes Array of element children
+ *
+ * @private
+ * @param {NodeList} children
+ * @param {AxonNode} node
+ * @returns {Array<Object>}
+ */
+const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
+    .map(child => {
+        if (hasDirectives(child)) {
+            //-> Recurse
+            return new AxonNode(child, node);
+        } else if (child.children.length > 0) {
+            //-> Enter Children
+            return mapSubNodes(child.children, node);
+        } else {
+            //-> Exit dead-end
+            return null;
+        }
+    })
+    .filter(val => val !== null));
 
 /**
  * Axon Node
@@ -75,4 +117,32 @@ const AxonNode = class {
     }
 };
 
-export default AxonNode;
+/**
+ * Axon Root Node
+ *
+ * @class
+ */
+const AxonNodeRoot = class extends AxonNode {
+    /**
+     * Axon Root Constructor
+     *
+     * @constructor
+     * @param {Object} [cfg={}] Config data for the Axon instance
+     */
+    constructor(cfg = {}) {
+        super(cfg.el, null, cfg.data);
+
+        this.methods = cfg.methods || {};
+
+        this.init();
+        this.render();
+    }
+};
+
+export {
+    mapSubNodes,
+    getNodeRoot,
+
+    AxonNode,
+    AxonNodeRoot
+};

@@ -1,4 +1,6 @@
-import AxonNode from "../axonNode";
+import {
+    AxonNode
+} from "../vdom/node";
 import {
     evalProp
 } from "../vdom/controller";
