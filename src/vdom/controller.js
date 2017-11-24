@@ -12,13 +12,20 @@ import {
 } from "./nodes";
 
 /**
- * Creates a new missing-prop error
+ * Handles not-found properties
  *
  * @private
  * @param {string} propName
- * @returns {Error}
+ * @param {boolean} allowUndefined
+ * @returns {false|void}
  */
-const missingPropErrorTextFactory = propName => `missing prop/method '${propName}'`;
+const handleMissingProp = (propName, allowUndefined) => {
+    if (!allowUndefined) {
+        throw new Error(`missing prop/method '${propName}'`);
+    } else {
+        return false;
+    }
+};
 
 /**
  * Runs a method in the given context
@@ -98,16 +105,12 @@ const evalProp = (expression, node, allowUndefined = false) => {
             data.node = current;
 
             return data;
-        } else {
-            current = current.$parent;
         }
+
+        current = current.$parent;
     }
 
-    if (allowUndefined) {
-        return null;
-    } else {
-        throw new Error(missingPropErrorTextFactory(expression));
-    }
+    return handleMissingProp(expression, allowUndefined);
 };
 
 /**
@@ -130,12 +133,8 @@ const evalMethod = (expression, node, allowUndefined = false) => {
         data.node = root;
 
         return data;
-    }
-
-    if (allowUndefined) {
-        return null;
     } else {
-        throw new Error(missingPropErrorTextFactory(expression));
+        return handleMissingProp(expression, allowUndefined);
     }
 };
 
