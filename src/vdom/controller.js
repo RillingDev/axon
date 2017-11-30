@@ -6,6 +6,7 @@ import getStringLiteral from "pseudo-eval/src/lib/get/getStringLiteral";
 import mapLiteral from "pseudo-eval/src/lib/map/mapLiteral";
 import {
     isDefined,
+    isNaN,
 } from "lightdash";
 import {
     getNodeRoot,

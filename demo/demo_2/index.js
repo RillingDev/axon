@@ -55,9 +55,6 @@ const app = new Axon({
         getTodoLength() {
             return this.list.length;
         },
-        listHasItems() {
-            return this.list.length > 0;
-        },
         getGrayscaleColorFromPriority(priority) {
             const offset = 2;
             const val = (16 - offset) + Math.floor(((16 - offset) / 10) * -priority);
