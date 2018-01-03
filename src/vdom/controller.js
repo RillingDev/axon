@@ -1,9 +1,11 @@
-import REGEX_IS_STRING_LITERAL from "pseudo-eval/src/lib/regex/regexIsStringLiteral";
-import REGEX_IS_FUNCTION from "pseudo-eval/src/lib/regex/regexIsFunction";
-import REGEX_FUNCTION_CALL_CONTENT from "pseudo-eval/src/lib/regex/regexFunctionCallContent";
-import getPath from "pseudo-eval/src/lib/get/getPath";
-import getStringLiteral from "pseudo-eval/src/lib/get/getStringLiteral";
-import mapLiteral from "pseudo-eval/src/lib/map/mapLiteral";
+import {
+    getPathFull,
+    getStringLiteral,
+    mapLiteral,
+    REGEX_GET_FUNCTION_CALL_ARGS,
+    REGEX_IS_FUNCTION_CALL,
+    REGEX_IS_STRING_LITERAL
+} from "pseudo-eval";
 import {
     isDefined,
     isNaN,
@@ -74,7 +76,7 @@ const evalLiteralFromNode = (expression, node) => {
  * @returns {any}
  */
 const evalDirective = (name, node, allowUndefined = false) => {
-    if (REGEX_IS_FUNCTION.test(name)) {
+    if (REGEX_IS_FUNCTION_CALL.test(name)) {
         const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
 
@@ -100,7 +102,7 @@ const evalProp = (expression, node, allowUndefined = false) => {
     let current = node;
 
     while (current) {
-        const data = getPath(current.data, expression, true);
+        const data = getPathFull(current.data, expression, true);
 
         if (data !== null) {
             data.node = current;
@@ -124,10 +126,10 @@ const evalProp = (expression, node, allowUndefined = false) => {
  * @returns {any|null}
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
-    const matched = expression.match(REGEX_FUNCTION_CALL_CONTENT);
+    const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
-    const data = getPath(root.methods, matched[1], true);
+    const data = getPathFull(root.methods, matched[1], true);
 
     if (data !== null) {
         data.args = args.map(arg => evalLiteralFromNode(arg, node));

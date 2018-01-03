@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Checks if the value has a certain type-string
+ * Checks if the value has a certain type-string.
  *
  * @function isTypeOf
  * @memberof Is
@@ -22,9 +22,9 @@
 const isTypeOf = (val, type) => typeof val === type;
 
 /**
- * Checks if a value is an array
+ * Checks if a value is an array.
  *
- * `Array.isArray` shorthand
+ * `Array.isArray` shorthand.
  *
  * @function isArray
  * @memberof Is
@@ -43,7 +43,7 @@ const isTypeOf = (val, type) => typeof val === type;
 const isArray = Array.isArray;
 
 /**
- * Checks if a value is undefined
+ * Checks if a value is undefined.
  *
  * @function isUndefined
  * @memberof Is
@@ -67,7 +67,7 @@ const isArray = Array.isArray;
 const isUndefined = (val) => isTypeOf(val, "undefined");
 
 /**
- * Checks if a value is not undefined
+ * Checks if a value is defined.
  *
  * @function isDefined
  * @memberof Is
@@ -91,28 +91,7 @@ const isUndefined = (val) => isTypeOf(val, "undefined");
 const isDefined = (val) => !isUndefined(val);
 
 /**
- * Checks if a target has a certain key
- *
- * @function hasKey
- * @memberof Has
- * @since 1.0.0
- * @param {any} target
- * @param {string} key
- * @returns {boolean}
- * @example
- * // returns true
- * hasKey([1, 2, 3], "0")
- * hasKey({foo: 0}, "foo")
- * hasKey("foo", "replace")
- *
- * @example
- * // returns false
- * hasKey({}, "foo")
- */
-const hasKey = (target, key) => isDefined(target[key]);
-
-/**
- * Checks if a value is undefined or null
+ * Checks if a value is undefined or null.
  *
  * @function isNil
  * @memberof Is
@@ -132,9 +111,9 @@ const hasKey = (target, key) => isDefined(target[key]);
 const isNil = (val) => isUndefined(val) || val === null;
 
 /**
- * Returns an array of the objects entries
+ * Returns an array of the objects entries.
  *
- * `Object.entries` shorthand
+ * `Object.entries` shorthand.
  *
  * @function objEntries
  * @memberof Object
@@ -184,7 +163,7 @@ const forEachEntry = (obj, fn) => {
 };
 
 /**
- * Checks if a value is an object
+ * Checks if a value is an object.
  *
  * @function isObject
  * @memberof Is
@@ -204,9 +183,10 @@ const forEachEntry = (obj, fn) => {
 const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
 
 /**
- * Checks if a value is NaN. Unlike the global `isNaN()`, this function returns false for undefined
+ * Checks if a value is NaN.
  *
- * `Number.isNaN` shorthand
+ * Unlike the global `isNaN()`, this function returns false for `undefined`.
+ * `Number.isNaN` shorthand.
  *
  * @function isNaN
  * @memberof Is
@@ -222,10 +202,10 @@ const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(va
  * isNaN(1);
  * isNaN(undefined);
  */
-const isNaN = Number.isNaN;
+const isNaN$1 = Number.isNaN;
 
 /**
- * Recursively flattens an array
+ * Recursively flattens an array.
  *
  * @function arrFlattenDeep
  * @memberof Array
@@ -254,9 +234,9 @@ const arrFlattenDeep = (arr) => {
 };
 
 /**
- * Creates a new array with the values of the input iterable
+ * Creates a new array with the values of the input iterable.
  *
- * `Array.from` shorthand
+ * `Array.from` shorthand.
  *
  * @function arrFrom
  * @memberof Array
@@ -273,7 +253,7 @@ const arrFlattenDeep = (arr) => {
 const arrFrom = Array.from;
 
 /**
- * Creates a new object with the entries of the input object
+ * Creates a new object with the entries of the input object.
  *
  * @function objFrom
  * @memberof Object
@@ -290,7 +270,7 @@ const arrFrom = Array.from;
 const objFrom = (obj) => isArray(obj) ? arrFrom(obj) : Object.assign({}, obj);
 
 /**
- * Creates a map from an object
+ * Creates a map from an object.
  *
  * @function mapFromObject
  * @memberof Map
@@ -449,67 +429,282 @@ const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
  */
 const bindEvent = (element, eventType, eventFn) => element.addEventListener(eventType, eventFn);
 
-const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
-
-const REGEX_IS_FUNCTION = /^.+\(.*\)$/;
+/**
+ * Regex for comparisons
+ *
+ * @private
+ * @memberof EvalRegex
+ */
+/**
+ * Checks if the value has a certain type-string.
+ *
+ * @function isTypeOf
+ * @memberof Is
+ * @since 1.0.0
+ * @param {any} val
+ * @param {string} type
+ * @returns {boolean}
+ * @example
+ * // returns true
+ * isTypeOf({}, "object")
+ * isTypeOf([], "object")
+ * isTypeOf("foo", "string")
+ *
+ * @example
+ * // returns false
+ * isTypeOf("foo", "number")
+ */
+const isTypeOf$1 = (val, type) => typeof val === type;
 
 /**
- * Does not work with nested function calls
+ * Checks if a value is undefined.
+ *
+ * @function isUndefined
+ * @memberof Is
+ * @since 1.0.0
+ * @param {any} val
+ * @returns {boolean}
+ * @example
+ * // returns false
+ * const a = {};
+ *
+ * isUndefined(a.b)
+ * isUndefined(undefined)
+ *
+ * @example
+ * // returns false
+ * const a = {};
+ *
+ * isUndefined(1)
+ * isUndefined(a)
  */
-const REGEX_FUNCTION_CALL_CONTENT = /(.+)\s?\((.*)\)/;
+const isUndefined$1 = (val) => isTypeOf$1(val, "undefined");
 
-const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
+/**
+ * Checks if a value is defined.
+ *
+ * @function isDefined
+ * @memberof Is
+ * @since 1.0.0
+ * @param {any} val
+ * @returns {boolean}
+ * @example
+ * // returns true
+ * const a = {};
+ *
+ * isDefined(1)
+ * isDefined(a)
+ *
+ * @example
+ * // returns false
+ * const a = {};
+ *
+ * isDefined(a.b)
+ * isDefined(undefined)
+ */
+const isDefined$1 = (val) => !isUndefined$1(val);
+
+/**
+ * Checks if a target has a certain key.
+ *
+ * @function hasKey
+ * @memberof Has
+ * @since 1.0.0
+ * @param {any} target
+ * @param {string} key
+ * @returns {boolean}
+ * @example
+ * // returns true
+ * hasKey([1, 2, 3], "0")
+ * hasKey({foo: 0}, "foo")
+ * hasKey("foo", "replace")
+ *
+ * @example
+ * // returns false
+ * hasKey({}, "foo")
+ */
+const hasKey$1 = (target, key) => isDefined$1(target[key]);
+
+/**
+ * Checks if a value is undefined or null.
+ *
+ * @function isNil
+ * @memberof Is
+ * @since 1.0.0
+ * @param {any} val
+ * @returns {boolean}
+ * @example
+ * // returns true
+ * isNil(null)
+ * isNil(undefined)
+ *
+ * @example
+ * // returns false
+ * isNil(0)
+ * isNil({})
+ */
+const isNil$1 = (val) => isUndefined$1(val) || val === null;
+
+/**
+ * Returns an array of the objects entries.
+ *
+ * `Object.entries` shorthand.
+ *
+ * @function objEntries
+ * @memberof Object
+ * @since 1.0.0
+ * @param {Object} obj
+ * @returns {any[]} Array<[key: any, val: any]>]
+ * @example
+ * // returns [["a", 1], ["b", 2], ["c", 3]]
+ * objEntries({a: 1, b: 2, c: 3})
+ */
+const objEntries$1 = Object.entries;
+
+/**
+ * Creates a map from an object.
+ *
+ * @function mapFromObject
+ * @memberof Map
+ * @since 1.0.0
+ * @param {Object} obj
+ * @returns {Map}
+ * @example
+ * // returns Map{a: 1, b: 4, c: 5}
+ * mapFromObject({a: 1, b: 4, c: 5})
+ */
+const mapFromObject$1 = (obj) => new Map(objEntries$1(obj));
+
+/**
+ * Map for comparison checks
+ *
+ * @private
+ * @memberof EvalMap
+ */
+const mapComparison = mapFromObject$1({
+    "===": (a, b) => a === b,
+    "!==": (a, b) => a !== b,
+    "&&": (a, b) => a && b,
+    "||": (a, b) => a || b,
+    ">=": (a, b) => a >= b,
+    "<=": (a, b) => a <= b,
+    ">": (a, b) => a > b,
+    "<": (a, b) => a < b,
+});
+
+/**
+ * Map for math checks.
+ *
+ * @private
+ * @memberof EvalMap
+ */
+const mapMath = mapFromObject$1({
+    "+": (a, b) => a + b,
+    "-": (a, b) => a - b,
+    "*": (a, b) => a * b,
+    "/": (a, b) => a / b,
+    "%": (a, b) => a % b,
+    "**": (a, b) => a ** b,
+});
+
+/**
+ * Regex checking for string literals
+ *
+ * @private
+ * @memberof EvalRegex
+ */
+const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
 
 /**
  * Returns a string literal as "normal" string
  *
+ * @function getStringLiteral
+ * @memberof Get
  * @param {string} str
- * @param {string}
+ * @returns {string}
  */
-const getStringLiteral = str => str.substr(1, str.length - 2);
+const getStringLiteral = (str) => str.substr(1, str.length - 2);
+
+/**
+ * Regex for splitting paths
+ *
+ * @private
+ * @memberof EvalRegex
+ */
+const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
 
 /**
  * Accesses a target by a path of keys. If the path doesn't exist, null is returned
  *
+ * @function getPathFull
+ * @memberof Get
  * @param {any} target
  * @param {string} path
  * @param {boolean} [getContaining=false]
- * @returns {boolean}
+ * @returns {any|null}
  */
-const getPath$1 = (target, path, getContaining = false) => {
+const getPathFull = (target, path, getContaining = false) => {
     const pathArr = path
         .split(REGEX_PATH_SPLIT)
-        .map(item => REGEX_IS_STRING_LITERAL.test(item) ? getStringLiteral(item) : item);
+        .map((item) => REGEX_IS_STRING_LITERAL.test(item) ? getStringLiteral(item) : item);
     let targetCurrent = target;
     let targetLast = null;
-    let keyCurrent = null;
+    let key = null;
     let index = 0;
-
-    while (!isNil(targetCurrent) && index < pathArr.length) {
-        keyCurrent = pathArr[index];
-
-        if (hasKey(targetCurrent, keyCurrent)) {
+    while (!isNil$1(targetCurrent) && index < pathArr.length) {
+        key = pathArr[index];
+        if (hasKey$1(targetCurrent, key)) {
             targetLast = targetCurrent;
-            targetCurrent = targetCurrent[keyCurrent];
+            // @ts-ignore
+            targetCurrent = targetCurrent[key];
             index++;
-        } else {
+        }
+        else {
             return null;
         }
     }
-
-    return getContaining ? {
-        val: targetCurrent,
-        container: targetLast,
-        key: keyCurrent,
-        index
-    } : targetCurrent;
+    if (getContaining) {
+        return {
+            index,
+            key,
+            val: targetCurrent,
+            container: targetLast
+        };
+    }
+    else {
+        return targetCurrent;
+    }
 };
 
-// Infinity/null/undefined are omitted because you usually wont need them
-const mapLiteral = mapFromObject({
+/**
+ * Map for literal checks.
+ *
+ * undefined and NaN are omitted because you usually wont need those
+ *
+ * @private
+ * @memberof EvalMap
+ */
+const mapLiteral = mapFromObject$1({
     "false": false,
-    "true": true
+    "true": true,
+    "null": null
 });
+
+/**
+ * Regex for function call args
+ *
+ * @private
+ * @memberof EvalRegex
+ */
+const REGEX_GET_FUNCTION_CALL_ARGS = /(.+)\s?\((.*)\)/;
+
+/**
+ * Regex checking for function calls
+ *
+ * @private
+ * @memberof EvalRegex
+ */
+const REGEX_IS_FUNCTION_CALL = /^.+\(.*\)$/;
 
 /**
  * Handles not-found properties
@@ -550,7 +745,7 @@ const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.a
 const evalLiteralFromNode = (expression, node) => {
     let result = null;
 
-    if (!isNaN(Number(expression))) {
+    if (!isNaN$1(Number(expression))) {
         result = Number(expression);
     } else if (REGEX_IS_STRING_LITERAL.test(expression)) {
         result = getStringLiteral(expression);
@@ -573,7 +768,7 @@ const evalLiteralFromNode = (expression, node) => {
  * @returns {any}
  */
 const evalDirective = (name, node, allowUndefined = false) => {
-    if (REGEX_IS_FUNCTION.test(name)) {
+    if (REGEX_IS_FUNCTION_CALL.test(name)) {
         const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
 
@@ -599,7 +794,7 @@ const evalProp = (expression, node, allowUndefined = false) => {
     let current = node;
 
     while (current) {
-        const data = getPath$1(current.data, expression, true);
+        const data = getPathFull(current.data, expression, true);
 
         if (data !== null) {
             data.node = current;
@@ -623,10 +818,10 @@ const evalProp = (expression, node, allowUndefined = false) => {
  * @returns {any|null}
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
-    const matched = expression.match(REGEX_FUNCTION_CALL_CONTENT);
+    const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
-    const data = getPath$1(root.methods, matched[1], true);
+    const data = getPathFull(root.methods, matched[1], true);
 
     if (data !== null) {
         data.args = args.map(arg => evalLiteralFromNode(arg, node));
