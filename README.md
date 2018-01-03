@@ -6,11 +6,12 @@
 
 ## Introduction
 
+**This is highly experimental and WIP, do not use this in any production software**
+
 Axon is an very small(4KB) JavaScript framework inspired by Vue.js.
-Instead of using the `v-` namespace for directives, axon uses `x-`.
+Instead of using the `v-` namespace for directives, it uses `x-`.
 
 This framework is **not** supposed or able to be "the next big framework", this is just a hobby project of mine.
-You _will_ encounter bugs and should never use this in production.
 Functionality and compatibility is much more limited than in Vue, due to the difference in complexity of the codebase.
 Most of the API is either the same or very similar as in Vue, however make sure to read the docs.
 
@@ -31,7 +32,7 @@ Disadvantages:
 
 ## Usage
 
-Axon can be installed from the npm registry:
+Axon can be installed from npm:
 
 ```shell
 npm install axonjs -S
@@ -46,7 +47,7 @@ To start with Axon, you need to create a new Axon App:
 ```javascript
 //Axon({el, data, methods})
 const app = new Axon({
-    el: document.querySelector("#myApp"), //Query for the root element
+    el: document.querySelector("#myApp"), // Query for the root element
     data: {
         name: "Lorem ipsum",
         bar: "bar"
@@ -87,8 +88,3 @@ Axon currently has the following directives:
 + `x-text="#expression#"`: inserts expression content as text
 + `x-html="#expression#"`: inserts expression content as HTML
 + `x-for="#variable# of #property#"`: loops over values in Array and creates elements with bound data for each
-
-## Changes from v1.x to v2.x
-
-+ `x-for="i in array"` is now `x-for="i of array"`
-+ `el` is no longer queried automatically (`el: "#app"` ->  `el: document.querySelector("#myApp"`))
