@@ -4,27 +4,24 @@
     "description": "A super tiny vue-like framework",
     "main": "dist/axon.common.js",
     "module": "dist/axon.esm.js",
-    "constants": {
-        "dirBase": {
-            "input": "./src",
-            "output": "./dist"
-        },
-        "js": {
-            "input": "main",
-            "namespace": {
-                "module": "Axon",
-                "file": "axon"
-            },
-            "targets": {
-                "browsers": "chrome >= 58"
-            }
+    "types": "types/main.d.ts",
+    "settings": {
+        "input": "main.ts",
+        "namespace": {
+            "module": "Axon",
+            "file": "axon"
         }
     },
     "scripts": {
-        "start": "npm-run-all lint build",
-        "build": "node tasks/jsDev.js",
-        "dist": "node tasks/jsDist.js",
-        "lint": "eslint src/"
+        "start": "npm-run-all lint build test docs",
+        "build": "rollup -c ./tasks/rollup.config.js",
+        "build:iife": "rollup -c ./tasks/rollup.config.iife.js",
+        "build:iife-min": "rollup -c ./tasks/rollup.config.iife-min.js",
+        "watch": "rollup -c ./tasks/rollup.config.js --watch",
+        "dist": "npm-run-all --parallel build build:iife build:iife-min",
+        "lint": "tslint src/**/*.ts",
+        "test": "jasmine",
+        "docs": "jsdoc -c jsdoc.json"
     },
     "repository": {
         "type": "git",
@@ -41,20 +38,26 @@
         "url": "https://github.com/FelixRilling/axonjs/issues"
     },
     "homepage": "https://github.com/FelixRilling/axonjs#readme",
-    "devDependencies": {
-        "babel-core": "^6.26.0",
-        "babel-plugin-external-helpers": "^6.22.0",
-        "babel-preset-env": "^1.6.1",
-        "eslint": "^4.14.0",
-        "npm-run-all": "^4.1.2",
-        "rollup": "^0.53.3",
-        "rollup-plugin-babel": "^3.0.3",
-        "rollup-plugin-node-resolve": "^3.0.0",
-        "rollup-plugin-uglify-es": "0.0.1",
-        "uglify-es": "^3.3.4"
-    },
     "dependencies": {
         "lightdash": "^3.4.2",
         "pseudo-eval": "^7.1.0"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.0.0-beta.36",
+        "@babel/plugin-external-helpers": "^7.0.0-beta.36",
+        "@babel/preset-env": "^7.0.0-beta.36",
+        "docdash": "git+https://github.com/clenemt/docdash.git",
+        "jasmine": "^2.8.0",
+        "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git",
+        "npm-run-all": "^4.1.2",
+        "rollup": "^0.53.3",
+        "rollup-plugin-babel": "^4.0.0-beta.0",
+        "rollup-plugin-json": "^2.3.0",
+        "rollup-plugin-node-resolve": "^3.0.0",
+        "rollup-plugin-typescript2": "^0.9.0",
+        "rollup-plugin-uglify-es": "0.0.1",
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.2",
+        "uglify-es": "^3.3.4"
     }
 }
