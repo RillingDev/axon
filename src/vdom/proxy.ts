@@ -2,6 +2,7 @@ import {
     isObject,
     forEachEntry,
 } from "lightdash";
+import { IAxonNode, IGenericObject } from "../interfaces";
 
 /**
  * Creates a Proxy object with the node render method bound
@@ -10,9 +11,9 @@ import {
  * @param {AxonNode} node
  * @returns {Object}
  */
-const dataProxyFactory = node => {
+const dataProxyFactory = (node: IAxonNode) => {
     return {
-        set: (target, key, val) => {
+        set: (target: IGenericObject, key: string, val: any) => {
             if (val !== target[key]) {
                 target[key] = val;
 
@@ -32,10 +33,10 @@ const dataProxyFactory = node => {
  * @param {Object} proxyObj
  * @returns {Proxy}
  */
-const mapProxy = (obj, proxyObj) => {
+const mapProxy = (obj: IGenericObject, proxyObj: object): any => {
     const result = obj;
 
-    forEachEntry(result, (val, key) => {
+    forEachEntry(result, (val: any, key: string) => {
         if (isObject(val)) {
             result[key] = mapProxy(val, proxyObj);
         }
@@ -52,7 +53,7 @@ const mapProxy = (obj, proxyObj) => {
  * @param {AxonNode} node
  * @returns {Proxy}
  */
-const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
+const bindDeepDataProxy = (obj: object, node: IAxonNode): any => mapProxy(obj, dataProxyFactory(node));
 
 export {
     bindDeepDataProxy

@@ -13,7 +13,7 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveIfBoth = function (directive, element, node) {
+const directiveIfBoth = function (directive: any, element: any, node: any) {
     const expressionValue = Boolean(evalDirective(directive.content, node, true).val);
 
     setElementActive(element, expressionValue);

@@ -1,6 +1,4 @@
-import {
-    AxonNode
-} from "../vdom/node";
+import AxonNode from "../classes/axonNode";
 import {
     evalProp
 } from "../vdom/controller";
@@ -30,7 +28,7 @@ const FOR_REGEX_ARR = /(.+) of (.+)/;
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveForInit = function (directive, element, node) {
+const directiveForInit = function (directive: any, element: any, node: any) {
     setDirective(element, DOM_DIR_FOR_BASE, true);
     setElementActive(element, false);
 
@@ -45,7 +43,7 @@ const directiveForInit = function (directive, element, node) {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveForRender = function (directive, element, node) {
+const directiveForRender = function (directive: any, element: any, node: any) {
     const directiveSplit = directive.content.match(FOR_REGEX_ARR);
     const iteratorKey = directiveSplit[1];
     const iterable = evalProp(directiveSplit[2], node).val;

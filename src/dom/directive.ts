@@ -14,7 +14,7 @@ import {
  * @param {string} key
  * @param {string} value
  */
-const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREFIX + key, value);
+const setDirective = (element: any, key: any, value: any) => element.setAttribute(DOM_ATTR_PREFIX + key, value);
 
 /**
  * Gets a value as directive
@@ -24,7 +24,7 @@ const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREF
  * @param {string} key
  * @returns {string}
  */
-const getDirective = (element, key) => element.getAttribute(DOM_ATTR_PREFIX + key);
+const getDirective = (element: any, key: any) => element.getAttribute(DOM_ATTR_PREFIX + key);
 
 /**
  * Checks a value as directive
@@ -34,7 +34,7 @@ const getDirective = (element, key) => element.getAttribute(DOM_ATTR_PREFIX + ke
  * @param {string} key
  * @returns {boolean}
  */
-const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + key);
+const hasDirective = (element: any, key: any) => element.hasAttribute(DOM_ATTR_PREFIX + key);
 
 /**
  * Removes a directive
@@ -43,7 +43,7 @@ const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + ke
  * @param {Element} element
  * @param {string} key
  */
-const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFIX + key);
+const removeDirective = (element: any, key: any) => element.removeAttribute(DOM_ATTR_PREFIX + key);
 
 /**
  * Checks if an attribute is an axon directive
@@ -52,7 +52,7 @@ const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFI
  * @param {Attribute} attr
  * @returns {boolean}
  */
-const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
+const isDirective = (attr: any) => attr.name.startsWith(DOM_ATTR_PREFIX);
 
 /**
  * Returns array of all directives
@@ -61,7 +61,7 @@ const isDirective = attr => attr.name.startsWith(DOM_ATTR_PREFIX);
  * @param {Element} element
  * @returns {Array<Directive>}
  */
-const getDirectives = element => arrFrom(element.attributes).filter(isDirective);
+const getDirectives = (element: any) => arrFrom(element.attributes).filter(isDirective);
 
 /**
  * Checks if the element has any directives
@@ -70,7 +70,7 @@ const getDirectives = element => arrFrom(element.attributes).filter(isDirective)
  * @param {Element} element
  * @returns {boolean}
  */
-const hasDirectives = element => getDirectives(element).length > 0;
+const hasDirectives = (element: any) => getDirectives(element).length > 0;
 
 /**
  * Returns directives on node with name parsed
@@ -79,8 +79,8 @@ const hasDirectives = element => getDirectives(element).length > 0;
  * @param {Element} element
  * @returns {Array<Object>}
  */
-const parseDirectives = element => getDirectives(element)
-    .map(attr => {
+const parseDirectives = (element: any) => getDirectives(element)
+    .map((attr: any) => {
         /**
          * 'x-bind:hidden="foo"' => nameFull = ["bind", "hidden"], val = "foo"
          */

@@ -16,8 +16,8 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveOnInit = function (directive, element, node) {
-    bindEvent(element, directive.opt, e => applyMethodContext(evalMethod(directive.content, node), [e]));
+const directiveOnInit = function (directive: any, element: any, node: any) {
+    bindEvent(element, directive.opt, (e: any) => applyMethodContext(evalMethod(directive.content, node), [e]));
 
     return true;
 };

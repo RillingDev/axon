@@ -13,7 +13,7 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveTextRender = function (directive, element, node) {
+const directiveTextRender = function (directive: any, element: any, node: any) {
     element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
 
     return true;

@@ -18,7 +18,7 @@ const DOM_EVENT_MODEL = "input";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelInit = function (directive, element, node) {
+const directiveModelInit = function (directive: any, element: any, node: any) {
     const elementContentProp = getElementContentProp(element);
 
     bindEvent(element, DOM_EVENT_MODEL, () => {
@@ -37,7 +37,7 @@ const directiveModelInit = function (directive, element, node) {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelRender = function (directive, element, node) {
+const directiveModelRender = function (directive: any, element: any, node: any) {
     const elementContentProp = getElementContentProp(element);
     const targetProp = evalProp(directive.content, node);
 

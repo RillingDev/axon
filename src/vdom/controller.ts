@@ -7,8 +7,7 @@ import {
     REGEX_IS_STRING_LITERAL
 } from "pseudo-eval";
 import {
-    isDefined,
-    isNaN,
+    isDefined
 } from "lightdash";
 import {
     getNodeRoot,
@@ -22,7 +21,7 @@ import {
  * @param {boolean} allowUndefined
  * @returns {false|void}
  */
-const handleMissingProp = (propName, allowUndefined) => {
+const handleMissingProp = (propName: any, allowUndefined: boolean) => {
     if (!allowUndefined) {
         throw new Error(`missing prop/method '${propName}'`);
     } else {
@@ -38,7 +37,7 @@ const handleMissingProp = (propName, allowUndefined) => {
  * @param {Array<any>} [additionalArgs=[]]
  * @returns {any}
  */
-const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(
+const applyMethodContext = (methodProp: any, additionalArgs = []) => methodProp.val.apply(
     methodProp.node.data, [...methodProp.args, ...additionalArgs]
 );
 
@@ -50,7 +49,7 @@ const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.a
  * @param {AxonNode} node
  * @returns {any}
  */
-const evalLiteralFromNode = (expression, node) => {
+const evalLiteralFromNode = (expression: any, node: any) => {
     let result = null;
 
     if (!isNaN(Number(expression))) {
@@ -75,7 +74,7 @@ const evalLiteralFromNode = (expression, node) => {
  * @param {boolean} [allowUndefined=false]
  * @returns {any}
  */
-const evalDirective = (name, node, allowUndefined = false) => {
+const evalDirective = (name: any, node: any, allowUndefined = false) => {
     if (REGEX_IS_FUNCTION_CALL.test(name)) {
         const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
@@ -98,7 +97,7 @@ const evalDirective = (name, node, allowUndefined = false) => {
  * @param {boolean} [allowUndefined=false]
  * @returns {any|null}
  */
-const evalProp = (expression, node, allowUndefined = false) => {
+const evalProp = (expression: any, node: any, allowUndefined = false) => {
     let current = node;
 
     while (current) {
@@ -125,14 +124,14 @@ const evalProp = (expression, node, allowUndefined = false) => {
  * @param {boolean} [allowUndefined=false]
  * @returns {any|null}
  */
-const evalMethod = (expression, node, allowUndefined = false) => {
+const evalMethod = (expression: any, node: any, allowUndefined = false) => {
     const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
     const data = getPathFull(root.methods, matched[1], true);
 
     if (data !== null) {
-        data.args = args.map(arg => evalLiteralFromNode(arg, node));
+        data.args = args.map((arg: any) => evalLiteralFromNode(arg, node));
         data.node = root;
 
         return data;

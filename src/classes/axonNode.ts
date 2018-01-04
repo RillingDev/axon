@@ -8,25 +8,9 @@ import {
 } from "../dom/directive";
 import {
     bindDeepDataProxy
-} from "./proxy";
+} from "../vdom/proxy";
 import mapDirectives from "../directives/index";
-
-/**
- * Gets the topmost node
- *
- * @private
- * @param {AxonNode} node
- * @returns {AxonNode}
- */
-const getNodeRoot = node => {
-    let result = node;
-
-    while (result.$parent !== null) {
-        result = result.$parent;
-    }
-
-    return result;
-};
+import { IAxonNode, IAxonDirective } from "../interfaces";
 
 /**
  * Maps and processes Array of element children
@@ -36,27 +20,33 @@ const getNodeRoot = node => {
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
-    .map(child => {
+const mapSubNodes = (children: HTMLCollection, node: IAxonNode): any => arrFlattenDeep(arrFrom(children)
+    .map((child: HTMLElement) => {
         if (hasDirectives(child)) {
-            //-> Recurse
+            // -> Recurse
             return new AxonNode(child, node);
         } else if (child.children.length > 0) {
-            //-> Enter Children
+            // -> Enter Children
             return mapSubNodes(child.children, node);
         } else {
-            //-> Exit dead-end
+            // -> Exit dead-end
             return null;
         }
     })
-    .filter(val => val !== null));
+    .filter((val: IAxonNode | null) => val !== null));
 
 /**
  * Axon Node
  *
  * @class
  */
-const AxonNode = class {
+const AxonNode = class implements IAxonNode {
+    public $parent: IAxonNode | null;
+    public $element: HTMLElement;
+    public $children: IAxonNode[];
+
+    public directives: IAxonDirective[];
+    public data: object;
     /**
      * Axon Element Node Constructor
      *
@@ -65,7 +55,7 @@ const AxonNode = class {
      * @param {Element|null} $parent
      * @param {Object} [data={}]
      */
-    constructor($element, $parent, data = {}) {
+    constructor($element: HTMLElement, $parent: IAxonNode | null, data: object = {}) {
         const dataStorage = data;
 
         this.directives = parseDirectives($element);
@@ -81,9 +71,9 @@ const AxonNode = class {
      * @param {"init"|"render"} type
      * @returns {Array|false}
      */
-    run(type) {
+    public run(type: string): boolean {
         const directiveResults = this.directives
-            .map(directive => {
+            .map((directive: IAxonDirective) => {
                 if (mapDirectives.has(directive.name)) {
                     const mapDirectivesEntry = mapDirectives.get(directive.name);
 
@@ -92,13 +82,15 @@ const AxonNode = class {
                     }
                 }
 
-                //Ignore non-existent directive types
+                // Ignore non-existent directive types
                 return true;
             });
 
-        //Recurse if all directives return true
-        if (directiveResults.every(directiveResult => directiveResult === true)) {
-            return this.$children.map(child => child.run(type));
+        // Recurse if all directives return true
+        if (directiveResults.every((directiveResult: boolean) => directiveResult === true)) {
+            this.$children.map((child) => child.run(type));
+
+            return true;
         } else {
             return false;
         }
@@ -106,42 +98,15 @@ const AxonNode = class {
     /**
      * Initializes directives
      */
-    init() {
+    public init() {
         return this.run("init");
     }
     /**
      * Renders directives
      */
-    render() {
+    public render() {
         return this.run("render");
     }
 };
 
-/**
- * Axon Root Node
- *
- * @class
- */
-const AxonNodeRoot = class extends AxonNode {
-    /**
-     * Axon Root Constructor
-     *
-     * @constructor
-     * @param {Object} [cfg={}] Config data for the Axon instance
-     */
-    constructor(cfg = {}) {
-        super(cfg.el, null, cfg.data);
-
-        this.methods = cfg.methods || {};
-
-        this.init();
-        this.render();
-    }
-};
-
-export {
-    getNodeRoot,
-
-    AxonNode,
-    AxonNodeRoot
-};
+export default AxonNode;

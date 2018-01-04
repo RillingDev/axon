@@ -10,7 +10,7 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveBindRender = (directive, element, node) => {
+const directiveBindRender = (directive: any, element: any, node: any) => {
     element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
 
     return true;

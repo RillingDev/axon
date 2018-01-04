@@ -15,9 +15,11 @@ import {
  * @param {Element} element
  * @returns {string}
  */
-const getElementContentProp = element => {
+const getElementContentProp = (element: HTMLElement) => {
+    // @ts-ignore
     if (isDefined(element[DOM_PROP_VALUE])) {
         return DOM_PROP_VALUE;
+        // @ts-ignore
     } else if (isDefined(element[DOM_PROP_TEXT])) {
         return DOM_PROP_TEXT;
     } else {
@@ -32,7 +34,7 @@ const getElementContentProp = element => {
  * @param {Element} element
  * @param {boolean} active
  */
-const setElementActive = (element, active) => active ?
+const setElementActive = (element: any, active: any) => active ?
     element.removeAttribute(DOM_ATTR_HIDDEN) :
     element.setAttribute(DOM_ATTR_HIDDEN, true);
 
