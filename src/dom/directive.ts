@@ -66,7 +66,7 @@ const isDirective = (attr: Attr) => attr.name.startsWith(DOM_ATTR_PREFIX);
  * @param {Element} element
  * @returns {Array<Directive>}
  */
-const getDirectives = (element: HTMLElement) =>
+const getDirectives = (element: HTMLElement): Attr[] =>
     arrFrom(element.attributes).filter(isDirective);
 
 /**

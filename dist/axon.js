@@ -586,14 +586,6 @@ const REGEX_GET_FUNCTION_CALL_ARGS = /(.+)\s?\((.*)\)/;
  */
 const REGEX_IS_FUNCTION_CALL = /^.+\(.*\)$/;
 
-const getNodeRoot = (node) => {
-    let result = node;
-    while (result.$parent !== null) {
-        result = result.$parent;
-    }
-    return result;
-};
-
 const handleMissingProp = (propName, allowUndefined) => {
     if (!allowUndefined) {
         throw new Error(`missing prop/method '${propName}'`);
@@ -779,6 +771,13 @@ const directives = mapFromObject({
     }
 });
 
+const getNodeRoot = (node) => {
+    let result = node;
+    while (result.$parent !== null) {
+        result = result.$parent;
+    }
+    return result;
+};
 const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
     .map((child) => {
     if (hasDirectives(child)) {
@@ -828,7 +827,16 @@ const AxonNode = class {
     }
 };
 
-return AxonNode;
+const AxonNodeRoot = class extends AxonNode {
+    constructor(cfg) {
+        super(cfg.el, null, cfg.data);
+        this.methods = cfg.methods || {};
+        this.init();
+        this.render();
+    }
+};
+
+return AxonNodeRoot;
 
 }());
 //# sourceMappingURL=axon.js.map
