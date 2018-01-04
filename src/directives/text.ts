@@ -4,6 +4,7 @@ import {
 import {
     DOM_PROP_TEXT
 } from "../constants";
+import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
  * v-text render directive
@@ -13,7 +14,7 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveTextRender = function (directive: any, element: any, node: any) {
+const directiveTextRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
 
     return true;

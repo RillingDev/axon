@@ -24,8 +24,9 @@ import {
 import {
     directiveOnInit
 } from "./on";
+import { IAxonDirectiveDeclaration } from "../interfaces";
 
-const directives = mapFromObject({
+const directives: Map<string, IAxonDirectiveDeclaration> = mapFromObject({
     "if": {
         init: directiveIfBoth,
         render: directiveIfBoth

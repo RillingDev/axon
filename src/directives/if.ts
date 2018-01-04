@@ -4,6 +4,7 @@ import {
 import {
     setElementActive
 } from "../dom/element";
+import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
  * v-if directive
@@ -13,7 +14,7 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveIfBoth = function (directive: any, element: any, node: any) {
+const directiveIfBoth = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     const expressionValue = Boolean(evalDirective(directive.content, node, true).val);
 
     setElementActive(element, expressionValue);

@@ -4,6 +4,7 @@ import {
 import {
     DOM_PROP_HTML
 } from "../constants";
+import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
  * v-html render directive
@@ -13,7 +14,7 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveHTMLRender = function (directive: any, element: any, node: any) {
+const directiveHTMLRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     element[DOM_PROP_HTML] = String(evalDirective(directive.content, node).val);
 
     return true;

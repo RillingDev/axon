@@ -1,10 +1,10 @@
-const DOM_ATTR_PREFIX: string = "x-";
-const DOM_ATTR_DELIMITER: string = ":";
-const DOM_ATTR_HIDDEN: string = "hidden";
+const DOM_ATTR_PREFIX = "x-";
+const DOM_ATTR_DELIMITER = ":";
+const DOM_ATTR_HIDDEN = "hidden";
 
-const DOM_PROP_VALUE: string = "value";
-const DOM_PROP_TEXT: string = "textContent";
-const DOM_PROP_HTML: string = "innerHTML";
+const DOM_PROP_VALUE = "value";
+const DOM_PROP_TEXT = "textContent";
+const DOM_PROP_HTML = "innerHTML";
 
 export {
     DOM_ATTR_PREFIX,

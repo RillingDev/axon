@@ -10,7 +10,7 @@ import {
     bindDeepDataProxy
 } from "../vdom/proxy";
 import mapDirectives from "../directives/index";
-import { IAxonNode, IAxonDirective } from "../interfaces";
+import { IAxonNode, IAxonDirective, IAxonDirectiveDeclaration } from "../interfaces";
 
 /**
  * Maps and processes Array of element children
@@ -20,7 +20,7 @@ import { IAxonNode, IAxonDirective } from "../interfaces";
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = (children: HTMLCollection, node: IAxonNode): any => arrFlattenDeep(arrFrom(children)
+const mapSubNodes = (children: HTMLCollection, node: IAxonNode): any[] => arrFlattenDeep(arrFrom(children)
     .map((child: HTMLElement) => {
         if (hasDirectives(child)) {
             // -> Recurse

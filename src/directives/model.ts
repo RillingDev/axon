@@ -7,6 +7,7 @@ import {
 import {
     getElementContentProp
 } from "../dom/element";
+import { IAxonDirective, IAxonNode } from "../interfaces";
 
 const DOM_EVENT_MODEL = "input";
 
@@ -18,7 +19,7 @@ const DOM_EVENT_MODEL = "input";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelInit = function (directive: any, element: any, node: any) {
+const directiveModelInit = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     const elementContentProp = getElementContentProp(element);
 
     bindEvent(element, DOM_EVENT_MODEL, () => {

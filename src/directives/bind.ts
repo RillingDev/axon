@@ -1,6 +1,7 @@
 import {
     evalDirective
 } from "../vdom/controller";
+import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
  * v-bind render directive
@@ -10,7 +11,7 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveBindRender = (directive: any, element: any, node: any) => {
+const directiveBindRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
 
     return true;

@@ -11,7 +11,12 @@ interface IAxonConfig {
 interface IAxonDirective {
     name: string;
     content: string;
-    opt: string | null;
+    opt: string;
+}
+
+interface IAxonDirectiveDeclaration extends IGenericObject {
+    init?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
+    render?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
 }
 
 interface IAxonNode {
@@ -31,4 +36,4 @@ interface IAxonNodeRoot extends IAxonNode {
     methods: object;
 }
 
-export { IAxonNode, IAxonNodeRoot, IAxonConfig, IAxonDirective, IGenericObject };
+export { IAxonNode, IAxonNodeRoot, IAxonConfig, IAxonDirective, IAxonDirectiveDeclaration, IGenericObject };

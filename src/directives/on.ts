@@ -7,6 +7,7 @@ import {
 import {
     evalMethod
 } from "../vdom/controller";
+import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
  * v-on init directive
@@ -16,7 +17,7 @@ import {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveOnInit = function (directive: any, element: any, node: any) {
+const directiveOnInit = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     bindEvent(element, directive.opt, (e: any) => applyMethodContext(evalMethod(directive.content, node), [e]));
 
     return true;

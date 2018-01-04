@@ -34,9 +34,9 @@ const getElementContentProp = (element: HTMLElement) => {
  * @param {Element} element
  * @param {boolean} active
  */
-const setElementActive = (element: any, active: any) => active ?
+const setElementActive = (element: HTMLElement, active: boolean) => active ?
     element.removeAttribute(DOM_ATTR_HIDDEN) :
-    element.setAttribute(DOM_ATTR_HIDDEN, true);
+    element.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
 
 export {
     getElementContentProp,
