@@ -38,7 +38,7 @@ const getNodeRoot = (node: IAxonNode | IAxonNodeRoot): IAxonNodeRoot => {
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = (children: HTMLCollection, node: IAxonNode): any[] =>
+const mapSubNodes = (children: HTMLCollection, node: IAxonNode): IAxonNode[] =>
     arrFlattenDeep(arrFrom(children)
         // @ts-ignore
         .map((child: HTMLElement) => {

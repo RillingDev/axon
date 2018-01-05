@@ -91,6 +91,27 @@ const isUndefined = (val) => isTypeOf(val, "undefined");
 const isDefined = (val) => !isUndefined(val);
 
 /**
+ * Checks if a target has a certain key.
+ *
+ * @function hasKey
+ * @memberof Has
+ * @since 1.0.0
+ * @param {any} target
+ * @param {string} key
+ * @returns {boolean}
+ * @example
+ * // returns true
+ * hasKey([1, 2, 3], "0")
+ * hasKey({foo: 0}, "foo")
+ * hasKey("foo", "replace")
+ *
+ * @example
+ * // returns false
+ * hasKey({}, "foo")
+ */
+const hasKey = (target, key) => isDefined(target[key]);
+
+/**
  * Checks if a value is undefined or null.
  *
  * @function isNil
@@ -799,11 +820,11 @@ const evalMethod = (expression, node, allowUndefined = false) => {
  */
 const getElementContentProp = (element) => {
     // @ts-ignore
-    if (isDefined(element[DOM_PROP_VALUE])) {
+    if (hasKey(element, DOM_PROP_VALUE)) {
         return DOM_PROP_VALUE;
         // @ts-ignore
     }
-    else if (isDefined(element[DOM_PROP_TEXT])) {
+    else if (hasKey(element, DOM_PROP_TEXT)) {
         return DOM_PROP_TEXT;
     }
     else {
@@ -909,18 +930,16 @@ const directiveForRender = (directive, element, node) => {
         // @ts-ignores
         const nodeElement = element.cloneNode(true);
         const nodeData = objFrom(node.data);
-        let elementInserted;
-        let nodeNew;
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, DOM_DIR_FOR_DYNAMIC);
         removeDirective(nodeElement, DOM_DIR_FOR_BASE);
         removeDirective(nodeElement, "for");
         setElementActive(nodeElement, true);
         // @ts-ignore
         nodeData[iteratorKey] = i;
-        elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
+        const elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
         // Creates AxonNode for the new element and adds to node children
         // @ts-ignore
-        nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
+        const nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
         node.$children.push(nodeNew);
         nodeNew.run(0 /* init */);
     }

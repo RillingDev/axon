@@ -7,5 +7,5 @@ import { IAxonNode } from "../interfaces";
  * @param {AxonNode} node
  * @returns {Proxy}
  */
-declare const bindDeepDataProxy: (obj: object, node: IAxonNode) => any;
+declare const bindDeepDataProxy: (obj: object, node: IAxonNode) => ProxyHandler<object>;
 export { bindDeepDataProxy };
