@@ -15,5 +15,5 @@ declare const directiveModelInit: (directive: IAxonDirective, element: HTMLEleme
  * @param {AxonNode} node
  * @returns {boolean}
  */
-declare const directiveModelRender: (directive: any, element: any, node: any) => boolean;
+declare const directiveModelRender: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
 export { directiveModelInit, directiveModelRender };
