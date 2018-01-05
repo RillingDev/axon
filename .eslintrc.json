@@ -13,10 +13,6 @@
         "ecmaVersion": 8
     },
     "rules": {
-        "linebreak-style": [
-            "warn",
-            "unix"
-        ],
         "quotes": [
             "warn",
             "double"
@@ -26,6 +22,7 @@
             "always"
         ],
         "no-console": "warn",
-        "indent": "warn"
+        "indent": "off",
+        "linebreak-style": "off"
     }
 }

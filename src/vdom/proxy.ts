@@ -13,7 +13,7 @@ import {
  * @param {AxonNode} node
  * @returns {Object}
  */
-const dataProxyFactory = (node: IAxonNode) => {
+const dataProxyFactory = (node: IAxonNode): object => {
     return {
         set: (target: IGenericObject, key: string, val: any) => {
             if (val !== target[key]) {
@@ -35,7 +35,7 @@ const dataProxyFactory = (node: IAxonNode) => {
  * @param {Object} proxyObj
  * @returns {Proxy}
  */
-const mapProxy = (obj: IGenericObject, proxyObj: object): any => {
+const mapProxy = (obj: IGenericObject, proxyObj: object): ProxyHandler<object> => {
     const result = obj;
 
     forEachEntry(result, (val: any, key: string) => {
@@ -55,7 +55,8 @@ const mapProxy = (obj: IGenericObject, proxyObj: object): any => {
  * @param {AxonNode} node
  * @returns {Proxy}
  */
-const bindDeepDataProxy = (obj: object, node: IAxonNode): any => mapProxy(obj, dataProxyFactory(node));
+const bindDeepDataProxy = (obj: object, node: IAxonNode): ProxyHandler<object> =>
+    mapProxy(obj, dataProxyFactory(node));
 
 export {
     bindDeepDataProxy

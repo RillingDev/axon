@@ -23,7 +23,7 @@ import { IAxonNode } from "../interfaces";
  * @param {boolean} allowUndefined
  * @returns {false|void}
  */
-const handleMissingProp = (propName: any, allowUndefined: boolean) => {
+const handleMissingProp = (propName: string, allowUndefined: boolean) => {
     if (!allowUndefined) {
         throw new Error(`missing prop/method '${propName}'`);
     } else {
@@ -39,9 +39,8 @@ const handleMissingProp = (propName: any, allowUndefined: boolean) => {
  * @param {Array<any>} [additionalArgs=[]]
  * @returns {any}
  */
-const applyMethodContext = (methodProp: any, additionalArgs: any[] = []) => methodProp.val.apply(
-    methodProp.node.data, [...methodProp.args, ...additionalArgs]
-);
+const applyMethodContext = (methodProp: any, additionalArgs: any[] = []) =>
+    methodProp.val.apply(methodProp.node.data, [...methodProp.args, ...additionalArgs]);
 
 /**
  * Parses Literal String
@@ -136,7 +135,7 @@ const evalMethod = (expression: string, node: IAxonNode, allowUndefined: boolean
     const data = getPathFull(root.methods, matched[1], true);
 
     if (data !== null) {
-        data.args = args.map((arg: any) => evalLiteralFromNode(arg, node));
+        data.args = args.map((arg: string) => evalLiteralFromNode(arg, node));
         data.node = root;
 
         return data;
