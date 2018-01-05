@@ -13,6 +13,7 @@ import {
 import {
     getNodeRoot,
 } from "./node";
+import { IAxonNode } from "../interfaces";
 
 /**
  * Handles not-found properties
@@ -50,7 +51,7 @@ const applyMethodContext = (methodProp: any, additionalArgs: any[] = []) => meth
  * @param {AxonNode} node
  * @returns {any}
  */
-const evalLiteralFromNode = (expression: any, node: any) => {
+const evalLiteralFromNode = (expression: string, node: IAxonNode) => {
     let result = null;
 
     if (!isNaN(Number(expression))) {
@@ -75,7 +76,7 @@ const evalLiteralFromNode = (expression: any, node: any) => {
  * @param {boolean} [allowUndefined=false]
  * @returns {any}
  */
-const evalDirective = (name: any, node: any, allowUndefined = false) => {
+const evalDirective = (name: string, node: IAxonNode, allowUndefined: boolean = false) => {
     if (REGEX_IS_FUNCTION_CALL.test(name)) {
         const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
@@ -98,7 +99,7 @@ const evalDirective = (name: any, node: any, allowUndefined = false) => {
  * @param {boolean} [allowUndefined=false]
  * @returns {any|null}
  */
-const evalProp = (expression: any, node: any, allowUndefined = false) => {
+const evalProp = (expression: string, node: IAxonNode, allowUndefined: boolean = false) => {
     let current = node;
 
     while (current) {
@@ -110,6 +111,7 @@ const evalProp = (expression: any, node: any, allowUndefined = false) => {
             return data;
         }
 
+        // @ts-ignore
         current = current.$parent;
     }
 
@@ -125,10 +127,12 @@ const evalProp = (expression: any, node: any, allowUndefined = false) => {
  * @param {boolean} [allowUndefined=false]
  * @returns {any|null}
  */
-const evalMethod = (expression: any, node: any, allowUndefined = false) => {
+const evalMethod = (expression: string, node: IAxonNode, allowUndefined: boolean = false) => {
     const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
-    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
+    // @ts-ignore
+    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
+    // @ts-ignore
     const data = getPathFull(root.methods, matched[1], true);
 
     if (data !== null) {

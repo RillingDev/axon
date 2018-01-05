@@ -757,6 +757,7 @@ const evalProp = (expression, node, allowUndefined = false) => {
             data.node = current;
             return data;
         }
+        // @ts-ignore
         current = current.$parent;
     }
     return handleMissingProp(expression, allowUndefined);
@@ -772,8 +773,10 @@ const evalProp = (expression, node, allowUndefined = false) => {
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
     const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
-    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const root = getNodeRoot(node);
+    // @ts-ignore
+    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
+    // @ts-ignore
     const data = getPathFull(root.methods, matched[1], true);
     if (data !== null) {
         data.args = args.map((arg) => evalLiteralFromNode(arg, node));
