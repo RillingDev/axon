@@ -16,7 +16,7 @@ declare const setDirective: (element: HTMLElement, key: string, value: string) =
  * @param {string} key
  * @returns {string}
  */
-declare const getDirective: (element: HTMLElement, key: string) => string;
+declare const getDirective: (element: HTMLElement, key: string) => string | null;
 /**
  * Checks a value as directive
  *

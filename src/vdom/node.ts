@@ -40,6 +40,7 @@ const getNodeRoot = (node: IAxonNode | IAxonNodeRoot): IAxonNodeRoot => {
  */
 const mapSubNodes = (children: HTMLCollection, node: IAxonNode): any[] =>
     arrFlattenDeep(arrFrom(children)
+        // @ts-ignore
         .map((child: HTMLElement) => {
             if (hasDirectives(child)) {
                 // -> Recurse
@@ -94,10 +95,12 @@ const AxonNode = class implements IAxonNode {
         const directiveResults = this.directives
             .map((directive: IAxonDirective) => {
                 if (mapDirectives.has(directive.name)) {
-                    const mapDirectivesEntry = mapDirectives.get(directive.name);
+                    const mapDirectiveEntry = mapDirectives.get(directive.name);
+                    // @ts-ignore
+                    const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
 
-                    if (mapDirectivesEntry[directiveFnId]) {
-                        return mapDirectivesEntry[directiveFnId](directive, this.$element, this);
+                    if (mapDirectiveEntryFn) {
+                        return mapDirectiveEntryFn(directive, this.$element, this);
                     }
                 }
 

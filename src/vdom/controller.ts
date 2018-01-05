@@ -38,7 +38,7 @@ const handleMissingProp = (propName: any, allowUndefined: boolean) => {
  * @param {Array<any>} [additionalArgs=[]]
  * @returns {any}
  */
-const applyMethodContext = (methodProp: any, additionalArgs = []) => methodProp.val.apply(
+const applyMethodContext = (methodProp: any, additionalArgs: any[] = []) => methodProp.val.apply(
     methodProp.node.data, [...methodProp.args, ...additionalArgs]
 );
 

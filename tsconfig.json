@@ -3,8 +3,8 @@
         "module": "esnext",
         "target": "esnext",
         "newLine": "LF",
-        "strict": false,
-        "noImplicitAny": false,
+        "strict": true,
+        "noImplicitAny": true,
         "removeComments": false
     },
     "include": [

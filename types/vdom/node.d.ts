@@ -14,8 +14,8 @@ declare const getNodeRoot: (node: IAxonNode | IAxonNodeRoot) => IAxonNodeRoot;
  * @class
  */
 declare const AxonNode: {
-    new ($element: HTMLElement, $parent: IAxonNode, data?: object): {
-        $parent: IAxonNode;
+    new ($element: HTMLElement, $parent: IAxonNode | null, data?: object): {
+        $parent: IAxonNode | null;
         $element: HTMLElement;
         $children: IAxonNode[];
         directives: IAxonDirective[];

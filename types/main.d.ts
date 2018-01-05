@@ -10,7 +10,7 @@ declare const AxonNodeRoot: {
         methods: object;
         init(): boolean;
         render(): boolean;
-        $parent: IAxonNode;
+        $parent: IAxonNode | null;
         $element: HTMLElement;
         $children: IAxonNode[];
         directives: IAxonDirective[];

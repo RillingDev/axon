@@ -7,7 +7,7 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-declare const directiveForInit: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
+declare const directiveForInit: (directive: IAxonDirective, element: HTMLElement) => boolean;
 /**
  * v-for render directive
  *

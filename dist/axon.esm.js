@@ -829,6 +829,7 @@ const directiveModelInit = (directive, element, node) => {
     const elementContentProp = getElementContentProp(element);
     bindEvent(element, DOM_EVENT_MODEL, () => {
         const targetProp = evalProp(directive.content, node);
+        // @ts-ignore
         targetProp.container[targetProp.key] = element[elementContentProp];
     });
     return true;
@@ -843,6 +844,7 @@ const directiveModelInit = (directive, element, node) => {
 const directiveModelRender = (directive, element, node) => {
     const elementContentProp = getElementContentProp(element);
     const targetProp = evalProp(directive.content, node);
+    // @ts-ignore
     element[elementContentProp] = targetProp.val;
     return true;
 };
@@ -871,7 +873,7 @@ const FOR_REGEX_ARR = /(.+) of (.+)/;
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveForInit = (directive, element, node) => {
+const directiveForInit = (directive, element) => {
     setDirective(element, DOM_DIR_FOR_BASE, DOM_DIR_FOR_BASE);
     setElementActive(element, false);
     return false;
@@ -886,10 +888,13 @@ const directiveForInit = (directive, element, node) => {
  */
 const directiveForRender = (directive, element, node) => {
     const directiveSplit = directive.content.match(FOR_REGEX_ARR);
+    // @ts-ignore
     const iteratorKey = directiveSplit[1];
+    // @ts-ignore
     const iterable = evalProp(directiveSplit[2], node).val;
     node.$children = [];
     // Delete old nodes
+    // @ts-ignore
     forEach(arrFrom(element.parentElement.children), (child) => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
@@ -905,9 +910,11 @@ const directiveForRender = (directive, element, node) => {
         removeDirective(nodeElement, DOM_DIR_FOR_BASE);
         removeDirective(nodeElement, "for");
         setElementActive(nodeElement, true);
+        // @ts-ignore
         nodeData[iteratorKey] = i;
         elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
         // Creates AxonNode for the new element and adds to node children
+        // @ts-ignore
         nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
         node.$children.push(nodeNew);
         nodeNew.run(0 /* init */);
@@ -1070,9 +1077,11 @@ const AxonNode = class {
         const directiveResults = this.directives
             .map((directive) => {
             if (directives.has(directive.name)) {
-                const mapDirectivesEntry = directives.get(directive.name);
-                if (mapDirectivesEntry[directiveFnId]) {
-                    return mapDirectivesEntry[directiveFnId](directive, this.$element, this);
+                const mapDirectiveEntry = directives.get(directive.name);
+                // @ts-ignore
+                const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
+                if (mapDirectiveEntryFn) {
+                    return mapDirectiveEntryFn(directive, this.$element, this);
                 }
             }
             // Ignore non-existent directive types
