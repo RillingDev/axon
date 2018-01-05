@@ -52,7 +52,7 @@ const mapSubNodes = (children: HTMLCollection, node: IAxonNode): any[] =>
                 return null;
             }
         })
-        .filter((val: IAxonNode | null) => val !== null));
+        .filter((val: IAxonNode | null) => val));
 
 /**
  * Axon Node
@@ -106,8 +106,8 @@ const AxonNode = class implements IAxonNode {
             });
 
         // Recurse if all directives return true
-        if (directiveResults.every((directiveResult: boolean) => directiveResult === true)) {
-            this.$children.map((child) => child.run(directiveFnId));
+        if (directiveResults.every((directiveResult: boolean) => directiveResult)) {
+            this.$children.forEach((child) => child.run(directiveFnId));
 
             return true;
         } else {

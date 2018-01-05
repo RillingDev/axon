@@ -787,7 +787,7 @@ const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
         return null;
     }
 })
-    .filter((val) => val !== null));
+    .filter((val) => val));
 const AxonNode = class {
     constructor($element, $parent, data = {}) {
         const dataStorage = data;
@@ -808,8 +808,8 @@ const AxonNode = class {
             }
             return true;
         });
-        if (directiveResults.every((directiveResult) => directiveResult === true)) {
-            this.$children.map((child) => child.run(directiveFnId));
+        if (directiveResults.every((directiveResult) => directiveResult)) {
+            this.$children.forEach((child) => child.run(directiveFnId));
             return true;
         }
         else {
