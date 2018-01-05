@@ -18,7 +18,10 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * @returns {boolean}
  */
 const directiveOnInit = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
-    bindEvent(element, directive.opt, (e: any) => applyMethodContext(evalMethod(directive.content, node), [e]));
+    bindEvent(
+        element,
+        directive.opt,
+        (e: Event) => applyMethodContext(evalMethod(directive.content, node), [e]));
 
     return true;
 };

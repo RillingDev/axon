@@ -25,6 +25,7 @@ const directiveModelInit = (directive: IAxonDirective, element: HTMLElement, nod
     bindEvent(element, DOM_EVENT_MODEL, () => {
         const targetProp = evalProp(directive.content, node);
 
+        // @ts-ignore
         targetProp.container[targetProp.key] = element[elementContentProp];
     });
 
@@ -38,10 +39,11 @@ const directiveModelInit = (directive: IAxonDirective, element: HTMLElement, nod
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelRender = (directive: any, element: any, node: any) => {
+const directiveModelRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     const elementContentProp = getElementContentProp(element);
     const targetProp = evalProp(directive.content, node);
 
+    // @ts-ignore
     element[elementContentProp] = targetProp.val;
 
     return true;

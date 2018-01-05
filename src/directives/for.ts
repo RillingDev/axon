@@ -32,7 +32,7 @@ const FOR_REGEX_ARR = /(.+) of (.+)/;
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveForInit = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
+const directiveForInit = (directive: IAxonDirective, element: HTMLElement) => {
     setDirective(element, DOM_DIR_FOR_BASE, DOM_DIR_FOR_BASE);
     setElementActive(element, false);
 
@@ -49,13 +49,16 @@ const directiveForInit = (directive: IAxonDirective, element: HTMLElement, node:
  */
 const directiveForRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     const directiveSplit = directive.content.match(FOR_REGEX_ARR);
+    // @ts-ignore
     const iteratorKey = directiveSplit[1];
+    // @ts-ignore
     const iterable = evalProp(directiveSplit[2], node).val;
 
     node.$children = [];
 
     // Delete old nodes
-    forEach(arrFrom(element.parentElement.children), (child) => {
+    // @ts-ignore
+    forEach(arrFrom(element.parentElement.children), (child: HTMLElement) => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }
@@ -73,10 +76,12 @@ const directiveForRender = (directive: IAxonDirective, element: HTMLElement, nod
         removeDirective(nodeElement, "for");
         setElementActive(nodeElement, true);
 
+        // @ts-ignore
         nodeData[iteratorKey] = i;
         elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
 
         // Creates AxonNode for the new element and adds to node children
+        // @ts-ignore
         nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
         node.$children.push(nodeNew);
         nodeNew.run(EDirectiveFn.init);
