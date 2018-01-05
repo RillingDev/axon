@@ -6,6 +6,9 @@ const DOM_PROP_VALUE = "value";
 const DOM_PROP_TEXT = "textContent";
 const DOM_PROP_HTML = "innerHTML";
 
+const DIRECTIVE_KEY_INIT = 0;
+const DIRECTIVE_KEY_RENDER = 1;
+
 export {
     DOM_ATTR_PREFIX,
     DOM_ATTR_DELIMITER,
@@ -13,5 +16,8 @@ export {
 
     DOM_PROP_VALUE,
     DOM_PROP_TEXT,
-    DOM_PROP_HTML
+    DOM_PROP_HTML,
+
+    DIRECTIVE_KEY_INIT,
+    DIRECTIVE_KEY_RENDER
 };

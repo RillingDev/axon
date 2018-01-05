@@ -25,31 +25,35 @@ import {
     directiveOnInit
 } from "./on";
 import { IAxonDirectiveDeclaration } from "../interfaces";
+import {
+    DIRECTIVE_KEY_INIT,
+    DIRECTIVE_KEY_RENDER
+} from "../constants";
 
 const directives: Map<string, IAxonDirectiveDeclaration> = mapFromObject({
     "if": {
-        init: directiveIfBoth,
-        render: directiveIfBoth
+        [DIRECTIVE_KEY_INIT]: directiveIfBoth,
+        [DIRECTIVE_KEY_RENDER]: directiveIfBoth
     },
     "on": {
-        init: directiveOnInit,
+        [DIRECTIVE_KEY_INIT]: directiveOnInit,
     },
     "model": {
-        init: directiveModelInit,
-        render: directiveModelRender
+        [DIRECTIVE_KEY_INIT]: directiveModelInit,
+        [DIRECTIVE_KEY_RENDER]: directiveModelRender
     },
     "bind": {
-        render: directiveBindRender
+        [DIRECTIVE_KEY_RENDER]: directiveBindRender
     },
     "text": {
-        render: directiveTextRender
+        [DIRECTIVE_KEY_RENDER]: directiveTextRender
     },
     "html": {
-        render: directiveHTMLRender
+        [DIRECTIVE_KEY_RENDER]: directiveHTMLRender
     },
     "for": {
-        init: directiveForInit,
-        render: directiveForRender
+        [DIRECTIVE_KEY_INIT]: directiveForInit,
+        [DIRECTIVE_KEY_RENDER]: directiveForRender
     }
 });
 

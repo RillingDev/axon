@@ -27,13 +27,14 @@ interface IAxonNode {
     directives: IAxonDirective[];
     data: object;
 
-    run(type: string): boolean;
-    init(): boolean;
-    render(): boolean;
+    run(type: PropertyKey): boolean;
 }
 
 interface IAxonNodeRoot extends IAxonNode {
     methods: object;
+
+    init(): boolean;
+    render(): boolean;
 }
 
 export { IAxonNode, IAxonNodeRoot, IAxonConfig, IAxonDirective, IAxonDirectiveDeclaration, IGenericObject };

@@ -89,7 +89,7 @@ const AxonNode = class implements IAxonNode {
      * @param {"init"|"render"} type
      * @returns {Array|false}
      */
-    public run(type: string): boolean {
+    public run(type: PropertyKey): boolean {
         const directiveResults = this.directives
             .map((directive: IAxonDirective) => {
                 if (mapDirectives.has(directive.name)) {
@@ -112,18 +112,6 @@ const AxonNode = class implements IAxonNode {
         } else {
             return false;
         }
-    }
-    /**
-     * Initializes directives
-     */
-    public init() {
-        return this.run("init");
-    }
-    /**
-     * Renders directives
-     */
-    public render() {
-        return this.run("render");
     }
 };
 

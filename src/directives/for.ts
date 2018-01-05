@@ -16,6 +16,9 @@ import {
     setElementActive
 } from "../dom/element";
 import { IAxonDirective, IAxonNode } from "../interfaces";
+import {
+    DIRECTIVE_KEY_INIT
+} from "../constants";
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
@@ -76,7 +79,7 @@ const directiveForRender = (directive: IAxonDirective, element: HTMLElement, nod
         // Creates AxonNode for the new element and adds to node children
         nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
         node.$children.push(nodeNew);
-        nodeNew.init();
+        nodeNew.run(DIRECTIVE_KEY_INIT);
     }
 
     return true;

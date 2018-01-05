@@ -7,9 +7,7 @@ declare const AxonNode: {
         $children: IAxonNode[];
         directives: IAxonDirective[];
         data: object;
-        run(type: string): boolean;
-        init(): boolean;
-        render(): boolean;
+        run(type: PropertyKey): boolean;
     };
 };
 export { AxonNode, getNodeRoot };
