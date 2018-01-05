@@ -1,5 +1,10 @@
 import { IAxonNode, IAxonDirective, IAxonConfig } from "./interfaces";
 import { EDirectiveFn } from "./enums";
+/**
+ * Axon Root Node
+ *
+ * @class
+ */
 declare const AxonNodeRoot: {
     new (cfg: IAxonConfig): {
         methods: object;
