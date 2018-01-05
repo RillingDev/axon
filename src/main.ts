@@ -1,8 +1,9 @@
 import { AxonNode } from "./vdom/node";
-import { IAxonNode, IAxonApp, IAxonConfig } from "./interfaces";
+import { IAxonNode, IAxonApp, IAxonConfig, IAxonDirectiveDeclaration } from "./interfaces";
 import {
     EDirectiveFn
 } from "./enums";
+import mapDirectives from "./directives/index";
 
 /**
  * Axon Root Node
@@ -14,6 +15,8 @@ const AxonApp = class implements IAxonApp {
 
     public methods: object;
     public computed: object;
+
+    public directives: Map<string, IAxonDirectiveDeclaration>;
     /**
      * Axon Root Constructor
      *
@@ -25,6 +28,8 @@ const AxonApp = class implements IAxonApp {
 
         this.methods = cfg.methods || {};
         this.computed = cfg.computed || {};
+
+        this.directives = mapDirectives;
 
         this.init();
         this.render();

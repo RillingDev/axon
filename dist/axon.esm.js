@@ -403,6 +403,84 @@ const mapProxy = (obj, proxyObj) => {
 const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
 
 /**
+ * Maps and processes Array of element children
+ *
+ * @private
+ * @param {NodeList} children
+ * @param {AxonNode} node
+ * @returns {Array<Object>}
+ */
+const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
+    .map((child) => {
+    if (hasDirectives(child)) {
+        // -> Recurse
+        return new AxonNode($app, child, node);
+    }
+    else if (child.children.length > 0) {
+        // -> Enter Children
+        return mapSubNodes($app, child.children, node);
+    }
+    else {
+        // -> Exit dead-end
+        return null;
+    }
+})
+    .filter((val) => val));
+/**
+ * Axon Node
+ *
+ * @class
+ */
+const AxonNode = class {
+    /**
+     * Axon Element Node Constructor
+     *
+     * @constructor
+     * @param {Element} $element
+     * @param {Element|null} $parent
+     * @param {Object} [data={}]
+     */
+    constructor($app, $element, $parent, data = {}) {
+        const dataStorage = data;
+        this.directives = parseDirectives($element);
+        this.data = bindDeepDataProxy(dataStorage, this);
+        this.$app = $app;
+        this.$element = $element;
+        this.$parent = $parent;
+        this.$children = mapSubNodes($app, $element.children, this);
+    }
+    /**
+     * Runs directives on the node and all sub-nodes
+     *
+     * @param {0|1} directiveFnId
+     * @returns {Array|false}
+     */
+    run(directiveFnId) {
+        const directiveResults = this.directives
+            .map((directive) => {
+            if (this.$app.directives.has(directive.name)) {
+                const mapDirectiveEntry = this.$app.directives.get(directive.name);
+                // @ts-ignore
+                const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
+                if (mapDirectiveEntryFn) {
+                    return mapDirectiveEntryFn(directive, this.$element, this);
+                }
+            }
+            // Ignore non-existent directive types
+            return true;
+        });
+        // Recurse if all directives return true
+        if (directiveResults.every((directiveResult) => directiveResult)) {
+            this.$children.forEach((child) => child.run(directiveFnId));
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+};
+
+/**
  * addEventListener shorthand
  *
  * @private
@@ -1028,84 +1106,6 @@ const directives = mapFromObject({
 });
 
 /**
- * Maps and processes Array of element children
- *
- * @private
- * @param {NodeList} children
- * @param {AxonNode} node
- * @returns {Array<Object>}
- */
-const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
-    .map((child) => {
-    if (hasDirectives(child)) {
-        // -> Recurse
-        return new AxonNode($app, child, node);
-    }
-    else if (child.children.length > 0) {
-        // -> Enter Children
-        return mapSubNodes($app, child.children, node);
-    }
-    else {
-        // -> Exit dead-end
-        return null;
-    }
-})
-    .filter((val) => val));
-/**
- * Axon Node
- *
- * @class
- */
-const AxonNode = class {
-    /**
-     * Axon Element Node Constructor
-     *
-     * @constructor
-     * @param {Element} $element
-     * @param {Element|null} $parent
-     * @param {Object} [data={}]
-     */
-    constructor($app, $element, $parent, data = {}) {
-        const dataStorage = data;
-        this.directives = parseDirectives($element);
-        this.data = bindDeepDataProxy(dataStorage, this);
-        this.$app = $app;
-        this.$element = $element;
-        this.$parent = $parent;
-        this.$children = mapSubNodes($app, $element.children, this);
-    }
-    /**
-     * Runs directives on the node and all sub-nodes
-     *
-     * @param {0|1} directiveFnId
-     * @returns {Array|false}
-     */
-    run(directiveFnId) {
-        const directiveResults = this.directives
-            .map((directive) => {
-            if (directives.has(directive.name)) {
-                const mapDirectiveEntry = directives.get(directive.name);
-                // @ts-ignore
-                const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
-                if (mapDirectiveEntryFn) {
-                    return mapDirectiveEntryFn(directive, this.$element, this);
-                }
-            }
-            // Ignore non-existent directive types
-            return true;
-        });
-        // Recurse if all directives return true
-        if (directiveResults.every((directiveResult) => directiveResult)) {
-            this.$children.forEach((child) => child.run(directiveFnId));
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-};
-
-/**
  * Axon Root Node
  *
  * @class
@@ -1121,6 +1121,7 @@ const AxonApp = class {
         this.$entry = new AxonNode(this, cfg.el, null, cfg.data);
         this.methods = cfg.methods || {};
         this.computed = cfg.computed || {};
+        this.directives = directives;
         this.init();
         this.render();
     }

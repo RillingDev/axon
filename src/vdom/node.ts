@@ -9,8 +9,7 @@ import {
 import {
     bindDeepDataProxy
 } from "./proxy";
-import mapDirectives from "../directives/index";
-import { IAxonNode, IAxonApp, IAxonDirective, IAxonDirectiveDeclaration } from "../interfaces";
+import { IAxonNode, IAxonApp, IAxonDirective } from "../interfaces";
 import { EDirectiveFn } from "../enums";
 
 /**
@@ -84,8 +83,8 @@ const AxonNode = class implements IAxonNode {
     public run(directiveFnId: EDirectiveFn): boolean {
         const directiveResults = this.directives
             .map((directive: IAxonDirective) => {
-                if (mapDirectives.has(directive.name)) {
-                    const mapDirectiveEntry = mapDirectives.get(directive.name);
+                if (this.$app.directives.has(directive.name)) {
+                    const mapDirectiveEntry = this.$app.directives.get(directive.name);
                     // @ts-ignore
                     const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
 

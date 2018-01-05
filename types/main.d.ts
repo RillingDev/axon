@@ -1,4 +1,4 @@
-import { IAxonNode, IAxonConfig } from "./interfaces";
+import { IAxonNode, IAxonConfig, IAxonDirectiveDeclaration } from "./interfaces";
 /**
  * Axon Root Node
  *
@@ -9,6 +9,7 @@ declare const AxonApp: {
         $entry: IAxonNode;
         methods: object;
         computed: object;
+        directives: Map<string, IAxonDirectiveDeclaration>;
         init(): boolean;
         render(): boolean;
     };
