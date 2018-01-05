@@ -4,8 +4,8 @@ import {
 } from "lightdash";
 import { IAxonNode, IGenericObject } from "../interfaces";
 import {
-    DIRECTIVE_KEY_RENDER
-} from "../constants";
+    EDirectiveFn
+} from "../enums";
 /**
  * Creates a Proxy object with the node render method bound
  *
@@ -19,7 +19,7 @@ const dataProxyFactory = (node: IAxonNode) => {
             if (val !== target[key]) {
                 target[key] = val;
 
-                node.run(DIRECTIVE_KEY_RENDER);
+                node.run(EDirectiveFn.render);
             }
 
             return true;

@@ -1,7 +1,4 @@
-import {
-    DIRECTIVE_KEY_INIT,
-    DIRECTIVE_KEY_RENDER
-} from "./constants";
+import { EDirectiveFn } from "./enums";
 
 interface IGenericObject {
     [key: string]: any;
@@ -20,11 +17,11 @@ interface IAxonDirective {
 }
 
 /**
- * Needs to be manually updated with the values of DIRECTIVE_KEY_INIT and DIRECTIVE_KEY_RENDER
+ * Needs to be manually updated with the values of EDirectiveFn
  */
-interface IAxonDirectiveDeclaration extends IGenericObject {
-    [0]?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
-    [1]?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
+interface IAxonDirectiveDeclaration {
+    0?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
+    1?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
 }
 
 interface IAxonNode {
@@ -35,7 +32,7 @@ interface IAxonNode {
     directives: IAxonDirective[];
     data: object;
 
-    run(type: PropertyKey): boolean;
+    run(directiveFnId: EDirectiveFn): boolean;
 }
 
 interface IAxonNodeRoot extends IAxonNode {

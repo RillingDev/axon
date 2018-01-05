@@ -11,6 +11,7 @@ import {
 } from "./proxy";
 import mapDirectives from "../directives/index";
 import { IAxonNode, IAxonNodeRoot, IAxonDirective, IAxonDirectiveDeclaration } from "../interfaces";
+import { EDirectiveFn } from "../enums";
 
 /**
  * Gets the topmost node
@@ -86,17 +87,17 @@ const AxonNode = class implements IAxonNode {
     /**
      * Runs directives on the node and all sub-nodes
      *
-     * @param {"init"|"render"} type
+     * @param {0|1} directiveFnId
      * @returns {Array|false}
      */
-    public run(type: PropertyKey): boolean {
+    public run(directiveFnId: EDirectiveFn): boolean {
         const directiveResults = this.directives
             .map((directive: IAxonDirective) => {
                 if (mapDirectives.has(directive.name)) {
                     const mapDirectivesEntry = mapDirectives.get(directive.name);
 
-                    if (mapDirectivesEntry[type]) {
-                        return mapDirectivesEntry[type](directive, this.$element, this);
+                    if (mapDirectivesEntry[directiveFnId]) {
+                        return mapDirectivesEntry[directiveFnId](directive, this.$element, this);
                     }
                 }
 
@@ -106,7 +107,7 @@ const AxonNode = class implements IAxonNode {
 
         // Recurse if all directives return true
         if (directiveResults.every((directiveResult: boolean) => directiveResult === true)) {
-            this.$children.map((child) => child.run(type));
+            this.$children.map((child) => child.run(directiveFnId));
 
             return true;
         } else {

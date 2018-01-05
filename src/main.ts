@@ -1,9 +1,8 @@
 import { AxonNode } from "./vdom/node";
 import { IAxonNode, IAxonNodeRoot, IAxonDirective, IAxonConfig } from "./interfaces";
 import {
-    DIRECTIVE_KEY_INIT,
-    DIRECTIVE_KEY_RENDER
-} from "./constants";
+    EDirectiveFn
+} from "./enums";
 
 /**
  * Axon Root Node
@@ -30,13 +29,13 @@ const AxonNodeRoot = class extends AxonNode implements IAxonNodeRoot {
      * Initializes directives
      */
     public init() {
-        return this.run(DIRECTIVE_KEY_INIT);
+        return this.run(EDirectiveFn.init);
     }
     /**
      * Renders directives
      */
     public render() {
-        return this.run(DIRECTIVE_KEY_RENDER);
+        return this.run(EDirectiveFn.render);
     }
 };
 

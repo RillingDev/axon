@@ -1,4 +1,5 @@
 import { IAxonNode, IAxonNodeRoot, IAxonDirective } from "../interfaces";
+import { EDirectiveFn } from "../enums";
 declare const getNodeRoot: (node: IAxonNode | IAxonNodeRoot) => IAxonNodeRoot;
 declare const AxonNode: {
     new ($element: HTMLElement, $parent: IAxonNode, data?: object): {
@@ -7,7 +8,7 @@ declare const AxonNode: {
         $children: IAxonNode[];
         directives: IAxonDirective[];
         data: object;
-        run(type: PropertyKey): boolean;
+        run(directiveFnId: EDirectiveFn): boolean;
     };
 };
 export { AxonNode, getNodeRoot };

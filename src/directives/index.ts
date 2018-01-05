@@ -26,9 +26,8 @@ import {
 } from "./on";
 import { IAxonDirectiveDeclaration } from "../interfaces";
 import {
-    DIRECTIVE_KEY_INIT,
-    DIRECTIVE_KEY_RENDER
-} from "../constants";
+    EDirectiveFn
+} from "../enums";
 
 /**
  * Some of the directive keys are reserved words.
@@ -36,28 +35,28 @@ import {
  */
 const directives: Map<string, IAxonDirectiveDeclaration> = mapFromObject({
     if: {
-        [DIRECTIVE_KEY_INIT]: directiveIfBoth,
-        [DIRECTIVE_KEY_RENDER]: directiveIfBoth
+        [EDirectiveFn.init]: directiveIfBoth,
+        [EDirectiveFn.render]: directiveIfBoth
     },
     on: {
-        [DIRECTIVE_KEY_INIT]: directiveOnInit,
+        [EDirectiveFn.init]: directiveOnInit,
     },
     model: {
-        [DIRECTIVE_KEY_INIT]: directiveModelInit,
-        [DIRECTIVE_KEY_RENDER]: directiveModelRender
+        [EDirectiveFn.init]: directiveModelInit,
+        [EDirectiveFn.render]: directiveModelRender
     },
     bind: {
-        [DIRECTIVE_KEY_RENDER]: directiveBindRender
+        [EDirectiveFn.render]: directiveBindRender
     },
     text: {
-        [DIRECTIVE_KEY_RENDER]: directiveTextRender
+        [EDirectiveFn.render]: directiveTextRender
     },
     html: {
-        [DIRECTIVE_KEY_RENDER]: directiveHTMLRender
+        [EDirectiveFn.render]: directiveHTMLRender
     },
     for: {
-        [DIRECTIVE_KEY_INIT]: directiveForInit,
-        [DIRECTIVE_KEY_RENDER]: directiveForRender
+        [EDirectiveFn.init]: directiveForInit,
+        [EDirectiveFn.render]: directiveForRender
     }
 });
 

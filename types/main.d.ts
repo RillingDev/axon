@@ -1,4 +1,5 @@
 import { IAxonNode, IAxonDirective, IAxonConfig } from "./interfaces";
+import { EDirectiveFn } from "./enums";
 declare const AxonNodeRoot: {
     new (cfg: IAxonConfig): {
         methods: object;
@@ -9,7 +10,7 @@ declare const AxonNodeRoot: {
         $children: IAxonNode[];
         directives: IAxonDirective[];
         data: object;
-        run(type: PropertyKey): boolean;
+        run(directiveFnId: EDirectiveFn): boolean;
     };
 };
 export default AxonNodeRoot;

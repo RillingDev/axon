@@ -265,8 +265,6 @@ const DOM_ATTR_HIDDEN = "hidden";
 const DOM_PROP_VALUE = "value";
 const DOM_PROP_TEXT = "textContent";
 const DOM_PROP_HTML = "innerHTML";
-const DIRECTIVE_KEY_INIT = 0;
-const DIRECTIVE_KEY_RENDER = 1;
 
 const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREFIX + key, value);
 const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + key);
@@ -289,7 +287,7 @@ const dataProxyFactory = (node) => {
         set: (target, key, val) => {
             if (val !== target[key]) {
                 target[key] = val;
-                node.run(DIRECTIVE_KEY_RENDER);
+                node.run(1);
             }
             return true;
         }
@@ -717,7 +715,7 @@ const directiveForRender = (directive, element, node) => {
         elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
         nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
         node.$children.push(nodeNew);
-        nodeNew.run(DIRECTIVE_KEY_INIT);
+        nodeNew.run(0);
     }
     return true;
 };
@@ -745,28 +743,28 @@ const directiveOnInit = (directive, element, node) => {
 
 const directives = mapFromObject({
     if: {
-        [DIRECTIVE_KEY_INIT]: directiveIfBoth,
-        [DIRECTIVE_KEY_RENDER]: directiveIfBoth
+        [0]: directiveIfBoth,
+        [1]: directiveIfBoth
     },
     on: {
-        [DIRECTIVE_KEY_INIT]: directiveOnInit,
+        [0]: directiveOnInit,
     },
     model: {
-        [DIRECTIVE_KEY_INIT]: directiveModelInit,
-        [DIRECTIVE_KEY_RENDER]: directiveModelRender
+        [0]: directiveModelInit,
+        [1]: directiveModelRender
     },
     bind: {
-        [DIRECTIVE_KEY_RENDER]: directiveBindRender
+        [1]: directiveBindRender
     },
     text: {
-        [DIRECTIVE_KEY_RENDER]: directiveTextRender
+        [1]: directiveTextRender
     },
     html: {
-        [DIRECTIVE_KEY_RENDER]: directiveHTMLRender
+        [1]: directiveHTMLRender
     },
     for: {
-        [DIRECTIVE_KEY_INIT]: directiveForInit,
-        [DIRECTIVE_KEY_RENDER]: directiveForRender
+        [0]: directiveForInit,
+        [1]: directiveForRender
     }
 });
 
@@ -799,19 +797,19 @@ const AxonNode = class {
         this.$parent = $parent;
         this.$children = mapSubNodes($element.children, this);
     }
-    run(type) {
+    run(directiveFnId) {
         const directiveResults = this.directives
             .map((directive) => {
             if (directives.has(directive.name)) {
                 const mapDirectivesEntry = directives.get(directive.name);
-                if (mapDirectivesEntry[type]) {
-                    return mapDirectivesEntry[type](directive, this.$element, this);
+                if (mapDirectivesEntry[directiveFnId]) {
+                    return mapDirectivesEntry[directiveFnId](directive, this.$element, this);
                 }
             }
             return true;
         });
         if (directiveResults.every((directiveResult) => directiveResult === true)) {
-            this.$children.map((child) => child.run(type));
+            this.$children.map((child) => child.run(directiveFnId));
             return true;
         }
         else {
@@ -828,10 +826,10 @@ const AxonNodeRoot = class extends AxonNode {
         this.render();
     }
     init() {
-        return this.run(DIRECTIVE_KEY_INIT);
+        return this.run(0);
     }
     render() {
-        return this.run(DIRECTIVE_KEY_RENDER);
+        return this.run(1);
     }
 };
 
