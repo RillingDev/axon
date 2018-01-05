@@ -1,21 +1,16 @@
-import { IAxonNode, IAxonDirective, IAxonConfig } from "./interfaces";
-import { EDirectiveFn } from "./enums";
+import { IAxonNode, IAxonConfig } from "./interfaces";
 /**
  * Axon Root Node
  *
  * @class
  */
-declare const AxonNodeRoot: {
+declare const AxonApp: {
     new (cfg: IAxonConfig): {
+        $entry: IAxonNode;
         methods: object;
+        computed: object;
         init(): boolean;
         render(): boolean;
-        $parent: IAxonNode | null;
-        $element: HTMLElement;
-        $children: IAxonNode[];
-        directives: IAxonDirective[];
-        data: object;
-        run(directiveFnId: EDirectiveFn): boolean;
     };
 };
-export default AxonNodeRoot;
+export default AxonApp;

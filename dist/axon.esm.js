@@ -794,14 +794,13 @@ const evalProp = (expression, node, allowUndefined = false) => {
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
     const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
-    const root = getNodeRoot(node);
     // @ts-ignore
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     // @ts-ignore
-    const data = getPathFull(root.methods, matched[1], true);
+    const data = getPathFull(node.$app.methods, matched[1], true);
     if (data !== null) {
         data.args = args.map((arg) => evalLiteralFromNode(arg, node));
-        data.node = root;
+        data.node = node.$app.$entry;
         return data;
     }
     else {
@@ -937,7 +936,7 @@ const directiveForRender = (directive, element, node) => {
         const elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
         // Creates AxonNode for the new element and adds to node children
         // @ts-ignore
-        const nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
+        const nodeNew = new AxonNode(node.$app, elementInserted, node.$parent, nodeData);
         node.$children.push(nodeNew);
         nodeNew.run(0 /* init */);
     }
@@ -1029,21 +1028,6 @@ const directives = mapFromObject({
 });
 
 /**
- * Gets the topmost node
- *
- * @private
- * @param {AxonNode} node
- * @returns {AxonNode}
- */
-const getNodeRoot = (node) => {
-    let result = node;
-    while (result.$parent !== null) {
-        result = result.$parent;
-    }
-    // @ts-ignore
-    return result;
-};
-/**
  * Maps and processes Array of element children
  *
  * @private
@@ -1051,15 +1035,15 @@ const getNodeRoot = (node) => {
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = (children, node) => arrFlattenDeep(arrFrom(children)
+const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
     .map((child) => {
     if (hasDirectives(child)) {
         // -> Recurse
-        return new AxonNode(child, node);
+        return new AxonNode($app, child, node);
     }
     else if (child.children.length > 0) {
         // -> Enter Children
-        return mapSubNodes(child.children, node);
+        return mapSubNodes($app, child.children, node);
     }
     else {
         // -> Exit dead-end
@@ -1081,13 +1065,14 @@ const AxonNode = class {
      * @param {Element|null} $parent
      * @param {Object} [data={}]
      */
-    constructor($element, $parent, data = {}) {
+    constructor($app, $element, $parent, data = {}) {
         const dataStorage = data;
         this.directives = parseDirectives($element);
         this.data = bindDeepDataProxy(dataStorage, this);
+        this.$app = $app;
         this.$element = $element;
         this.$parent = $parent;
-        this.$children = mapSubNodes($element.children, this);
+        this.$children = mapSubNodes($app, $element.children, this);
     }
     /**
      * Runs directives on the node and all sub-nodes
@@ -1125,7 +1110,7 @@ const AxonNode = class {
  *
  * @class
  */
-const AxonNodeRoot = class extends AxonNode {
+const AxonApp = class {
     /**
      * Axon Root Constructor
      *
@@ -1133,8 +1118,9 @@ const AxonNodeRoot = class extends AxonNode {
      * @param {Object} [cfg={}] Config data for the Axon instance
      */
     constructor(cfg) {
-        super(cfg.el, null, cfg.data);
+        this.$entry = new AxonNode(this, cfg.el, null, cfg.data);
         this.methods = cfg.methods || {};
+        this.computed = cfg.computed || {};
         this.init();
         this.render();
     }
@@ -1142,14 +1128,14 @@ const AxonNodeRoot = class extends AxonNode {
      * Initializes directives
      */
     init() {
-        return this.run(0 /* init */);
+        return this.$entry.run(0 /* init */);
     }
     /**
      * Renders directives
      */
     render() {
-        return this.run(1 /* render */);
+        return this.$entry.run(1 /* render */);
     }
 };
 
-export default AxonNodeRoot;
+export default AxonApp;

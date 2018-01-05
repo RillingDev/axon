@@ -81,7 +81,7 @@ const directiveForRender = (directive: IAxonDirective, element: HTMLElement, nod
 
         // Creates AxonNode for the new element and adds to node children
         // @ts-ignore
-        const nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
+        const nodeNew = new AxonNode(node.$app, elementInserted, node.$parent, nodeData);
 
         node.$children.push(nodeNew);
         nodeNew.run(EDirectiveFn.init);

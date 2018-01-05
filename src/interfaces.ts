@@ -7,6 +7,7 @@ interface IGenericObject {
 interface IAxonConfig {
     el: HTMLElement;
     data?: object;
+    computed?: object;
     methods?: object;
 }
 
@@ -25,6 +26,7 @@ interface IAxonDirectiveDeclaration {
 }
 
 interface IAxonNode {
+    $app: IAxonApp;
     $parent: IAxonNode | null;
     $element: HTMLElement;
     $children: IAxonNode[];
@@ -35,11 +37,21 @@ interface IAxonNode {
     run(directiveFnId: EDirectiveFn): boolean;
 }
 
-interface IAxonNodeRoot extends IAxonNode {
+interface IAxonApp {
+    $entry: IAxonNode;
+
     methods: object;
+    computed: object;
 
     init(): boolean;
     render(): boolean;
 }
 
-export { IAxonNode, IAxonNodeRoot, IAxonConfig, IAxonDirective, IAxonDirectiveDeclaration, IGenericObject };
+export {
+    IAxonNode,
+    IAxonApp,
+    IAxonConfig,
+    IAxonDirective,
+    IAxonDirectiveDeclaration,
+    IGenericObject
+};

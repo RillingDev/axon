@@ -10,9 +10,6 @@ import {
 import {
     isDefined
 } from "lightdash";
-import {
-    getNodeRoot,
-} from "./node";
 import { IAxonNode } from "../interfaces";
 
 /**
@@ -128,15 +125,14 @@ const evalProp = (expression: string, node: IAxonNode, allowUndefined: boolean =
  */
 const evalMethod = (expression: string, node: IAxonNode, allowUndefined: boolean = false) => {
     const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
-    const root = getNodeRoot(node);
     // @ts-ignore
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     // @ts-ignore
-    const data = getPathFull(root.methods, matched[1], true);
+    const data = getPathFull(node.$app.methods, matched[1], true);
 
     if (data !== null) {
         data.args = args.map((arg: string) => evalLiteralFromNode(arg, node));
-        data.node = root;
+        data.node = node.$app.$entry;
 
         return data;
     } else {

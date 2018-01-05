@@ -1,20 +1,13 @@
-import { IAxonNode, IAxonNodeRoot, IAxonDirective } from "../interfaces";
+import { IAxonNode, IAxonApp, IAxonDirective } from "../interfaces";
 import { EDirectiveFn } from "../enums";
-/**
- * Gets the topmost node
- *
- * @private
- * @param {AxonNode} node
- * @returns {AxonNode}
- */
-declare const getNodeRoot: (node: IAxonNode | IAxonNodeRoot) => IAxonNodeRoot;
 /**
  * Axon Node
  *
  * @class
  */
 declare const AxonNode: {
-    new ($element: HTMLElement, $parent: IAxonNode | null, data?: object): {
+    new ($app: IAxonApp, $element: HTMLElement, $parent: IAxonNode | null, data?: object): {
+        $app: IAxonApp;
         $parent: IAxonNode | null;
         $element: HTMLElement;
         $children: IAxonNode[];
@@ -23,4 +16,4 @@ declare const AxonNode: {
         run(directiveFnId: EDirectiveFn): boolean;
     };
 };
-export { AxonNode, getNodeRoot };
+export { AxonNode };

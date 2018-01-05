@@ -1,5 +1,5 @@
 import { AxonNode } from "./vdom/node";
-import { IAxonNode, IAxonNodeRoot, IAxonDirective, IAxonConfig } from "./interfaces";
+import { IAxonNode, IAxonApp, IAxonConfig } from "./interfaces";
 import {
     EDirectiveFn
 } from "./enums";
@@ -9,8 +9,11 @@ import {
  *
  * @class
  */
-const AxonNodeRoot = class extends AxonNode implements IAxonNodeRoot {
+const AxonApp = class implements IAxonApp {
+    public $entry: IAxonNode;
+
     public methods: object;
+    public computed: object;
     /**
      * Axon Root Constructor
      *
@@ -18,9 +21,10 @@ const AxonNodeRoot = class extends AxonNode implements IAxonNodeRoot {
      * @param {Object} [cfg={}] Config data for the Axon instance
      */
     constructor(cfg: IAxonConfig) {
-        super(cfg.el, null, cfg.data);
+        this.$entry = new AxonNode(this, cfg.el, null, cfg.data);
 
         this.methods = cfg.methods || {};
+        this.computed = cfg.computed || {};
 
         this.init();
         this.render();
@@ -29,14 +33,14 @@ const AxonNodeRoot = class extends AxonNode implements IAxonNodeRoot {
      * Initializes directives
      */
     public init() {
-        return this.run(EDirectiveFn.init);
+        return this.$entry.run(EDirectiveFn.init);
     }
     /**
      * Renders directives
      */
     public render() {
-        return this.run(EDirectiveFn.render);
+        return this.$entry.run(EDirectiveFn.render);
     }
 };
 
-export default AxonNodeRoot;
+export default AxonApp;

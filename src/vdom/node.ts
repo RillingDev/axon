@@ -10,25 +10,8 @@ import {
     bindDeepDataProxy
 } from "./proxy";
 import mapDirectives from "../directives/index";
-import { IAxonNode, IAxonNodeRoot, IAxonDirective, IAxonDirectiveDeclaration } from "../interfaces";
+import { IAxonNode, IAxonApp, IAxonDirective, IAxonDirectiveDeclaration } from "../interfaces";
 import { EDirectiveFn } from "../enums";
-
-/**
- * Gets the topmost node
- *
- * @private
- * @param {AxonNode} node
- * @returns {AxonNode}
- */
-const getNodeRoot = (node: IAxonNode | IAxonNodeRoot): IAxonNodeRoot => {
-    let result = node;
-
-    while (result.$parent !== null) {
-        result = result.$parent;
-    }
-    // @ts-ignore
-    return result;
-};
 
 /**
  * Maps and processes Array of element children
@@ -38,16 +21,16 @@ const getNodeRoot = (node: IAxonNode | IAxonNodeRoot): IAxonNodeRoot => {
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = (children: HTMLCollection, node: IAxonNode): IAxonNode[] =>
+const mapSubNodes = ($app: IAxonApp, children: HTMLCollection, node: IAxonNode): IAxonNode[] =>
     arrFlattenDeep(arrFrom(children)
         // @ts-ignore
         .map((child: HTMLElement) => {
             if (hasDirectives(child)) {
                 // -> Recurse
-                return new AxonNode(child, node);
+                return new AxonNode($app, child, node);
             } else if (child.children.length > 0) {
                 // -> Enter Children
-                return mapSubNodes(child.children, node);
+                return mapSubNodes($app, child.children, node);
             } else {
                 // -> Exit dead-end
                 return null;
@@ -61,6 +44,7 @@ const mapSubNodes = (children: HTMLCollection, node: IAxonNode): IAxonNode[] =>
  * @class
  */
 const AxonNode = class implements IAxonNode {
+    public $app: IAxonApp;
     public $parent: IAxonNode | null;
     public $element: HTMLElement;
     public $children: IAxonNode[];
@@ -75,15 +59,21 @@ const AxonNode = class implements IAxonNode {
      * @param {Element|null} $parent
      * @param {Object} [data={}]
      */
-    constructor($element: HTMLElement, $parent: IAxonNode | null, data: object = {}) {
+    constructor(
+        $app: IAxonApp,
+        $element: HTMLElement,
+        $parent: IAxonNode | null,
+        data: object = {}
+    ) {
         const dataStorage = data;
 
         this.directives = parseDirectives($element);
         this.data = bindDeepDataProxy(dataStorage, this);
 
+        this.$app = $app;
         this.$element = $element;
         this.$parent = $parent;
-        this.$children = mapSubNodes($element.children, this);
+        this.$children = mapSubNodes($app, $element.children, this);
     }
     /**
      * Runs directives on the node and all sub-nodes
@@ -119,4 +109,4 @@ const AxonNode = class implements IAxonNode {
     }
 };
 
-export { AxonNode, getNodeRoot };
+export { AxonNode };
