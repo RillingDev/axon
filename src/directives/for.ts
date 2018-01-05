@@ -68,8 +68,6 @@ const directiveForRender = (directive: IAxonDirective, element: HTMLElement, nod
         // @ts-ignores
         const nodeElement: HTMLElement = element.cloneNode(true);
         const nodeData = objFrom(node.data);
-        let elementInserted;
-        let nodeNew;
 
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, DOM_DIR_FOR_DYNAMIC);
         removeDirective(nodeElement, DOM_DIR_FOR_BASE);
@@ -78,11 +76,13 @@ const directiveForRender = (directive: IAxonDirective, element: HTMLElement, nod
 
         // @ts-ignore
         nodeData[iteratorKey] = i;
-        elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
+
+        const elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
 
         // Creates AxonNode for the new element and adds to node children
         // @ts-ignore
-        nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
+        const nodeNew = new AxonNode(elementInserted, node.$parent, nodeData);
+
         node.$children.push(nodeNew);
         nodeNew.run(EDirectiveFn.init);
     }

@@ -1,5 +1,5 @@
 import {
-    isDefined
+    hasKey
 } from "lightdash";
 import {
     DOM_PROP_VALUE,
@@ -17,10 +17,10 @@ import {
  */
 const getElementContentProp = (element: HTMLElement) => {
     // @ts-ignore
-    if (isDefined(element[DOM_PROP_VALUE])) {
+    if (hasKey(element, DOM_PROP_VALUE)) {
         return DOM_PROP_VALUE;
         // @ts-ignore
-    } else if (isDefined(element[DOM_PROP_TEXT])) {
+    } else if (hasKey(element, DOM_PROP_TEXT)) {
         return DOM_PROP_TEXT;
     } else {
         return DOM_PROP_HTML;
