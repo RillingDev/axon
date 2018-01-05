@@ -1,3 +1,8 @@
+import {
+    DIRECTIVE_KEY_INIT,
+    DIRECTIVE_KEY_RENDER
+} from "./constants";
+
 interface IGenericObject {
     [key: string]: any;
 }
@@ -14,9 +19,12 @@ interface IAxonDirective {
     opt: string;
 }
 
+/**
+ * Needs to be manually updated with the values of DIRECTIVE_KEY_INIT and DIRECTIVE_KEY_RENDER
+ */
 interface IAxonDirectiveDeclaration extends IGenericObject {
-    init?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
-    render?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
+    [0]?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
+    [1]?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
 }
 
 interface IAxonNode {

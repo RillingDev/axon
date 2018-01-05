@@ -30,28 +30,32 @@ import {
     DIRECTIVE_KEY_RENDER
 } from "../constants";
 
+/**
+ * Some of the directive keys are reserved words.
+ * this 'should' work fine, but be careful
+ */
 const directives: Map<string, IAxonDirectiveDeclaration> = mapFromObject({
-    "if": {
+    if: {
         [DIRECTIVE_KEY_INIT]: directiveIfBoth,
         [DIRECTIVE_KEY_RENDER]: directiveIfBoth
     },
-    "on": {
+    on: {
         [DIRECTIVE_KEY_INIT]: directiveOnInit,
     },
-    "model": {
+    model: {
         [DIRECTIVE_KEY_INIT]: directiveModelInit,
         [DIRECTIVE_KEY_RENDER]: directiveModelRender
     },
-    "bind": {
+    bind: {
         [DIRECTIVE_KEY_RENDER]: directiveBindRender
     },
-    "text": {
+    text: {
         [DIRECTIVE_KEY_RENDER]: directiveTextRender
     },
-    "html": {
+    html: {
         [DIRECTIVE_KEY_RENDER]: directiveHTMLRender
     },
-    "for": {
+    for: {
         [DIRECTIVE_KEY_INIT]: directiveForInit,
         [DIRECTIVE_KEY_RENDER]: directiveForRender
     }

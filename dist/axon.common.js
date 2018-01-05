@@ -746,27 +746,27 @@ const directiveOnInit = (directive, element, node) => {
 };
 
 const directives = mapFromObject({
-    "if": {
+    if: {
         [DIRECTIVE_KEY_INIT]: directiveIfBoth,
         [DIRECTIVE_KEY_RENDER]: directiveIfBoth
     },
-    "on": {
+    on: {
         [DIRECTIVE_KEY_INIT]: directiveOnInit,
     },
-    "model": {
+    model: {
         [DIRECTIVE_KEY_INIT]: directiveModelInit,
         [DIRECTIVE_KEY_RENDER]: directiveModelRender
     },
-    "bind": {
+    bind: {
         [DIRECTIVE_KEY_RENDER]: directiveBindRender
     },
-    "text": {
+    text: {
         [DIRECTIVE_KEY_RENDER]: directiveTextRender
     },
-    "html": {
+    html: {
         [DIRECTIVE_KEY_RENDER]: directiveHTMLRender
     },
-    "for": {
+    for: {
         [DIRECTIVE_KEY_INIT]: directiveForInit,
         [DIRECTIVE_KEY_RENDER]: directiveForRender
     }
