@@ -2,12 +2,14 @@ import {
     hasKey
 } from "lightdash";
 import {
+    DOM_PROP_CHECKED,
     DOM_PROP_VALUE,
     DOM_PROP_TEXT,
     DOM_PROP_HTML,
     DOM_ATTR_HIDDEN
 } from "../constants";
 
+const DOM_PROPS = [DOM_PROP_CHECKED, DOM_PROP_VALUE, DOM_PROP_TEXT, DOM_PROP_HTML];
 /**
  * Checks which type of content property an Element uses
  *
@@ -15,17 +17,8 @@ import {
  * @param {Element} element
  * @returns {string}
  */
-const getElementContentProp = (element: HTMLElement) => {
-    // @ts-ignore
-    if (hasKey(element, DOM_PROP_VALUE)) {
-        return DOM_PROP_VALUE;
-        // @ts-ignore
-    } else if (hasKey(element, DOM_PROP_TEXT)) {
-        return DOM_PROP_TEXT;
-    } else {
-        return DOM_PROP_HTML;
-    }
-};
+const getElementContentProp = (element: HTMLElement) =>
+    DOM_PROPS.find(prop => hasKey(element, prop));
 
 /**
  * Toggles element active mode

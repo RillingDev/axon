@@ -7,5 +7,5 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-declare const directiveIfBoth: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
-export { directiveIfBoth };
+declare const directiveIfRender: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
+export { directiveIfRender };

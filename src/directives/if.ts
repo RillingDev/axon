@@ -14,7 +14,7 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveIfBoth = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
+const directiveIfRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     const expressionValue = Boolean(evalDirective(directive.content, node, true).val);
 
     setElementActive(element, expressionValue);
@@ -23,5 +23,5 @@ const directiveIfBoth = (directive: IAxonDirective, element: HTMLElement, node: 
 };
 
 export {
-    directiveIfBoth
+    directiveIfRender
 };

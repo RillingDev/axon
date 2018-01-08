@@ -283,6 +283,7 @@ const mapFromObject = (obj) => new Map(objEntries(obj));
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_DELIMITER = ":";
 const DOM_ATTR_HIDDEN = "hidden";
+const DOM_PROP_CHECKED = "checked";
 const DOM_PROP_VALUE = "value";
 const DOM_PROP_TEXT = "textContent";
 const DOM_PROP_HTML = "innerHTML";
@@ -489,6 +490,19 @@ const AxonNode = class {
  * @param {Function} eventFn
  */
 const bindEvent = (element, eventType, eventFn) => element.addEventListener(eventType, eventFn);
+/**
+ * Detects wether an input element uses the input ot change event
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/Events/input
+ *
+ * @param {HTMLElement} element
+ * @returns {string}
+ */
+const getEventType = (element) => 
+// @ts-ignore
+element.type === "checkbox" || element.type === "radio" ?
+    "change" :
+    "input";
 
 /**
  * Regex for comparisons
@@ -886,6 +900,7 @@ const evalMethod = (expression, node, allowUndefined = false) => {
     }
 };
 
+const DOM_PROPS = [DOM_PROP_CHECKED, DOM_PROP_VALUE, DOM_PROP_TEXT, DOM_PROP_HTML];
 /**
  * Checks which type of content property an Element uses
  *
@@ -893,19 +908,7 @@ const evalMethod = (expression, node, allowUndefined = false) => {
  * @param {Element} element
  * @returns {string}
  */
-const getElementContentProp = (element) => {
-    // @ts-ignore
-    if (hasKey(element, DOM_PROP_VALUE)) {
-        return DOM_PROP_VALUE;
-        // @ts-ignore
-    }
-    else if (hasKey(element, DOM_PROP_TEXT)) {
-        return DOM_PROP_TEXT;
-    }
-    else {
-        return DOM_PROP_HTML;
-    }
-};
+const getElementContentProp = (element) => DOM_PROPS.find(prop => hasKey(element, prop));
 /**
  * Toggles element active mode
  *
@@ -917,7 +920,6 @@ const setElementActive = (element, active) => active ?
     element.removeAttribute(DOM_ATTR_HIDDEN) :
     element.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
 
-const DOM_EVENT_MODEL = "input";
 /**
  * v-model init directive
  *
@@ -928,8 +930,11 @@ const DOM_EVENT_MODEL = "input";
  */
 const directiveModelInit = (directive, element, node) => {
     const elementContentProp = getElementContentProp(element);
-    bindEvent(element, DOM_EVENT_MODEL, () => {
+    const elementEventType = getEventType(element);
+    console.log("I", node, elementContentProp);
+    bindEvent(element, elementEventType, () => {
         const targetProp = evalProp(directive.content, node);
+        console.log("I", node, targetProp);
         // @ts-ignore
         targetProp.container[targetProp.key] = element[elementContentProp];
     });
@@ -1055,7 +1060,7 @@ const directiveHTMLRender = (directive, element, node) => {
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveIfBoth = (directive, element, node) => {
+const directiveIfRender = (directive, element, node) => {
     const expressionValue = Boolean(evalDirective(directive.content, node, true).val);
     setElementActive(element, expressionValue);
     return expressionValue;
@@ -1080,8 +1085,7 @@ const directiveOnInit = (directive, element, node) => {
  */
 const directives = mapFromObject({
     if: {
-        [0 /* init */]: directiveIfBoth,
-        [1 /* render */]: directiveIfBoth
+        [1 /* render */]: directiveIfRender
     },
     on: {
         [0 /* init */]: directiveOnInit,

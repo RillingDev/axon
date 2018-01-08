@@ -19,7 +19,7 @@ import {
     directiveHTMLRender
 } from "./html";
 import {
-    directiveIfBoth
+    directiveIfRender
 } from "./if";
 import {
     directiveOnInit
@@ -35,8 +35,7 @@ import {
  */
 const directives: Map<string, IAxonDirectiveDeclaration> = mapFromObject({
     if: {
-        [EDirectiveFn.init]: directiveIfBoth,
-        [EDirectiveFn.render]: directiveIfBoth
+        [EDirectiveFn.render]: directiveIfRender
     },
     on: {
         [EDirectiveFn.init]: directiveOnInit,

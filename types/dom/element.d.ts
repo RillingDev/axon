@@ -5,7 +5,7 @@
  * @param {Element} element
  * @returns {string}
  */
-declare const getElementContentProp: (element: HTMLElement) => "value" | "textContent" | "innerHTML";
+declare const getElementContentProp: (element: HTMLElement) => string | undefined;
 /**
  * Toggles element active mode
  *

@@ -7,9 +7,8 @@ import {
 import {
     getElementContentProp
 } from "../dom/element";
+import { getEventType } from "../dom/event";
 import { IAxonDirective, IAxonNode } from "../interfaces";
-
-const DOM_EVENT_MODEL = "input";
 
 /**
  * v-model init directive
@@ -21,9 +20,14 @@ const DOM_EVENT_MODEL = "input";
  */
 const directiveModelInit = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     const elementContentProp = getElementContentProp(element);
+    const elementEventType = getEventType(element);
 
-    bindEvent(element, DOM_EVENT_MODEL, () => {
+    console.log("I", node, elementContentProp)
+
+    bindEvent(element, elementEventType, () => {
         const targetProp = evalProp(directive.content, node);
+
+        console.log("I", node, targetProp)
 
         // @ts-ignore
         targetProp.container[targetProp.key] = element[elementContentProp];

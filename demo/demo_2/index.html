@@ -23,7 +23,6 @@
             padding: 0px 8px;
             float: right;
         }
-
     </style>
 </head>
 
@@ -35,6 +34,10 @@
             <div>
                 <h3>Add Item</h3>
                 <div>
+                    <label for="showAddItem">Show "Add Item"</label>
+                    <input type="checkbox" id="showAddItem" x-model="showAddItem">
+                </div>
+                <div x-if="showAddItem">
                     <label>Name</label>
                     <input type="text" placeholder="Item Name" x-model="newItem.name">
                     <label>Priority</label>

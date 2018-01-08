@@ -3,30 +3,31 @@
 const app = new Axon({
     el: document.querySelector("#myApp"),
     data: {
+        showAddItem: true,
         newItem: {
             name: "Walk Dogs",
             priority: 2
         },
         list: [{
-                name: "Buy Milk",
-                priority: 1
-            },
-            {
-                name: "Go for a Walk",
-                priority: 6
-            },
-            {
-                name: "Learn Python",
-                priority: 8
-            },
-            {
-                name: "Read a Book",
-                priority: 2
-            },
-            {
-                name: "Pet Cat",
-                priority: 10
-            }
+            name: "Buy Milk",
+            priority: 1
+        },
+        {
+            name: "Go for a Walk",
+            priority: 6
+        },
+        {
+            name: "Learn Python",
+            priority: 8
+        },
+        {
+            name: "Read a Book",
+            priority: 2
+        },
+        {
+            name: "Pet Cat",
+            priority: 10
+        }
         ]
     },
     methods: {
