@@ -27,7 +27,6 @@ const AxonApp = class implements IAxonApp {
         this.$entry = new AxonNode(this, cfg.el, null, cfg.data);
 
         this.methods = cfg.methods || {};
-        this.computed = cfg.computed || {};
 
         this.directives = mapDirectives;
 

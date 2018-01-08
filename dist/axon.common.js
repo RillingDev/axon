@@ -1122,7 +1122,6 @@ const AxonApp = class {
     constructor(cfg) {
         this.$entry = new AxonNode(this, cfg.el, null, cfg.data);
         this.methods = cfg.methods || {};
-        this.computed = cfg.computed || {};
         this.directives = directives;
         this.init();
         this.render();

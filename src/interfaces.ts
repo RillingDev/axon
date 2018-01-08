@@ -7,7 +7,6 @@ interface IGenericObject {
 interface IAxonConfig {
     el: HTMLElement;
     data?: object;
-    computed?: object;
     methods?: object;
 }
 
@@ -41,7 +40,6 @@ interface IAxonApp {
     $entry: IAxonNode;
 
     methods: object;
-    computed: object;
 
     directives: Map<string, IAxonDirectiveDeclaration>;
 
