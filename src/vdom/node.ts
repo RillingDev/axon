@@ -54,7 +54,7 @@ const AxonNode = class implements IAxonNode {
      * Axon Element Node Constructor
      *
      * @constructor
-     * @param {Element} $element
+     * @param {HTMLElement} $element
      * @param {Element|null} $parent
      * @param {Object} [data={}]
      */

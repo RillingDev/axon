@@ -7,7 +7,7 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * v-bind render directive
  *
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */

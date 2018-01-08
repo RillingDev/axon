@@ -11,7 +11,7 @@ import { IAxonDirective } from "../interfaces";
  * Sets a value as directive
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {string} key
  * @param {string} value
  */
@@ -22,7 +22,7 @@ const setDirective = (element: HTMLElement, key: string, value: string) =>
  * Gets a value as directive
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {string} key
  * @returns {string}
  */
@@ -33,7 +33,7 @@ const getDirective = (element: HTMLElement, key: string) =>
  * Checks a value as directive
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {string} key
  * @returns {boolean}
  */
@@ -44,7 +44,7 @@ const hasDirective = (element: HTMLElement, key: string) =>
  * Removes a directive
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {string} key
  */
 const removeDirective = (element: HTMLElement, key: string) =>
@@ -63,7 +63,7 @@ const isDirective = (attr: Attr) => attr.name.startsWith(DOM_ATTR_PREFIX);
  * Returns array of all directives
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {Array<Directive>}
  */
 const getDirectives = (element: HTMLElement): Attr[] =>
@@ -73,7 +73,7 @@ const getDirectives = (element: HTMLElement): Attr[] =>
  * Checks if the element has any directives
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {boolean}
  */
 const hasDirectives = (element: HTMLElement) => getDirectives(element).length > 0;
@@ -82,7 +82,7 @@ const hasDirectives = (element: HTMLElement) => getDirectives(element).length > 
  * Returns directives on node with name parsed
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {Array<Object>}
  */
 const parseDirectives = (element: HTMLElement): IAxonDirective[] => getDirectives(element)

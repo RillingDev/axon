@@ -13,7 +13,7 @@ import {
  * addEventListener shorthand
  *
  * @private
- * @param {Element} node
+ * @param {HTMLElement} node
  * @param {string} eventType
  * @param {Function} eventFn
  */
@@ -45,7 +45,7 @@ const getInputEventType = (element: HTMLElement): string =>
  * Checks which type of content property an Element uses
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {string}
  */
 const getElementContentProp = (element: HTMLElement): string => {
@@ -62,7 +62,7 @@ const getElementContentProp = (element: HTMLElement): string => {
  * Toggles element active mode
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {boolean} active
  */
 const setElementActive = (element: HTMLElement, active: boolean) => active ?
