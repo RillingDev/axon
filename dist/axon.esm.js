@@ -1103,7 +1103,10 @@ const directiveOnInit = (directive, element, node) => {
 
 /**
  * Some of the directive keys are reserved words.
- * this 'should' work fine, but be careful
+ *
+ * should work fine, but be careful.
+ *
+ * @private
  */
 const directives = mapFromObject({
     if: {

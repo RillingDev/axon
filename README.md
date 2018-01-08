@@ -8,7 +8,7 @@
 
 **This is highly experimental and WIP, do not use this in any production software**
 
-Axon is an very small(4KB) JavaScript framework inspired by Vue.js.
+Axon is an very small(~4KB) JavaScript framework inspired by Vue.js.
 Instead of using the `v-` namespace for directives, it uses `x-`.
 
 This framework is **not** supposed or able to be "the next big framework", this is just a hobby project of mine.
@@ -47,14 +47,18 @@ To start with Axon, you need to create a new Axon App:
 ```javascript
 //Axon({el, data, methods})
 const app = new Axon({
-    el: document.querySelector("#myApp"), // Query for the root element
+    el: document.querySelector("#myApp"), // Root element
     data: {
         name: "Lorem ipsum",
-        bar: "bar"
+        bar: "bar",
+        list: [1, 4, 2]
     },
     methods: {
         setBar(val) {
             this.bar = val;
+        },
+        logBar(){
+            console.log(this.bar);
         }
     }
 });
@@ -79,12 +83,10 @@ const app = new Axon({
 
 ### Directives
 
-Axon currently has the following directives:
-
-+ `x-if="#expression#"`: if the value evaluates to true, this node and child-nodes will render, else they will be ignored and hidden
-+ `x-on:#event#="method()"`: attaches the given method as event-handler for the given event
 + `x-model="#property#"`: binds the property to the node and attaches an event to update
-+ `x-bind:#attr#="#expression#"`: binds the value of the expression as the given attribute
-+ `x-text="#expression#"`: inserts expression content as text
-+ `x-html="#expression#"`: inserts expression content as HTML
++ `x-bind:#attr#="#property#"`: binds the value of the expression as the given attribute
++ `x-text="#property#"`: inserts expression content as text
++ `x-html="#property#"`: inserts expression content as HTML
++ `x-if="#property#"`: if the value evaluates to true, this node and child-nodes will render, else they will be ignored and hidden
++ `x-on:#event#="method()"`: attaches the given method as event-handler for the given event
 + `x-for="#variable# of #property#"`: loops over values in Array and creates elements with bound data for each
