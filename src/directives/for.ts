@@ -27,6 +27,7 @@ const FOR_REGEX_ARR = /(.+) of (.+)/;
 /**
  * v-for init directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
@@ -42,6 +43,7 @@ const directiveForInit = (directive: IAxonDirective, element: HTMLElement) => {
 /**
  * v-for render directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node

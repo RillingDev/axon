@@ -23,6 +23,7 @@ const bindEvent = (element: HTMLElement, eventType: string, eventFn: (e: Event) 
 /**
  * Checks if an element is a checkbox or a radio
  *
+ * @private
  * @param {HTMLElement} element
  * @returns {boolean}
  */
@@ -31,10 +32,11 @@ const isCheckboxLike = (element: HTMLElement): boolean =>
     element.type === "checkbox" || element.type === "radio";
 
 /**
- * Detects wether an input element uses the input ot change event
+ * Detects wether an input element uses the input ot change event.
  *
- * https://developer.mozilla.org/en-US/docs/Web/Events/input
+ * See: https://developer.mozilla.org/en-US/docs/Web/Events/input
  *
+ * @private
  * @param {HTMLElement} element
  * @returns {string}
  */

@@ -3,6 +3,7 @@ import { EDirectiveFn } from "../enums";
 /**
  * Axon Node
  *
+ * @private
  * @class
  */
 declare const AxonNode: {

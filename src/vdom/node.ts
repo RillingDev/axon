@@ -40,6 +40,7 @@ const mapSubNodes = ($app: IAxonApp, children: HTMLCollection, node: IAxonNode):
 /**
  * Axon Node
  *
+ * @private
  * @class
  */
 const AxonNode = class implements IAxonNode {
@@ -77,6 +78,7 @@ const AxonNode = class implements IAxonNode {
     /**
      * Runs directives on the node and all sub-nodes
      *
+     * @private
      * @param {0|1} directiveFnId
      * @returns {Array|false}
      */

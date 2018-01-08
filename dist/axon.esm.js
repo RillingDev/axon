@@ -292,7 +292,7 @@ const DOM_PROP_HTML = "innerHTML";
  * Sets a value as directive
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {string} key
  * @param {string} value
  */
@@ -301,7 +301,7 @@ const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREF
  * Checks a value as directive
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {string} key
  * @returns {boolean}
  */
@@ -310,7 +310,7 @@ const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + ke
  * Removes a directive
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {string} key
  */
 const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFIX + key);
@@ -326,7 +326,7 @@ const isDirective = (attr) => attr.name.startsWith(DOM_ATTR_PREFIX);
  * Returns array of all directives
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {Array<Directive>}
  */
 const getDirectives = (element) => arrFrom(element.attributes).filter(isDirective);
@@ -334,7 +334,7 @@ const getDirectives = (element) => arrFrom(element.attributes).filter(isDirectiv
  * Checks if the element has any directives
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {boolean}
  */
 const hasDirectives = (element) => getDirectives(element).length > 0;
@@ -342,7 +342,7 @@ const hasDirectives = (element) => getDirectives(element).length > 0;
  * Returns directives on node with name parsed
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {Array<Object>}
  */
 const parseDirectives = (element) => getDirectives(element)
@@ -430,6 +430,7 @@ const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
 /**
  * Axon Node
  *
+ * @private
  * @class
  */
 const AxonNode = class {
@@ -437,7 +438,7 @@ const AxonNode = class {
      * Axon Element Node Constructor
      *
      * @constructor
-     * @param {Element} $element
+     * @param {HTMLElement} $element
      * @param {Element|null} $parent
      * @param {Object} [data={}]
      */
@@ -453,6 +454,7 @@ const AxonNode = class {
     /**
      * Runs directives on the node and all sub-nodes
      *
+     * @private
      * @param {0|1} directiveFnId
      * @returns {Array|false}
      */
@@ -881,7 +883,7 @@ const evalMethod = (expression, node, allowUndefined = false) => {
  * addEventListener shorthand
  *
  * @private
- * @param {Element} node
+ * @param {HTMLElement} node
  * @param {string} eventType
  * @param {Function} eventFn
  */
@@ -889,6 +891,7 @@ const bindEvent = (element, eventType, eventFn) => element.addEventListener(even
 /**
  * Checks if an element is a checkbox or a radio
  *
+ * @private
  * @param {HTMLElement} element
  * @returns {boolean}
  */
@@ -896,10 +899,11 @@ const isCheckboxLike = (element) =>
 // @ts-ignore
 element.type === "checkbox" || element.type === "radio";
 /**
- * Detects wether an input element uses the input ot change event
+ * Detects wether an input element uses the input ot change event.
  *
- * https://developer.mozilla.org/en-US/docs/Web/Events/input
+ * See: https://developer.mozilla.org/en-US/docs/Web/Events/input
  *
+ * @private
  * @param {HTMLElement} element
  * @returns {string}
  */
@@ -908,7 +912,7 @@ const getInputEventType = (element) => isCheckboxLike(element) ? "change" : "inp
  * Checks which type of content property an Element uses
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {string}
  */
 const getElementContentProp = (element) => {
@@ -924,7 +928,7 @@ const getElementContentProp = (element) => {
  * Toggles element active mode
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {boolean} active
  */
 const setElementActive = (element, active) => active ?
@@ -934,8 +938,9 @@ const setElementActive = (element, active) => active ?
 /**
  * v-model init directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
@@ -952,6 +957,7 @@ const directiveModelInit = (directive, element, node) => {
 /**
  * v-model render directive
  *
+ * @private
  * @param {Object} directive
  * @param {AxonNode} node
  * @returns {boolean}
@@ -967,8 +973,9 @@ const directiveModelRender = (directive, element, node) => {
 /**
  * v-bind render directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
@@ -983,8 +990,9 @@ const FOR_REGEX_ARR = /(.+) of (.+)/;
 /**
  * v-for init directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
@@ -996,8 +1004,9 @@ const directiveForInit = (directive, element) => {
 /**
  * v-for render directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
@@ -1038,8 +1047,9 @@ const directiveForRender = (directive, element, node) => {
 /**
  * v-text render directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
@@ -1051,8 +1061,9 @@ const directiveTextRender = (directive, element, node) => {
 /**
  * v-html render directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
@@ -1064,8 +1075,9 @@ const directiveHTMLRender = (directive, element, node) => {
 /**
  * v-if directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
@@ -1078,8 +1090,9 @@ const directiveIfRender = (directive, element, node) => {
 /**
  * v-on init directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */

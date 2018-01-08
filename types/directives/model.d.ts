@@ -2,8 +2,9 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
 /**
  * v-model init directive
  *
+ * @private
  * @param {Object} directive
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {AxonNode} node
  * @returns {boolean}
  */
@@ -11,6 +12,7 @@ declare const directiveModelInit: (directive: IAxonDirective, element: HTMLEleme
 /**
  * v-model render directive
  *
+ * @private
  * @param {Object} directive
  * @param {AxonNode} node
  * @returns {boolean}

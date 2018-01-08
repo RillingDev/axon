@@ -6,6 +6,7 @@ import { IAxonNode, IGenericObject } from "../interfaces";
 import {
     EDirectiveFn
 } from "../enums";
+
 /**
  * Creates a Proxy object with the node render method bound
  *

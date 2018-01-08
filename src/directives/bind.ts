@@ -6,6 +6,7 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
 /**
  * v-bind render directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node

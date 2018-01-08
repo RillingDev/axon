@@ -9,6 +9,7 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
 /**
  * v-if directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node

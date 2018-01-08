@@ -2,7 +2,7 @@
  * addEventListener shorthand
  *
  * @private
- * @param {Element} node
+ * @param {HTMLElement} node
  * @param {string} eventType
  * @param {Function} eventFn
  */
@@ -10,15 +10,17 @@ declare const bindEvent: (element: HTMLElement, eventType: string, eventFn: (e: 
 /**
  * Checks if an element is a checkbox or a radio
  *
+ * @private
  * @param {HTMLElement} element
  * @returns {boolean}
  */
 declare const isCheckboxLike: (element: HTMLElement) => boolean;
 /**
- * Detects wether an input element uses the input ot change event
+ * Detects wether an input element uses the input ot change event.
  *
- * https://developer.mozilla.org/en-US/docs/Web/Events/input
+ * See: https://developer.mozilla.org/en-US/docs/Web/Events/input
  *
+ * @private
  * @param {HTMLElement} element
  * @returns {string}
  */
@@ -27,7 +29,7 @@ declare const getInputEventType: (element: HTMLElement) => string;
  * Checks which type of content property an Element uses
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @returns {string}
  */
 declare const getElementContentProp: (element: HTMLElement) => string;
@@ -35,7 +37,7 @@ declare const getElementContentProp: (element: HTMLElement) => string;
  * Toggles element active mode
  *
  * @private
- * @param {Element} element
+ * @param {HTMLElement} element
  * @param {boolean} active
  */
 declare const setElementActive: (element: HTMLElement, active: boolean) => void;

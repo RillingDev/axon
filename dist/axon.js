@@ -433,6 +433,7 @@ const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
 /**
  * Axon Node
  *
+ * @private
  * @class
  */
 const AxonNode = class {
@@ -456,6 +457,7 @@ const AxonNode = class {
     /**
      * Runs directives on the node and all sub-nodes
      *
+     * @private
      * @param {0|1} directiveFnId
      * @returns {Array|false}
      */
@@ -892,6 +894,7 @@ const bindEvent = (element, eventType, eventFn) => element.addEventListener(even
 /**
  * Checks if an element is a checkbox or a radio
  *
+ * @private
  * @param {HTMLElement} element
  * @returns {boolean}
  */
@@ -899,10 +902,11 @@ const isCheckboxLike = (element) =>
 // @ts-ignore
 element.type === "checkbox" || element.type === "radio";
 /**
- * Detects wether an input element uses the input ot change event
+ * Detects wether an input element uses the input ot change event.
  *
- * https://developer.mozilla.org/en-US/docs/Web/Events/input
+ * See: https://developer.mozilla.org/en-US/docs/Web/Events/input
  *
+ * @private
  * @param {HTMLElement} element
  * @returns {string}
  */
@@ -937,6 +941,7 @@ const setElementActive = (element, active) => active ?
 /**
  * v-model init directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
@@ -955,6 +960,7 @@ const directiveModelInit = (directive, element, node) => {
 /**
  * v-model render directive
  *
+ * @private
  * @param {Object} directive
  * @param {AxonNode} node
  * @returns {boolean}
@@ -970,6 +976,7 @@ const directiveModelRender = (directive, element, node) => {
 /**
  * v-bind render directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
@@ -986,6 +993,7 @@ const FOR_REGEX_ARR = /(.+) of (.+)/;
 /**
  * v-for init directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
@@ -999,6 +1007,7 @@ const directiveForInit = (directive, element) => {
 /**
  * v-for render directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
@@ -1041,6 +1050,7 @@ const directiveForRender = (directive, element, node) => {
 /**
  * v-text render directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
@@ -1054,6 +1064,7 @@ const directiveTextRender = (directive, element, node) => {
 /**
  * v-html render directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
@@ -1067,6 +1078,7 @@ const directiveHTMLRender = (directive, element, node) => {
 /**
  * v-if directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
@@ -1081,6 +1093,7 @@ const directiveIfRender = (directive, element, node) => {
 /**
  * v-on init directive
  *
+ * @private
  * @param {Object} directive
  * @param {HTMLElement} element
  * @param {AxonNode} node
