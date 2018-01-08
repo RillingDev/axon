@@ -1,13 +1,11 @@
 import {
-    bindEvent
-} from "../dom/event";
-import {
     evalProp
 } from "../vdom/controller";
 import {
-    getElementContentProp
+    getElementContentProp,
+    getInputEventType,
+    bindEvent
 } from "../dom/element";
-import { getEventType } from "../dom/event";
 import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
@@ -20,14 +18,10 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  */
 const directiveModelInit = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
     const elementContentProp = getElementContentProp(element);
-    const elementEventType = getEventType(element);
-
-    console.log("I", node, elementContentProp)
+    const elementEventType = getInputEventType(element);
 
     bindEvent(element, elementEventType, () => {
         const targetProp = evalProp(directive.content, node);
-
-        console.log("I", node, targetProp)
 
         // @ts-ignore
         targetProp.container[targetProp.key] = element[elementContentProp];

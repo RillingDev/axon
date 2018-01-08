@@ -1,6 +1,6 @@
 import {
     bindEvent
-} from "../dom/event";
+} from "../dom/element";
 import {
     applyMethodContext
 } from "../vdom/controller";
