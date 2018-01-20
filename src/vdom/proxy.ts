@@ -1,11 +1,6 @@
-import {
-    isObject,
-    forEachEntry,
-} from "lightdash";
+import { isObject, forEachEntry } from "lightdash";
 import { IAxonNode, IGenericObject } from "../interfaces";
-import {
-    EDirectiveFn
-} from "../enums";
+import { EDirectiveFn } from "../enums";
 
 /**
  * Creates a Proxy object with the node render method bound
@@ -36,10 +31,13 @@ const dataProxyFactory = (node: IAxonNode): object => {
  * @param {Object} proxyObj
  * @returns {Proxy}
  */
-const mapProxy = (obj: IGenericObject, proxyObj: object): ProxyHandler<object> => {
+const mapProxy = (
+    obj: IGenericObject,
+    proxyObj: object
+): ProxyHandler<object> => {
     const result = obj;
 
-    forEachEntry(result, (val: any, key: string) => {
+    forEachEntry(result, (key: string, val: any) => {
         if (isObject(val)) {
             result[key] = mapProxy(val, proxyObj);
         }
@@ -56,9 +54,9 @@ const mapProxy = (obj: IGenericObject, proxyObj: object): ProxyHandler<object> =
  * @param {AxonNode} node
  * @returns {Proxy}
  */
-const bindDeepDataProxy = (obj: object, node: IAxonNode): ProxyHandler<object> =>
-    mapProxy(obj, dataProxyFactory(node));
+const bindDeepDataProxy = (
+    obj: object,
+    node: IAxonNode
+): ProxyHandler<object> => mapProxy(obj, dataProxyFactory(node));
 
-export {
-    bindDeepDataProxy
-};
+export { bindDeepDataProxy };

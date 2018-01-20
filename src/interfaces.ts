@@ -20,8 +20,16 @@ interface IAxonDirective {
  * Needs to be manually updated with the values of EDirectiveFn
  */
 interface IAxonDirectiveDeclaration {
-    0?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
-    1?: (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => boolean;
+    0?: (
+        directive: IAxonDirective,
+        element: HTMLElement,
+        node: IAxonNode
+    ) => boolean;
+    1?: (
+        directive: IAxonDirective,
+        element: HTMLElement,
+        node: IAxonNode
+    ) => boolean;
 }
 
 interface IAxonNode {

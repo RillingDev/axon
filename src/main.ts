@@ -1,8 +1,11 @@
 import { AxonNode } from "./vdom/node";
-import { IAxonNode, IAxonApp, IAxonConfig, IAxonDirectiveDeclaration } from "./interfaces";
 import {
-    EDirectiveFn
-} from "./enums";
+    IAxonNode,
+    IAxonApp,
+    IAxonConfig,
+    IAxonDirectiveDeclaration
+} from "./interfaces";
+import { EDirectiveFn } from "./enums";
 import mapDirectives from "./directives/index";
 
 /**

@@ -1,9 +1,5 @@
-import {
-    evalDirective
-} from "../vdom/controller";
-import {
-    DOM_PROP_TEXT
-} from "../constants";
+import { evalDirective } from "../vdom/controller";
+import { DOM_PROP_TEXT } from "../constants";
 import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
@@ -15,12 +11,14 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveTextRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
+const directiveTextRender = (
+    directive: IAxonDirective,
+    element: HTMLElement,
+    node: IAxonNode
+) => {
     element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
 
     return true;
 };
 
-export {
-    directiveTextRender
-};
+export { directiveTextRender };

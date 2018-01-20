@@ -7,9 +7,7 @@ import {
     REGEX_IS_FUNCTION_CALL,
     REGEX_IS_STRING_LITERAL
 } from "pseudo-eval";
-import {
-    isDefined
-} from "lightdash";
+import { isDefined } from "lightdash";
 import { IAxonNode } from "../interfaces";
 
 /**
@@ -37,7 +35,10 @@ const handleMissingProp = (propName: string, allowUndefined: boolean) => {
  * @returns {any}
  */
 const applyMethodContext = (methodProp: any, additionalArgs: any[] = []) =>
-    methodProp.val.apply(methodProp.node.data, [...methodProp.args, ...additionalArgs]);
+    methodProp.val.apply(methodProp.node.data, [
+        ...methodProp.args,
+        ...additionalArgs
+    ]);
 
 /**
  * Parses Literal String
@@ -72,7 +73,11 @@ const evalLiteralFromNode = (expression: string, node: IAxonNode) => {
  * @param {boolean} [allowUndefined=false]
  * @returns {any}
  */
-const evalDirective = (name: string, node: IAxonNode, allowUndefined: boolean = false) => {
+const evalDirective = (
+    name: string,
+    node: IAxonNode,
+    allowUndefined: boolean = false
+) => {
     if (REGEX_IS_FUNCTION_CALL.test(name)) {
         const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
@@ -95,7 +100,11 @@ const evalDirective = (name: string, node: IAxonNode, allowUndefined: boolean = 
  * @param {boolean} [allowUndefined=false]
  * @returns {any|null}
  */
-const evalProp = (expression: string, node: IAxonNode, allowUndefined: boolean = false) => {
+const evalProp = (
+    expression: string,
+    node: IAxonNode,
+    allowUndefined: boolean = false
+) => {
     let current = node;
 
     while (current) {
@@ -123,7 +132,11 @@ const evalProp = (expression: string, node: IAxonNode, allowUndefined: boolean =
  * @param {boolean} [allowUndefined=false]
  * @returns {any|null}
  */
-const evalMethod = (expression: string, node: IAxonNode, allowUndefined: boolean = false) => {
+const evalMethod = (
+    expression: string,
+    node: IAxonNode,
+    allowUndefined: boolean = false
+) => {
     const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
     // @ts-ignore
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];

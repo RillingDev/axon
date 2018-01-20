@@ -1,6 +1,4 @@
-import {
-    evalProp
-} from "../vdom/controller";
+import { evalProp } from "../vdom/controller";
 import {
     getElementContentProp,
     getInputEventType,
@@ -17,7 +15,11 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelInit = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
+const directiveModelInit = (
+    directive: IAxonDirective,
+    element: HTMLElement,
+    node: IAxonNode
+) => {
     const elementContentProp = getElementContentProp(element);
     const elementEventType = getInputEventType(element);
 
@@ -39,7 +41,11 @@ const directiveModelInit = (directive: IAxonDirective, element: HTMLElement, nod
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveModelRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
+const directiveModelRender = (
+    directive: IAxonDirective,
+    element: HTMLElement,
+    node: IAxonNode
+) => {
     const elementContentProp = getElementContentProp(element);
     const targetProp = evalProp(directive.content, node);
 
@@ -49,7 +55,4 @@ const directiveModelRender = (directive: IAxonDirective, element: HTMLElement, n
     return true;
 };
 
-export {
-    directiveModelInit,
-    directiveModelRender
-};
+export { directiveModelInit, directiveModelRender };

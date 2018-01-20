@@ -1,9 +1,5 @@
-import {
-    evalDirective
-} from "../vdom/controller";
-import {
-    setElementActive
-} from "../dom/element";
+import { evalDirective } from "../vdom/controller";
+import { setElementActive } from "../dom/element";
 import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
@@ -15,14 +11,18 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveIfRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
-    const expressionValue = Boolean(evalDirective(directive.content, node, true).val);
+const directiveIfRender = (
+    directive: IAxonDirective,
+    element: HTMLElement,
+    node: IAxonNode
+) => {
+    const expressionValue = Boolean(
+        evalDirective(directive.content, node, true).val
+    );
 
     setElementActive(element, expressionValue);
 
     return expressionValue;
 };
 
-export {
-    directiveIfRender
-};
+export { directiveIfRender };

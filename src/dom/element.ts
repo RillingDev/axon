@@ -1,6 +1,4 @@
-import {
-    hasKey
-} from "lightdash";
+import { hasKey } from "lightdash";
 import {
     DOM_PROP_CHECKED,
     DOM_PROP_VALUE,
@@ -17,8 +15,11 @@ import {
  * @param {string} eventType
  * @param {Function} eventFn
  */
-const bindEvent = (element: HTMLElement, eventType: string, eventFn: (e: Event) => void) =>
-    element.addEventListener(eventType, eventFn);
+const bindEvent = (
+    element: HTMLElement,
+    eventType: string,
+    eventFn: (e: Event) => void
+) => element.addEventListener(eventType, eventFn);
 
 /**
  * Checks if an element is a checkbox or a radio
@@ -67,14 +68,15 @@ const getElementContentProp = (element: HTMLElement): string => {
  * @param {HTMLElement} element
  * @param {boolean} active
  */
-const setElementActive = (element: HTMLElement, active: boolean) => active ?
-    element.removeAttribute(DOM_ATTR_HIDDEN) :
-    element.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
+const setElementActive = (element: HTMLElement, active: boolean) =>
+    active
+        ? element.removeAttribute(DOM_ATTR_HIDDEN)
+        : element.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
 
 export {
     bindEvent,
     getElementContentProp,
     getInputEventType,
     isCheckboxLike,
-    setElementActive,
+    setElementActive
 };

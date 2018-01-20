@@ -1,15 +1,12 @@
+import { arrFrom, arrFlattenDeep } from "lightdash";
+import { hasDirectives, parseDirectives } from "../dom/directive";
+import { bindDeepDataProxy } from "./proxy";
 import {
-    arrFrom,
-    arrFlattenDeep
-} from "lightdash";
-import {
-    hasDirectives,
-    parseDirectives
-} from "../dom/directive";
-import {
-    bindDeepDataProxy
-} from "./proxy";
-import { IAxonNode, IAxonApp, IAxonDirective } from "../interfaces";
+    IAxonNode,
+    IAxonApp,
+    IAxonDirective,
+    IAxonDirectiveDeclaration
+} from "../interfaces";
 import { EDirectiveFn } from "../enums";
 
 /**
@@ -20,22 +17,28 @@ import { EDirectiveFn } from "../enums";
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = ($app: IAxonApp, children: HTMLCollection, node: IAxonNode): IAxonNode[] =>
-    arrFlattenDeep(arrFrom(children)
-        // @ts-ignore
-        .map((child: HTMLElement) => {
-            if (hasDirectives(child)) {
-                // -> Recurse
-                return new AxonNode($app, child, node);
-            } else if (child.children.length > 0) {
-                // -> Enter Children
-                return mapSubNodes($app, child.children, node);
-            } else {
-                // -> Exit dead-end
-                return null;
-            }
-        })
-        .filter((val: IAxonNode | null) => val));
+const mapSubNodes = (
+    $app: IAxonApp,
+    children: HTMLCollection,
+    node: IAxonNode
+): IAxonNode[] =>
+    arrFlattenDeep(
+        arrFrom(children)
+            // @ts-ignore
+            .map((child: HTMLElement) => {
+                if (hasDirectives(child)) {
+                    // -> Recurse
+                    return new AxonNode($app, child, node);
+                } else if (child.children.length > 0) {
+                    // -> Enter Children
+                    return mapSubNodes($app, child.children, node);
+                } else {
+                    // -> Exit dead-end
+                    return null;
+                }
+            })
+            .filter((val: IAxonNode | null) => val)
+    );
 
 /**
  * Axon Node
@@ -83,25 +86,37 @@ const AxonNode = class implements IAxonNode {
      * @returns {Array|false}
      */
     public run(directiveFnId: EDirectiveFn): boolean {
-        const directiveResults = this.directives
-            .map((directive: IAxonDirective) => {
+        const directiveResults = this.directives.map(
+            (directive: IAxonDirective) => {
                 if (this.$app.directives.has(directive.name)) {
-                    const mapDirectiveEntry = this.$app.directives.get(directive.name);
-                    // @ts-ignore
-                    const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
+                    const mapDirectiveEntry = this.$app.directives.get(
+                        directive.name
+                    );
+                    const mapDirectiveEntryFn = (<IAxonDirectiveDeclaration>mapDirectiveEntry)[
+                        directiveFnId
+                    ];
 
                     if (mapDirectiveEntryFn) {
-                        return mapDirectiveEntryFn(directive, this.$element, this);
+                        return mapDirectiveEntryFn(
+                            directive,
+                            this.$element,
+                            this
+                        );
                     }
                 }
 
                 // Ignore non-existent directive types
                 return true;
-            });
+            }
+        );
 
         // Recurse if all directives return true
-        if (directiveResults.every((directiveResult: boolean) => directiveResult)) {
-            this.$children.forEach((child) => child.run(directiveFnId));
+        if (
+            directiveResults.every(
+                (directiveResult: boolean) => directiveResult
+            )
+        ) {
+            this.$children.forEach(child => child.run(directiveFnId));
 
             return true;
         } else {

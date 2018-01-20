@@ -1,6 +1,4 @@
-import {
-    evalDirective
-} from "../vdom/controller";
+import { evalDirective } from "../vdom/controller";
 import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
@@ -12,12 +10,17 @@ import { IAxonDirective, IAxonNode } from "../interfaces";
  * @param {AxonNode} node
  * @returns {boolean}
  */
-const directiveBindRender = (directive: IAxonDirective, element: HTMLElement, node: IAxonNode) => {
-    element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
+const directiveBindRender = (
+    directive: IAxonDirective,
+    element: HTMLElement,
+    node: IAxonNode
+) => {
+    element.setAttribute(
+        directive.opt,
+        evalDirective(directive.content, node).val
+    );
 
     return true;
 };
 
-export {
-    directiveBindRender
-};
+export { directiveBindRender };

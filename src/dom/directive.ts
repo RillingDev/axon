@@ -1,10 +1,5 @@
-import {
-    DOM_ATTR_PREFIX,
-    DOM_ATTR_DELIMITER
-} from "../constants";
-import {
-    arrFrom,
-} from "lightdash";
+import { DOM_ATTR_PREFIX, DOM_ATTR_DELIMITER } from "../constants";
+import { arrFrom } from "lightdash";
 import { IAxonDirective } from "../interfaces";
 
 /**
@@ -76,7 +71,8 @@ const getDirectives = (element: HTMLElement): Attr[] =>
  * @param {HTMLElement} element
  * @returns {boolean}
  */
-const hasDirectives = (element: HTMLElement) => getDirectives(element).length > 0;
+const hasDirectives = (element: HTMLElement) =>
+    getDirectives(element).length > 0;
 
 /**
  * Returns directives on node with name parsed
@@ -85,17 +81,19 @@ const hasDirectives = (element: HTMLElement) => getDirectives(element).length > 
  * @param {HTMLElement} element
  * @returns {Array<Object>}
  */
-const parseDirectives = (element: HTMLElement): IAxonDirective[] => getDirectives(element)
-    .map((attr: Attr) => {
+const parseDirectives = (element: HTMLElement): IAxonDirective[] =>
+    getDirectives(element).map((attr: Attr) => {
         /**
          * 'x-bind:hidden="foo"' => nameFull = ["bind", "hidden"], val = "foo"
          */
-        const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
+        const nameFull = attr.name
+            .replace(DOM_ATTR_PREFIX, "")
+            .split(DOM_ATTR_DELIMITER);
 
         return {
             name: nameFull[0],
             opt: nameFull[1] || "",
-            content: attr.value,
+            content: attr.value
         };
     });
 
@@ -104,8 +102,7 @@ export {
     getDirective,
     hasDirective,
     removeDirective,
-
     getDirectives,
     hasDirectives,
-    parseDirectives,
+    parseDirectives
 };
