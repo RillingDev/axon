@@ -29,8 +29,8 @@ const bindEvent = (
  * @returns {boolean}
  */
 const isCheckboxLike = (element: HTMLElement): boolean =>
-    // @ts-ignore
-    element.type === "checkbox" || element.type === "radio";
+    (<HTMLInputElement>element).type === "checkbox" ||
+    (<HTMLInputElement>element).type === "radio";
 
 /**
  * Detects wether an input element uses the input ot change event.

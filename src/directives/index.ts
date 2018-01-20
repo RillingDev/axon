@@ -16,7 +16,7 @@ import { EDirectiveFn } from "../enums";
  *
  * @private
  */
-const directives: Map<string, IAxonDirectiveDeclaration> = mapFromObject({
+const directives = <Map<string, IAxonDirectiveDeclaration>>mapFromObject({
     if: {
         [EDirectiveFn.render]: directiveIfRender
     },

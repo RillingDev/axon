@@ -116,8 +116,7 @@ const evalProp = (
             return data;
         }
 
-        // @ts-ignore
-        current = current.$parent;
+        current = <IAxonNode>current.$parent;
     }
 
     return handleMissingProp(expression, allowUndefined);
@@ -137,10 +136,10 @@ const evalMethod = (
     node: IAxonNode,
     allowUndefined: boolean = false
 ) => {
-    const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
-    // @ts-ignore
+    const matched = <RegExpMatchArray>expression.match(
+        REGEX_GET_FUNCTION_CALL_ARGS
+    );
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
-    // @ts-ignore
     const data = getPathFull(node.$app.methods, matched[1], true);
 
     if (data !== null) {

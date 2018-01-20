@@ -40,42 +40,41 @@ const directiveForRender = (
     element: HTMLElement,
     node: IAxonNode
 ) => {
-    const directiveSplit = directive.content.match(FOR_REGEX_ARR);
-    // @ts-ignore
+    const directiveSplit = <RegExpMatchArray>directive.content.match(
+        FOR_REGEX_ARR
+    );
     const iteratorKey = directiveSplit[1];
-    // @ts-ignore
     const iterable = evalProp(directiveSplit[2], node).val;
 
     node.$children = [];
 
     // Delete old nodes
-    // @ts-ignore
-    forEach(arrFrom(element.parentElement.children), (child: HTMLElement) => {
-        if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
-            child.remove();
+    forEach(
+        arrFrom((<HTMLElement>element.parentElement).children),
+        (child: HTMLElement) => {
+            if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
+                child.remove();
+            }
         }
-    });
+    );
 
     for (const i of iterable) {
-        // @ts-ignores
-        const nodeElement: HTMLElement = element.cloneNode(true);
-        const nodeData = objFrom(node.data);
+        const nodeElement: HTMLElement = <HTMLElement>element.cloneNode(true);
+        const nodeData: { [key: string]: any } = objFrom(node.data);
 
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, DOM_DIR_FOR_DYNAMIC);
         removeDirective(nodeElement, DOM_DIR_FOR_BASE);
         removeDirective(nodeElement, "for");
         setElementActive(nodeElement, true);
 
-        // @ts-ignore
         nodeData[iteratorKey] = i;
 
-        const elementInserted = element.insertAdjacentElement(
+        const elementInserted = <HTMLElement>element.insertAdjacentElement(
             "beforebegin",
             nodeElement
         );
 
         // Creates AxonNode for the new element and adds to node children
-        // @ts-ignore
         const nodeNew = new AxonNode(
             node.$app,
             elementInserted,

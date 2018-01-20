@@ -19,6 +19,9 @@
  */
 const isTypeOf = (val, type) => typeof val === type;
 
+const _Object = Object;
+const _Array = Array;
+const _Map = Map;
 /**
  * Checks if a value is an array.
  *
@@ -38,7 +41,7 @@ const isTypeOf = (val, type) => typeof val === type;
  * // returns false
  * isArray({});
  */
-const isArray = Array.isArray;
+const isArray = _Array.isArray;
 
 /**
  * Checks if a value is undefined.
@@ -143,7 +146,7 @@ const isNil = (val) => isUndefined(val) || val === null;
  * // returns [["a", 1], ["b", 2], ["c", 3]]
  * objEntries({a: 1, b: 2, c: 3})
  */
-const objEntries = Object.entries;
+const objEntries = _Object.entries;
 
 /**
  * Iterates over each element in an array
@@ -168,16 +171,16 @@ const forEach = (arr, fn) => arr.forEach(fn);
  * @function forEachEntry
  * @memberof For
  * @param {object} obj
- * @param {function} fn fn(val: any, key: any, index: number, arr: any[])
+ * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
  * @example
  * // returns a = {a: 0, b: 2}
  * const a = {a: 1, b: 2};
  *
- * forEachEntry(a, (val, key, index) => a[key] = val * index)
+ * forEachEntry(a, (key, val, index) => a[key] = val * index)
  */
 const forEachEntry = (obj, fn) => {
     forEach(objEntries(obj), (entry, index) => {
-        fn(entry[1], entry[0], index, obj);
+        fn(entry[0], entry[1], index, obj);
     });
 };
 
@@ -219,7 +222,7 @@ const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(va
  */
 const arrFlattenDeep = (arr) => {
     const result = [];
-    forEach(arr, (val) => {
+    forEach(arr, val => {
         if (isArray(val)) {
             result.push(...arrFlattenDeep(val));
         }
@@ -247,7 +250,24 @@ const arrFlattenDeep = (arr) => {
  *
  * b[1] = 10;
  */
-const arrFrom = Array.from;
+const arrFrom = _Array.from;
+
+/**
+ * Merges contents of two objects.
+ *
+ * `Object.assign` shorthand.
+ *
+ * @function objMerge
+ * @memberof Object
+ * @since 2.7.0
+ * @param {Object} obj
+ * @param {Object} objSecondary
+ * @returns {Object}
+ * @example
+ * // returns {a: 1, b: 2}
+ * objMerge({a: 1}, {b: 2})
+ */
+const objMerge = _Object.assign;
 
 /**
  * Creates a new object with the entries of the input object.
@@ -264,7 +284,7 @@ const arrFrom = Array.from;
  *
  * b.a = 10;
  */
-const objFrom = (obj) => isArray(obj) ? arrFrom(obj) : Object.assign({}, obj);
+const objFrom = (obj) => isArray(obj) ? arrFrom(obj) : objMerge({}, obj);
 
 /**
  * Creates a map from an object.
@@ -278,7 +298,7 @@ const objFrom = (obj) => isArray(obj) ? arrFrom(obj) : Object.assign({}, obj);
  * // returns Map{a: 1, b: 4, c: 5}
  * mapFromObject({a: 1, b: 4, c: 5})
  */
-const mapFromObject = (obj) => new Map(objEntries(obj));
+const mapFromObject = (obj) => new _Map(objEntries(obj));
 
 const DOM_ATTR_PREFIX = "x-";
 const DOM_ATTR_DELIMITER = ":";
@@ -345,16 +365,17 @@ const hasDirectives = (element) => getDirectives(element).length > 0;
  * @param {HTMLElement} element
  * @returns {Array<Object>}
  */
-const parseDirectives = (element) => getDirectives(element)
-    .map((attr) => {
+const parseDirectives = (element) => getDirectives(element).map((attr) => {
     /**
      * 'x-bind:hidden="foo"' => nameFull = ["bind", "hidden"], val = "foo"
      */
-    const nameFull = attr.name.replace(DOM_ATTR_PREFIX, "").split(DOM_ATTR_DELIMITER);
+    const nameFull = attr.name
+        .replace(DOM_ATTR_PREFIX, "")
+        .split(DOM_ATTR_DELIMITER);
     return {
         name: nameFull[0],
         opt: nameFull[1] || "",
-        content: attr.value,
+        content: attr.value
     };
 });
 
@@ -386,7 +407,7 @@ const dataProxyFactory = (node) => {
  */
 const mapProxy = (obj, proxyObj) => {
     const result = obj;
-    forEachEntry(result, (val, key) => {
+    forEachEntry(result, (key, val) => {
         if (isObject(val)) {
             result[key] = mapProxy(val, proxyObj);
         }
@@ -459,11 +480,9 @@ const AxonNode = class {
      * @returns {Array|false}
      */
     run(directiveFnId) {
-        const directiveResults = this.directives
-            .map((directive) => {
+        const directiveResults = this.directives.map((directive) => {
             if (this.$app.directives.has(directive.name)) {
                 const mapDirectiveEntry = this.$app.directives.get(directive.name);
-                // @ts-ignore
                 const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
                 if (mapDirectiveEntryFn) {
                     return mapDirectiveEntryFn(directive, this.$element, this);
@@ -474,7 +493,7 @@ const AxonNode = class {
         });
         // Recurse if all directives return true
         if (directiveResults.every((directiveResult) => directiveResult)) {
-            this.$children.forEach((child) => child.run(directiveFnId));
+            this.$children.forEach(child => child.run(directiveFnId));
             return true;
         }
         else {
@@ -484,158 +503,12 @@ const AxonNode = class {
 };
 
 /**
- * Regex for comparisons
- *
- * @private
- * @memberof EvalRegex
- */
-/**
- * Checks if the value has a certain type-string.
- *
- * @function isTypeOf
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @param {string} type
- * @returns {boolean}
- * @example
- * // returns true
- * isTypeOf({}, "object")
- * isTypeOf([], "object")
- * isTypeOf("foo", "string")
- *
- * @example
- * // returns false
- * isTypeOf("foo", "number")
- */
-const isTypeOf$1 = (val, type) => typeof val === type;
-
-/**
- * Checks if a value is undefined.
- *
- * @function isUndefined
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * // returns false
- * const a = {};
- *
- * isUndefined(a.b)
- * isUndefined(undefined)
- *
- * @example
- * // returns false
- * const a = {};
- *
- * isUndefined(1)
- * isUndefined(a)
- */
-const isUndefined$1 = (val) => isTypeOf$1(val, "undefined");
-
-/**
- * Checks if a value is defined.
- *
- * @function isDefined
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * // returns true
- * const a = {};
- *
- * isDefined(1)
- * isDefined(a)
- *
- * @example
- * // returns false
- * const a = {};
- *
- * isDefined(a.b)
- * isDefined(undefined)
- */
-const isDefined$1 = (val) => !isUndefined$1(val);
-
-/**
- * Checks if a target has a certain key.
- *
- * @function hasKey
- * @memberof Has
- * @since 1.0.0
- * @param {any} target
- * @param {string} key
- * @returns {boolean}
- * @example
- * // returns true
- * hasKey([1, 2, 3], "0")
- * hasKey({foo: 0}, "foo")
- * hasKey("foo", "replace")
- *
- * @example
- * // returns false
- * hasKey({}, "foo")
- */
-const hasKey$1 = (target, key) => isDefined$1(target[key]);
-
-/**
- * Checks if a value is undefined or null.
- *
- * @function isNil
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * // returns true
- * isNil(null)
- * isNil(undefined)
- *
- * @example
- * // returns false
- * isNil(0)
- * isNil({})
- */
-const isNil$1 = (val) => isUndefined$1(val) || val === null;
-
-/**
- * Returns an array of the objects entries.
- *
- * `Object.entries` shorthand.
- *
- * @function objEntries
- * @memberof Object
- * @since 1.0.0
- * @param {Object} obj
- * @returns {any[]} Array<[key: any, val: any]>]
- * @example
- * // returns [["a", 1], ["b", 2], ["c", 3]]
- * objEntries({a: 1, b: 2, c: 3})
- */
-const objEntries$1 = Object.entries;
-
-/**
- * Creates a map from an object.
- *
- * @function mapFromObject
- * @memberof Map
- * @since 1.0.0
- * @param {Object} obj
- * @returns {Map}
- * @example
- * // returns Map{a: 1, b: 4, c: 5}
- * mapFromObject({a: 1, b: 4, c: 5})
- */
-const mapFromObject$1 = (obj) => new Map(objEntries$1(obj));
-
-/**
  * Map for comparison checks
  *
  * @private
  * @memberof EvalMap
  */
-const mapComparison = mapFromObject$1({
+const mapComparison = mapFromObject({
     "===": (a, b) => a === b,
     "!==": (a, b) => a !== b,
     "&&": (a, b) => a && b,
@@ -643,7 +516,7 @@ const mapComparison = mapFromObject$1({
     ">=": (a, b) => a >= b,
     "<=": (a, b) => a <= b,
     ">": (a, b) => a > b,
-    "<": (a, b) => a < b,
+    "<": (a, b) => a < b
 });
 
 /**
@@ -652,13 +525,13 @@ const mapComparison = mapFromObject$1({
  * @private
  * @memberof EvalMap
  */
-const mapMath = mapFromObject$1({
+const mapMath = mapFromObject({
     "+": (a, b) => a + b,
     "-": (a, b) => a - b,
     "*": (a, b) => a * b,
     "/": (a, b) => a / b,
     "%": (a, b) => a % b,
-    "**": (a, b) => a ** b,
+    "**": (a, b) => a ** b
 });
 
 /**
@@ -700,16 +573,17 @@ const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
 const getPathFull = (target, path, getContaining = false) => {
     const pathArr = path
         .split(REGEX_PATH_SPLIT)
-        .map((item) => REGEX_IS_STRING_LITERAL.test(item) ? getStringLiteral(item) : item);
+        .map((item) => REGEX_IS_STRING_LITERAL.test(item)
+        ? getStringLiteral(item)
+        : item);
     let targetCurrent = target;
     let targetLast = null;
     let key = null;
     let index = 0;
-    while (!isNil$1(targetCurrent) && index < pathArr.length) {
+    while (!isNil(targetCurrent) && index < pathArr.length) {
         key = pathArr[index];
-        if (hasKey$1(targetCurrent, key)) {
+        if (hasKey(targetCurrent, key)) {
             targetLast = targetCurrent;
-            // @ts-ignore
             targetCurrent = targetCurrent[key];
             index++;
         }
@@ -738,10 +612,10 @@ const getPathFull = (target, path, getContaining = false) => {
  * @private
  * @memberof EvalMap
  */
-const mapLiteral = mapFromObject$1({
-    "false": false,
-    "true": true,
-    "null": null
+const mapLiteral = mapFromObject({
+    false: false,
+    true: true,
+    null: null
 });
 
 /**
@@ -785,7 +659,10 @@ const handleMissingProp = (propName, allowUndefined) => {
  * @param {Array<any>} [additionalArgs=[]]
  * @returns {any}
  */
-const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(methodProp.node.data, [...methodProp.args, ...additionalArgs]);
+const applyMethodContext = (methodProp, additionalArgs = []) => methodProp.val.apply(methodProp.node.data, [
+    ...methodProp.args,
+    ...additionalArgs
+]);
 /**
  * Parses Literal String
  *
@@ -849,7 +726,6 @@ const evalProp = (expression, node, allowUndefined = false) => {
             data.node = current;
             return data;
         }
-        // @ts-ignore
         current = current.$parent;
     }
     return handleMissingProp(expression, allowUndefined);
@@ -865,9 +741,7 @@ const evalProp = (expression, node, allowUndefined = false) => {
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
     const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
-    // @ts-ignore
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
-    // @ts-ignore
     const data = getPathFull(node.$app.methods, matched[1], true);
     if (data !== null) {
         data.args = args.map((arg) => evalLiteralFromNode(arg, node));
@@ -895,9 +769,8 @@ const bindEvent = (element, eventType, eventFn) => element.addEventListener(even
  * @param {HTMLElement} element
  * @returns {boolean}
  */
-const isCheckboxLike = (element) => 
-// @ts-ignore
-element.type === "checkbox" || element.type === "radio";
+const isCheckboxLike = (element) => element.type === "checkbox" ||
+    element.type === "radio";
 /**
  * Detects wether an input element uses the input ot change event.
  *
@@ -931,9 +804,9 @@ const getElementContentProp = (element) => {
  * @param {HTMLElement} element
  * @param {boolean} active
  */
-const setElementActive = (element, active) => active ?
-    element.removeAttribute(DOM_ATTR_HIDDEN) :
-    element.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
+const setElementActive = (element, active) => active
+    ? element.removeAttribute(DOM_ATTR_HIDDEN)
+    : element.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
 
 /**
  * v-model init directive
@@ -1012,31 +885,25 @@ const directiveForInit = (directive, element) => {
  */
 const directiveForRender = (directive, element, node) => {
     const directiveSplit = directive.content.match(FOR_REGEX_ARR);
-    // @ts-ignore
     const iteratorKey = directiveSplit[1];
-    // @ts-ignore
     const iterable = evalProp(directiveSplit[2], node).val;
     node.$children = [];
     // Delete old nodes
-    // @ts-ignore
     forEach(arrFrom(element.parentElement.children), (child) => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }
     });
     for (const i of iterable) {
-        // @ts-ignores
         const nodeElement = element.cloneNode(true);
         const nodeData = objFrom(node.data);
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, DOM_DIR_FOR_DYNAMIC);
         removeDirective(nodeElement, DOM_DIR_FOR_BASE);
         removeDirective(nodeElement, "for");
         setElementActive(nodeElement, true);
-        // @ts-ignore
         nodeData[iteratorKey] = i;
         const elementInserted = element.insertAdjacentElement("beforebegin", nodeElement);
         // Creates AxonNode for the new element and adds to node children
-        // @ts-ignore
         const nodeNew = new AxonNode(node.$app, elementInserted, node.$parent, nodeData);
         node.$children.push(nodeNew);
         nodeNew.run(0 /* init */);
@@ -1113,7 +980,7 @@ const directives = mapFromObject({
         [1 /* render */]: directiveIfRender
     },
     on: {
-        [0 /* init */]: directiveOnInit,
+        [0 /* init */]: directiveOnInit
     },
     model: {
         [0 /* init */]: directiveModelInit,
