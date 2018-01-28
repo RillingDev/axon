@@ -179,7 +179,7 @@ const forEach = (arr, fn) => arr.forEach(fn);
  * forEachEntry(a, (key, val, index) => a[key] = val * index)
  */
 const forEachEntry = (obj, fn) => {
-    forEach(objEntries(obj), (entry, index) => {
+    forEach((objEntries(obj)), (entry, index) => {
         fn(entry[0], entry[1], index, obj);
     });
 };
@@ -284,7 +284,7 @@ const objMerge = _Object.assign;
  *
  * b.a = 10;
  */
-const objFrom = (obj) => isArray(obj) ? arrFrom(obj) : objMerge({}, obj);
+const objFrom = (obj) => objMerge({}, obj);
 
 /**
  * Creates a map from an object.
@@ -889,7 +889,9 @@ const directiveForRender = (directive, element, node) => {
     const iterable = evalProp(directiveSplit[2], node).val;
     node.$children = [];
     // Delete old nodes
-    forEach(arrFrom(element.parentElement.children), (child) => {
+    forEach(arrFrom(element.parentElement.children), 
+    // @ts-ignore
+    (child) => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
             child.remove();
         }

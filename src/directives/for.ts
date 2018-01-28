@@ -51,6 +51,7 @@ const directiveForRender = (
     // Delete old nodes
     forEach(
         arrFrom((<HTMLElement>element.parentElement).children),
+        // @ts-ignore
         (child: HTMLElement) => {
             if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
                 child.remove();
