@@ -1,9 +1,0 @@
-{
-    "private": true,
-    "dependencies": {
-        "avenuejs": "^5.5.0",
-        "axonjs": "^2.1.2",
-        "todomvc-app-css": "^2.1.0",
-        "todomvc-common": "^1.0.4"
-    }
-}
