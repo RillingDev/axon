@@ -8,7 +8,6 @@ declare const AxonApp: {
     new (cfg: IAxonConfig): {
         $entry: IAxonNode;
         methods: object;
-        computed: object;
         directives: Map<string, IAxonDirectiveDeclaration>;
         init(): boolean;
         render(): boolean;

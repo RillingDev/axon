@@ -17,7 +17,6 @@ const AxonApp = class implements IAxonApp {
     public $entry: IAxonNode;
 
     public methods: object;
-    public computed: object;
 
     public directives: Map<string, IAxonDirectiveDeclaration>;
     /**
