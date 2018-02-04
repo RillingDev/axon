@@ -1,5 +1,5 @@
-import { DOM_ATTR_PREFIX, DOM_ATTR_DELIMITER } from "../constants";
 import { arrFrom } from "lightdash";
+import { DOM_ATTR_DELIMITER, DOM_ATTR_PREFIX } from "../constants";
 import { IAxonDirective } from "../interfaces";
 
 /**

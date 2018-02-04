@@ -1,13 +1,13 @@
-import { arrFrom, arrFlattenDeep } from "lightdash";
+import { arrFlattenDeep, arrFrom } from "lightdash";
 import { hasDirectives, parseDirectives } from "../dom/directive";
-import { bindDeepDataProxy } from "./proxy";
+import { EDirectiveFn } from "../enums";
 import {
-    IAxonNode,
     IAxonApp,
     IAxonDirective,
-    IAxonDirectiveDeclaration
+    IAxonDirectiveDeclaration,
+    IAxonNode
 } from "../interfaces";
-import { EDirectiveFn } from "../enums";
+import { bindDeepDataProxy } from "./proxy";
 
 /**
  * Maps and processes Array of element children
@@ -92,7 +92,7 @@ const AxonNode = class implements IAxonNode {
                     const mapDirectiveEntry = this.$app.directives.get(
                         directive.name
                     );
-                    const mapDirectiveEntryFn = (<IAxonDirectiveDeclaration>mapDirectiveEntry)[
+                    const mapDirectiveEntryFn = (mapDirectiveEntry as IAxonDirectiveDeclaration)[
                         directiveFnId
                     ];
 

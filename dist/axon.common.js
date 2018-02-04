@@ -181,7 +181,7 @@ const forEach = (arr, fn) => arr.forEach(fn);
  * forEachEntry(a, (key, val, index) => a[key] = val * index)
  */
 const forEachEntry = (obj, fn) => {
-    forEach((objEntries(obj)), (entry, index) => {
+    forEach(objEntries(obj), (entry, index) => {
         fn(entry[0], entry[1], index, obj);
     });
 };
@@ -522,18 +522,27 @@ const mapComparison = mapFromObject({
 });
 
 /**
- * Map for math checks.
+ * Returns a string literal as "normal" string
+ *
+ * @function getStringLiteral
+ * @memberof Get
+ * @param {string} str
+ * @returns {string}
+ */
+const getStringLiteral = (str) => str.substr(1, str.length - 2);
+
+/**
+ * Map for literal checks.
+ *
+ * undefined and NaN are omitted because you usually wont need those
  *
  * @private
  * @memberof EvalMap
  */
-const mapMath = mapFromObject({
-    "+": (a, b) => a + b,
-    "-": (a, b) => a - b,
-    "*": (a, b) => a * b,
-    "/": (a, b) => a / b,
-    "%": (a, b) => a % b,
-    "**": (a, b) => a ** b
+const mapLiteral = mapFromObject({
+    false: false,
+    true: true,
+    null: null
 });
 
 /**
@@ -543,16 +552,6 @@ const mapMath = mapFromObject({
  * @memberof EvalRegex
  */
 const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
-
-/**
- * Returns a string literal as "normal" string
- *
- * @function getStringLiteral
- * @memberof Get
- * @param {string} str
- * @returns {string}
- */
-const getStringLiteral = (str) => str.substr(1, str.length - 2);
 
 /**
  * Regex for splitting paths
@@ -607,17 +606,18 @@ const getPathFull = (target, path, getContaining = false) => {
 };
 
 /**
- * Map for literal checks.
- *
- * undefined and NaN are omitted because you usually wont need those
+ * Map for math checks.
  *
  * @private
  * @memberof EvalMap
  */
-const mapLiteral = mapFromObject({
-    false: false,
-    true: true,
-    null: null
+const mapMath = mapFromObject({
+    "+": (a, b) => a + b,
+    "-": (a, b) => a - b,
+    "*": (a, b) => a * b,
+    "/": (a, b) => a / b,
+    "%": (a, b) => a % b,
+    "**": (a, b) => a ** b
 });
 
 /**
@@ -756,6 +756,20 @@ const evalMethod = (expression, node, allowUndefined = false) => {
 };
 
 /**
+ * v-bind render directive
+ *
+ * @private
+ * @param {Object} directive
+ * @param {HTMLElement} element
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
+const directiveBindRender = (directive, element, node) => {
+    element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
+    return true;
+};
+
+/**
  * addEventListener shorthand
  *
  * @private
@@ -809,55 +823,6 @@ const getElementContentProp = (element) => {
 const setElementActive = (element, active) => active
     ? element.removeAttribute(DOM_ATTR_HIDDEN)
     : element.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
-
-/**
- * v-model init directive
- *
- * @private
- * @param {Object} directive
- * @param {HTMLElement} element
- * @param {AxonNode} node
- * @returns {boolean}
- */
-const directiveModelInit = (directive, element, node) => {
-    const elementContentProp = getElementContentProp(element);
-    const elementEventType = getInputEventType(element);
-    bindEvent(element, elementEventType, () => {
-        const targetProp = evalProp(directive.content, node);
-        // @ts-ignore
-        targetProp.container[targetProp.key] = element[elementContentProp];
-    });
-    return true;
-};
-/**
- * v-model render directive
- *
- * @private
- * @param {Object} directive
- * @param {AxonNode} node
- * @returns {boolean}
- */
-const directiveModelRender = (directive, element, node) => {
-    const elementContentProp = getElementContentProp(element);
-    const targetProp = evalProp(directive.content, node);
-    // @ts-ignore
-    element[elementContentProp] = targetProp.val;
-    return true;
-};
-
-/**
- * v-bind render directive
- *
- * @private
- * @param {Object} directive
- * @param {HTMLElement} element
- * @param {AxonNode} node
- * @returns {boolean}
- */
-const directiveBindRender = (directive, element, node) => {
-    element.setAttribute(directive.opt, evalDirective(directive.content, node).val);
-    return true;
-};
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
@@ -916,20 +881,6 @@ const directiveForRender = (directive, element, node) => {
 };
 
 /**
- * v-text render directive
- *
- * @private
- * @param {Object} directive
- * @param {HTMLElement} element
- * @param {AxonNode} node
- * @returns {boolean}
- */
-const directiveTextRender = (directive, element, node) => {
-    element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
-    return true;
-};
-
-/**
  * v-html render directive
  *
  * @private
@@ -959,6 +910,41 @@ const directiveIfRender = (directive, element, node) => {
 };
 
 /**
+ * v-model init directive
+ *
+ * @private
+ * @param {Object} directive
+ * @param {HTMLElement} element
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
+const directiveModelInit = (directive, element, node) => {
+    const elementContentProp = getElementContentProp(element);
+    const elementEventType = getInputEventType(element);
+    bindEvent(element, elementEventType, () => {
+        const targetProp = evalProp(directive.content, node);
+        // @ts-ignore
+        targetProp.container[targetProp.key] = element[elementContentProp];
+    });
+    return true;
+};
+/**
+ * v-model render directive
+ *
+ * @private
+ * @param {Object} directive
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
+const directiveModelRender = (directive, element, node) => {
+    const elementContentProp = getElementContentProp(element);
+    const targetProp = evalProp(directive.content, node);
+    // @ts-ignore
+    element[elementContentProp] = targetProp.val;
+    return true;
+};
+
+/**
  * v-on init directive
  *
  * @private
@@ -969,6 +955,20 @@ const directiveIfRender = (directive, element, node) => {
  */
 const directiveOnInit = (directive, element, node) => {
     bindEvent(element, directive.opt, (e) => applyMethodContext(evalMethod(directive.content, node), [e]));
+    return true;
+};
+
+/**
+ * v-text render directive
+ *
+ * @private
+ * @param {Object} directive
+ * @param {HTMLElement} element
+ * @param {AxonNode} node
+ * @returns {boolean}
+ */
+const directiveTextRender = (directive, element, node) => {
+    element[DOM_PROP_TEXT] = String(evalDirective(directive.content, node).val);
     return true;
 };
 

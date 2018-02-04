@@ -1,5 +1,5 @@
-import { IAxonNode, IAxonApp, IAxonDirective } from "../interfaces";
 import { EDirectiveFn } from "../enums";
+import { IAxonApp, IAxonDirective, IAxonNode } from "../interfaces";
 /**
  * Axon Node
  *

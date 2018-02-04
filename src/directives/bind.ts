@@ -1,5 +1,5 @@
-import { evalDirective } from "../vdom/controller";
 import { IAxonDirective, IAxonNode } from "../interfaces";
+import { evalDirective } from "../vdom/controller";
 
 /**
  * v-bind render directive

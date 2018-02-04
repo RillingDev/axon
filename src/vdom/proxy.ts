@@ -1,6 +1,6 @@
-import { isObject, forEachEntry } from "lightdash";
-import { IAxonNode, IGenericObject } from "../interfaces";
+import { forEachEntry, isObject } from "lightdash";
 import { EDirectiveFn } from "../enums";
+import { IAxonNode, IGenericObject } from "../interfaces";
 
 /**
  * Creates a Proxy object with the node render method bound

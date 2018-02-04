@@ -1,10 +1,10 @@
-import { evalProp } from "../vdom/controller";
 import {
+    bindEvent,
     getElementContentProp,
-    getInputEventType,
-    bindEvent
+    getInputEventType
 } from "../dom/element";
 import { IAxonDirective, IAxonNode } from "../interfaces";
+import { evalProp } from "../vdom/controller";
 
 /**
  * v-model init directive

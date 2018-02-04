@@ -1,7 +1,7 @@
 import { bindEvent } from "../dom/element";
+import { IAxonDirective, IAxonNode } from "../interfaces";
 import { applyMethodContext } from "../vdom/controller";
 import { evalMethod } from "../vdom/controller";
-import { IAxonDirective, IAxonNode } from "../interfaces";
 
 /**
  * v-on init directive

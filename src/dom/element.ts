@@ -1,10 +1,10 @@
 import { hasKey } from "lightdash";
 import {
+    DOM_ATTR_HIDDEN,
     DOM_PROP_CHECKED,
-    DOM_PROP_VALUE,
-    DOM_PROP_TEXT,
     DOM_PROP_HTML,
-    DOM_ATTR_HIDDEN
+    DOM_PROP_TEXT,
+    DOM_PROP_VALUE
 } from "../constants";
 
 /**
@@ -29,8 +29,8 @@ const bindEvent = (
  * @returns {boolean}
  */
 const isCheckboxLike = (element: HTMLElement): boolean =>
-    (<HTMLInputElement>element).type === "checkbox" ||
-    (<HTMLInputElement>element).type === "radio";
+    (element as HTMLInputElement).type === "checkbox" ||
+    (element as HTMLInputElement).type === "radio";
 
 /**
  * Detects wether an input element uses the input ot change event.

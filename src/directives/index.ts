@@ -1,13 +1,13 @@
 import { mapFromObject } from "lightdash";
-import { directiveModelInit, directiveModelRender } from "./model";
+import { EDirectiveFn } from "../enums";
+import { IAxonDirectiveDeclaration } from "../interfaces";
 import { directiveBindRender } from "./bind";
 import { directiveForInit, directiveForRender } from "./for";
-import { directiveTextRender } from "./text";
 import { directiveHTMLRender } from "./html";
 import { directiveIfRender } from "./if";
+import { directiveModelInit, directiveModelRender } from "./model";
 import { directiveOnInit } from "./on";
-import { IAxonDirectiveDeclaration } from "../interfaces";
-import { EDirectiveFn } from "../enums";
+import { directiveTextRender } from "./text";
 
 /**
  * Some of the directive keys are reserved words.
@@ -16,7 +16,7 @@ import { EDirectiveFn } from "../enums";
  *
  * @private
  */
-const directives = <Map<string, IAxonDirectiveDeclaration>>mapFromObject({
+const directives = mapFromObject({
     if: {
         [EDirectiveFn.render]: directiveIfRender
     },
@@ -40,6 +40,6 @@ const directives = <Map<string, IAxonDirectiveDeclaration>>mapFromObject({
         [EDirectiveFn.init]: directiveForInit,
         [EDirectiveFn.render]: directiveForRender
     }
-});
+}) as Map<string, IAxonDirectiveDeclaration>;
 
 export default directives;

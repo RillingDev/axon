@@ -1,4 +1,5 @@
 // @TODO: fix duplicate imports
+import { isDefined } from "lightdash";
 import {
     getPathFull,
     getStringLiteral,
@@ -7,7 +8,6 @@ import {
     REGEX_IS_FUNCTION_CALL,
     REGEX_IS_STRING_LITERAL
 } from "pseudo-eval";
-import { isDefined } from "lightdash";
 import { IAxonNode } from "../interfaces";
 
 /**
@@ -49,7 +49,7 @@ const applyMethodContext = (methodProp: any, additionalArgs: any[] = []) =>
  * @returns {any}
  */
 const evalLiteralFromNode = (expression: string, node: IAxonNode) => {
-    let result = null;
+    let result: any = null;
 
     if (!isNaN(Number(expression))) {
         result = Number(expression);
@@ -116,7 +116,7 @@ const evalProp = (
             return data;
         }
 
-        current = <IAxonNode>current.$parent;
+        current = current.$parent as IAxonNode;
     }
 
     return handleMissingProp(expression, allowUndefined);
@@ -136,9 +136,9 @@ const evalMethod = (
     node: IAxonNode,
     allowUndefined: boolean = false
 ) => {
-    const matched = <RegExpMatchArray>expression.match(
+    const matched = expression.match(
         REGEX_GET_FUNCTION_CALL_ARGS
-    );
+    ) as RegExpMatchArray;
     const args = isDefined(matched[2]) ? matched[2].split(",") : [];
     const data = getPathFull(node.$app.methods, matched[1], true);
 

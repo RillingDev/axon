@@ -1,6 +1,6 @@
-import { evalDirective } from "../vdom/controller";
 import { setElementActive } from "../dom/element";
 import { IAxonDirective, IAxonNode } from "../interfaces";
+import { evalDirective } from "../vdom/controller";
 
 /**
  * v-if directive

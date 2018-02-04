@@ -1,6 +1,6 @@
-import { evalDirective } from "../vdom/controller";
 import { DOM_PROP_TEXT } from "../constants";
 import { IAxonDirective, IAxonNode } from "../interfaces";
+import { evalDirective } from "../vdom/controller";
 
 /**
  * v-text render directive

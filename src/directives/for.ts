@@ -1,10 +1,10 @@
-import { AxonNode } from "../vdom/node";
-import { evalProp } from "../vdom/controller";
+import { arrFrom, forEach, objFrom } from "lightdash";
 import { hasDirective, removeDirective, setDirective } from "../dom/directive";
-import { forEach, arrFrom, objFrom } from "lightdash";
 import { setElementActive } from "../dom/element";
-import { IAxonDirective, IAxonNode } from "../interfaces";
 import { EDirectiveFn } from "../enums";
+import { IAxonDirective, IAxonNode } from "../interfaces";
+import { evalProp } from "../vdom/controller";
+import { AxonNode } from "../vdom/node";
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";
@@ -40,9 +40,9 @@ const directiveForRender = (
     element: HTMLElement,
     node: IAxonNode
 ) => {
-    const directiveSplit = <RegExpMatchArray>directive.content.match(
+    const directiveSplit = directive.content.match(
         FOR_REGEX_ARR
-    );
+    ) as RegExpMatchArray;
     const iteratorKey = directiveSplit[1];
     const iterable = evalProp(directiveSplit[2], node).val;
 
@@ -50,7 +50,7 @@ const directiveForRender = (
 
     // Delete old nodes
     forEach(
-        arrFrom((<HTMLElement>element.parentElement).children),
+        arrFrom((element.parentElement as HTMLElement).children),
         // @ts-ignore
         (child: HTMLElement) => {
             if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
@@ -60,7 +60,7 @@ const directiveForRender = (
     );
 
     for (const i of iterable) {
-        const nodeElement: HTMLElement = <HTMLElement>element.cloneNode(true);
+        const nodeElement: HTMLElement = element.cloneNode(true) as HTMLElement;
         const nodeData: { [key: string]: any } = objFrom(node.data);
 
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, DOM_DIR_FOR_DYNAMIC);
@@ -70,10 +70,10 @@ const directiveForRender = (
 
         nodeData[iteratorKey] = i;
 
-        const elementInserted = <HTMLElement>element.insertAdjacentElement(
+        const elementInserted = element.insertAdjacentElement(
             "beforebegin",
             nodeElement
-        );
+        ) as HTMLElement;
 
         // Creates AxonNode for the new element and adds to node children
         const nodeNew = new AxonNode(
