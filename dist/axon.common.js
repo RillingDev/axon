@@ -277,8 +277,8 @@ const objMerge = _Object.assign;
  * @function objFrom
  * @memberof Object
  * @since 1.0.0
- * @param {object} obj
- * @returns {object}
+ * @param {Object} obj
+ * @returns {Object}
  * @example
  * // returns a = {a: 4, b: 2}, b = {a: 10, b: 2}
  * const a = {a: 4, b: 2};
@@ -600,9 +600,7 @@ const getPathFull = (target, path, getContaining = false) => {
             container: targetLast
         };
     }
-    else {
-        return targetCurrent;
-    }
+    return targetCurrent;
 };
 
 /**
