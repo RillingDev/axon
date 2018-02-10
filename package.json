@@ -24,7 +24,6 @@
         "fix": "npm-run-all fix:ts fix:prettier",
         "fix:ts": "tslint ./src/**/*.ts --fix",
         "fix:prettier": "prettier ./src/**/* ./spec/**/* --write",
-        "test": "jasmine",
         "docs": "jsdoc -c jsdoc.json"
     },
     "repository": {
