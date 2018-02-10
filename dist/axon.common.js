@@ -302,208 +302,6 @@ const objFrom = (obj) => objMerge({}, obj);
  */
 const mapFromObject = (obj) => new _Map(objEntries(obj));
 
-const DOM_ATTR_PREFIX = "x-";
-const DOM_ATTR_DELIMITER = ":";
-const DOM_ATTR_HIDDEN = "hidden";
-const DOM_PROP_CHECKED = "checked";
-const DOM_PROP_VALUE = "value";
-const DOM_PROP_TEXT = "textContent";
-const DOM_PROP_HTML = "innerHTML";
-
-/**
- * Sets a value as directive
- *
- * @private
- * @param {HTMLElement} element
- * @param {string} key
- * @param {string} value
- */
-const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREFIX + key, value);
-/**
- * Checks a value as directive
- *
- * @private
- * @param {HTMLElement} element
- * @param {string} key
- * @returns {boolean}
- */
-const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + key);
-/**
- * Removes a directive
- *
- * @private
- * @param {HTMLElement} element
- * @param {string} key
- */
-const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFIX + key);
-/**
- * Checks if an attribute is an axon directive
- *
- * @private
- * @param {Attribute} attr
- * @returns {boolean}
- */
-const isDirective = (attr) => attr.name.startsWith(DOM_ATTR_PREFIX);
-/**
- * Returns array of all directives
- *
- * @private
- * @param {HTMLElement} element
- * @returns {Array<Directive>}
- */
-const getDirectives = (element) => arrFrom(element.attributes).filter(isDirective);
-/**
- * Checks if the element has any directives
- *
- * @private
- * @param {HTMLElement} element
- * @returns {boolean}
- */
-const hasDirectives = (element) => getDirectives(element).length > 0;
-/**
- * Returns directives on node with name parsed
- *
- * @private
- * @param {HTMLElement} element
- * @returns {Array<Object>}
- */
-const parseDirectives = (element) => getDirectives(element).map((attr) => {
-    /**
-     * 'x-bind:hidden="foo"' => nameFull = ["bind", "hidden"], val = "foo"
-     */
-    const nameFull = attr.name
-        .replace(DOM_ATTR_PREFIX, "")
-        .split(DOM_ATTR_DELIMITER);
-    return {
-        name: nameFull[0],
-        opt: nameFull[1] || "",
-        content: attr.value
-    };
-});
-
-/**
- * Creates a Proxy object with the node render method bound
- *
- * @private
- * @param {AxonNode} node
- * @returns {Object}
- */
-const dataProxyFactory = (node) => {
-    return {
-        set: (target, key, val) => {
-            if (val !== target[key]) {
-                target[key] = val;
-                node.run(1 /* render */);
-            }
-            return true;
-        }
-    };
-};
-/**
- * Recursively iterates over an object and attaches proxy on on all object-like props
- *
- * @private
- * @param {Object} obj
- * @param {Object} proxyObj
- * @returns {Proxy}
- */
-const mapProxy = (obj, proxyObj) => {
-    const result = obj;
-    forEachEntry(result, (key, val) => {
-        if (isObject(val)) {
-            result[key] = mapProxy(val, proxyObj);
-        }
-    });
-    return new Proxy(obj, proxyObj);
-};
-/**
- * Binds data-proxy
- *
- * @private
- * @param {Object} obj
- * @param {AxonNode} node
- * @returns {Proxy}
- */
-const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
-
-/**
- * Maps and processes Array of element children
- *
- * @private
- * @param {NodeList} children
- * @param {AxonNode} node
- * @returns {Array<Object>}
- */
-const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
-    .map((child) => {
-    if (hasDirectives(child)) {
-        // -> Recurse
-        return new AxonNode($app, child, node);
-    }
-    else if (child.children.length > 0) {
-        // -> Enter Children
-        return mapSubNodes($app, child.children, node);
-    }
-    else {
-        // -> Exit dead-end
-        return null;
-    }
-})
-    .filter((val) => val));
-/**
- * Axon Node
- *
- * @private
- * @class
- */
-const AxonNode = class {
-    /**
-     * Axon Element Node Constructor
-     *
-     * @constructor
-     * @param {HTMLElement} $element
-     * @param {Element|null} $parent
-     * @param {Object} [data={}]
-     */
-    constructor($app, $element, $parent, data = {}) {
-        const dataStorage = data;
-        this.directives = parseDirectives($element);
-        this.data = bindDeepDataProxy(dataStorage, this);
-        this.$app = $app;
-        this.$element = $element;
-        this.$parent = $parent;
-        this.$children = mapSubNodes($app, $element.children, this);
-    }
-    /**
-     * Runs directives on the node and all sub-nodes
-     *
-     * @private
-     * @param {0|1} directiveFnId
-     * @returns {Array|false}
-     */
-    run(directiveFnId) {
-        const directiveResults = this.directives.map((directive) => {
-            if (this.$app.directives.has(directive.name)) {
-                const mapDirectiveEntry = this.$app.directives.get(directive.name);
-                const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
-                if (mapDirectiveEntryFn) {
-                    return mapDirectiveEntryFn(directive, this.$element, this);
-                }
-            }
-            // Ignore non-existent directive types
-            return true;
-        });
-        // Recurse if all directives return true
-        if (directiveResults.every((directiveResult) => directiveResult)) {
-            this.$children.forEach(child => child.run(directiveFnId));
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-};
-
 /**
  * Map for comparison checks
  *
@@ -767,6 +565,85 @@ const directiveBindRender = (directive, element, node) => {
     return true;
 };
 
+const DOM_ATTR_PREFIX = "x-";
+const DOM_ATTR_DELIMITER = ":";
+const DOM_ATTR_HIDDEN = "hidden";
+const DOM_PROP_CHECKED = "checked";
+const DOM_PROP_VALUE = "value";
+const DOM_PROP_TEXT = "textContent";
+const DOM_PROP_HTML = "innerHTML";
+
+/**
+ * Sets a value as directive
+ *
+ * @private
+ * @param {HTMLElement} element
+ * @param {string} key
+ * @param {string} value
+ */
+const setDirective = (element, key, value) => element.setAttribute(DOM_ATTR_PREFIX + key, value);
+/**
+ * Checks a value as directive
+ *
+ * @private
+ * @param {HTMLElement} element
+ * @param {string} key
+ * @returns {boolean}
+ */
+const hasDirective = (element, key) => element.hasAttribute(DOM_ATTR_PREFIX + key);
+/**
+ * Removes a directive
+ *
+ * @private
+ * @param {HTMLElement} element
+ * @param {string} key
+ */
+const removeDirective = (element, key) => element.removeAttribute(DOM_ATTR_PREFIX + key);
+/**
+ * Checks if an attribute is an axon directive
+ *
+ * @private
+ * @param {Attribute} attr
+ * @returns {boolean}
+ */
+const isDirective = (attr) => attr.name.startsWith(DOM_ATTR_PREFIX);
+/**
+ * Returns array of all directives
+ *
+ * @private
+ * @param {HTMLElement} element
+ * @returns {Array<Directive>}
+ */
+const getDirectives = (element) => arrFrom(element.attributes).filter(isDirective);
+/**
+ * Checks if the element has any directives
+ *
+ * @private
+ * @param {HTMLElement} element
+ * @returns {boolean}
+ */
+const hasDirectives = (element) => getDirectives(element).length > 0;
+/**
+ * Returns directives on node with name parsed
+ *
+ * @private
+ * @param {HTMLElement} element
+ * @returns {Array<Object>}
+ */
+const parseDirectives = (element) => getDirectives(element).map((attr) => {
+    /**
+     * 'x-bind:hidden="foo"' => nameFull = ["bind", "hidden"], val = "foo"
+     */
+    const nameFull = attr.name
+        .replace(DOM_ATTR_PREFIX, "")
+        .split(DOM_ATTR_DELIMITER);
+    return {
+        name: nameFull[0],
+        opt: nameFull[1] || "",
+        content: attr.value
+    };
+});
+
 /**
  * addEventListener shorthand
  *
@@ -821,6 +698,127 @@ const getElementContentProp = (element) => {
 const setElementActive = (element, active) => active
     ? element.removeAttribute(DOM_ATTR_HIDDEN)
     : element.setAttribute(DOM_ATTR_HIDDEN, DOM_ATTR_HIDDEN);
+
+/**
+ * Creates a Proxy object with the node render method bound
+ *
+ * @private
+ * @param {AxonNode} node
+ * @returns {Object}
+ */
+const dataProxyFactory = (node) => {
+    return {
+        set: (target, key, val) => {
+            if (val !== target[key]) {
+                target[key] = val;
+                node.run(1 /* render */);
+            }
+            return true;
+        }
+    };
+};
+/**
+ * Recursively iterates over an object and attaches proxy on on all object-like props
+ *
+ * @private
+ * @param {Object} obj
+ * @param {Object} proxyObj
+ * @returns {Proxy}
+ */
+const mapProxy = (obj, proxyObj) => {
+    const result = obj;
+    forEachEntry(result, (key, val) => {
+        if (isObject(val)) {
+            result[key] = mapProxy(val, proxyObj);
+        }
+    });
+    return new Proxy(obj, proxyObj);
+};
+/**
+ * Binds data-proxy
+ *
+ * @private
+ * @param {Object} obj
+ * @param {AxonNode} node
+ * @returns {Proxy}
+ */
+const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
+
+/**
+ * Maps and processes Array of element children
+ *
+ * @private
+ * @param {NodeList} children
+ * @param {AxonNode} node
+ * @returns {Array<Object>}
+ */
+const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
+    .map((child) => {
+    if (hasDirectives(child)) {
+        // -> Recurse
+        return new AxonNode($app, child, node);
+    }
+    else if (child.children.length > 0) {
+        // -> Enter Children
+        return mapSubNodes($app, child.children, node);
+    }
+    else {
+        // -> Exit dead-end
+        return null;
+    }
+})
+    .filter((val) => val));
+/**
+ * Axon Node
+ *
+ * @private
+ * @class
+ */
+const AxonNode = class {
+    /**
+     * Axon Element Node Constructor
+     *
+     * @constructor
+     * @param {HTMLElement} $element
+     * @param {Element|null} $parent
+     * @param {Object} [data={}]
+     */
+    constructor($app, $element, $parent, data = {}) {
+        const dataStorage = data;
+        this.directives = parseDirectives($element);
+        this.data = bindDeepDataProxy(dataStorage, this);
+        this.$app = $app;
+        this.$element = $element;
+        this.$parent = $parent;
+        this.$children = mapSubNodes($app, $element.children, this);
+    }
+    /**
+     * Runs directives on the node and all sub-nodes
+     *
+     * @private
+     * @param {0|1} directiveFnId
+     * @returns {Array|false}
+     */
+    run(directiveFnId) {
+        const directiveResults = this.directives.map((directive) => {
+            if (this.$app.directives.has(directive.name)) {
+                const mapDirectiveEntry = this.$app.directives.get(directive.name);
+                const mapDirectiveEntryFn = mapDirectiveEntry[directiveFnId];
+                if (mapDirectiveEntryFn) {
+                    return mapDirectiveEntryFn(directive, this.$element, this);
+                }
+            }
+            // Ignore non-existent directive types
+            return true;
+        });
+        // Recurse if all directives return true
+        if (directiveResults.every((directiveResult) => directiveResult)) {
+            this.$children.forEach(child => child.run(directiveFnId));
+            return true;
+        }
+        return false;
+    }
+};
 
 const DOM_DIR_FOR_BASE = "forbase";
 const DOM_DIR_FOR_DYNAMIC = "dyn";

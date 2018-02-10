@@ -119,9 +119,9 @@ const AxonNode = class implements IAxonNode {
             this.$children.forEach(child => child.run(directiveFnId));
 
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 };
 

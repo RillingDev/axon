@@ -1,4 +1,4 @@
-import { IAxonNode, IAxonConfig, IAxonDirectiveDeclaration } from "./interfaces";
+import { IAxonConfig, IAxonDirectiveDeclaration, IAxonNode } from "./interfaces";
 /**
  * Axon Root Node
  *

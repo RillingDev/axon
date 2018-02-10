@@ -1,12 +1,12 @@
-import { AxonNode } from "./vdom/node";
+import mapDirectives from "./directives/index";
+import { EDirectiveFn } from "./enums";
 import {
-    IAxonNode,
     IAxonApp,
     IAxonConfig,
-    IAxonDirectiveDeclaration
+    IAxonDirectiveDeclaration,
+    IAxonNode
 } from "./interfaces";
-import { EDirectiveFn } from "./enums";
-import mapDirectives from "./directives/index";
+import { AxonNode } from "./vdom/node";
 
 /**
  * Axon Root Node
