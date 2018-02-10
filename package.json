@@ -1,6 +1,6 @@
 {
     "name": "axonjs",
-    "version": "2.1.12",
+    "version": "2.1.13",
     "description": "A super tiny vue-like framework",
     "main": "dist/axon.common.js",
     "module": "dist/axon.esm.js",
@@ -30,7 +30,11 @@
         "type": "git",
         "url": "git+https://github.com/FelixRilling/axonjs.git"
     },
-    "keywords": ["framework", "directives", "vue-like"],
+    "keywords": [
+        "framework",
+        "directives",
+        "vue-like"
+    ],
     "author": "Felix Rilling",
     "license": "MIT",
     "bugs": {
