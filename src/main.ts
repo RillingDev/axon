@@ -15,9 +15,7 @@ import { AxonNode } from "./vdom/node";
  */
 const AxonApp = class implements IAxonApp {
     public $entry: IAxonNode;
-
     public methods: object;
-
     public directives: Map<string, IAxonDirectiveDeclaration>;
     /**
      * Axon Root Constructor

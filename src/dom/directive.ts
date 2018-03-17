@@ -1,4 +1,3 @@
-import { arrFrom } from "lightdash";
 import { DOM_ATTR_DELIMITER, DOM_ATTR_PREFIX } from "../constants";
 import { IAxonDirective } from "../interfaces";
 
@@ -62,7 +61,7 @@ const isDirective = (attr: Attr) => attr.name.startsWith(DOM_ATTR_PREFIX);
  * @returns {Array<Directive>}
  */
 const getDirectives = (element: HTMLElement): Attr[] =>
-    arrFrom(element.attributes).filter(isDirective);
+    Array.from(element.attributes).filter(isDirective);
 
 /**
  * Checks if the element has any directives

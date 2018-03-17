@@ -10,20 +10,21 @@
  * @param {string} type
  * @returns {boolean}
  * @example
- * // returns true
  * isTypeOf({}, "object")
+ * // => true
+ *
  * isTypeOf([], "object")
+ * // => true
+ *
  * isTypeOf("foo", "string")
+ * // => true
  *
  * @example
- * // returns false
  * isTypeOf("foo", "number")
+ * // => false
  */
 const isTypeOf = (val, type) => typeof val === type;
 
-const _Object = Object;
-const _Array = Array;
-const _Map = Map;
 /**
  * Checks if a value is an array.
  *
@@ -35,15 +36,17 @@ const _Map = Map;
  * @param {any} val
  * @returns {boolean}
  * @example
- * // returns true
  * isArray([]);
+ * // => true
+ *
  * isArray([1, 2, 3]);
+ * // => true
  *
  * @example
- * // returns false
  * isArray({});
+ * // => false
  */
-const isArray = _Array.isArray;
+const isArray = Array.isArray;
 
 /**
  * Checks if a value is undefined.
@@ -54,65 +57,24 @@ const isArray = _Array.isArray;
  * @param {any} val
  * @returns {boolean}
  * @example
- * // returns false
  * const a = {};
  *
  * isUndefined(a.b)
+ * // => true
+ *
  * isUndefined(undefined)
+ * // => true
  *
  * @example
- * // returns false
  * const a = {};
  *
  * isUndefined(1)
+ * // => false
+ *
  * isUndefined(a)
+ * // => false
  */
 const isUndefined = (val) => isTypeOf(val, "undefined");
-
-/**
- * Checks if a value is defined.
- *
- * @function isDefined
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * // returns true
- * const a = {};
- *
- * isDefined(1)
- * isDefined(a)
- *
- * @example
- * // returns false
- * const a = {};
- *
- * isDefined(a.b)
- * isDefined(undefined)
- */
-const isDefined = (val) => !isUndefined(val);
-
-/**
- * Checks if a target has a certain key.
- *
- * @function hasKey
- * @memberof Has
- * @since 1.0.0
- * @param {any} target
- * @param {string} key
- * @returns {boolean}
- * @example
- * // returns true
- * hasKey([1, 2, 3], "0")
- * hasKey({foo: 0}, "foo")
- * hasKey("foo", "replace")
- *
- * @example
- * // returns false
- * hasKey({}, "foo")
- */
-const hasKey = (target, key) => isDefined(target[key]);
 
 /**
  * Checks if a value is undefined or null.
@@ -123,49 +85,20 @@ const hasKey = (target, key) => isDefined(target[key]);
  * @param {any} val
  * @returns {boolean}
  * @example
- * // returns true
  * isNil(null)
+ * // => true
+ *
  * isNil(undefined)
+ * // => true
  *
  * @example
- * // returns false
  * isNil(0)
- * isNil({})
+ * // => false
+ *
+ * isNil("")
+ * // => false
  */
 const isNil = (val) => isUndefined(val) || val === null;
-
-/**
- * Returns an array of the objects entries.
- *
- * `Object.entries` shorthand.
- *
- * @function objEntries
- * @memberof Object
- * @since 1.0.0
- * @param {Object} obj
- * @returns {any[]} Array<[key: any, val: any]>]
- * @example
- * // returns [["a", 1], ["b", 2], ["c", 3]]
- * objEntries({a: 1, b: 2, c: 3})
- */
-const objEntries = _Object.entries;
-
-/**
- * Iterates over each element in an array
- *
- * Wrapper around arr.forEach to have a cleaner API and better minified code
- *
- * @function forEach
- * @memberof For
- * @param {any[]} arr
- * @param {function} fn fn(val: any, index: number, arr: any[])
- * @example
- * // returns a = [0, 2, 6]
- * const a = [1, 2, 3];
- *
- * forEach(a, (val, index)=>a[index] = val * index)
- */
-const forEach = (arr, fn) => arr.forEach(fn);
 
 /**
  * Iterates over each entry of an object
@@ -175,13 +108,13 @@ const forEach = (arr, fn) => arr.forEach(fn);
  * @param {object} obj
  * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
  * @example
- * // returns a = {a: 0, b: 2}
  * const a = {a: 1, b: 2};
  *
  * forEachEntry(a, (key, val, index) => a[key] = val * index)
+ * // a = {a: 0, b: 2}
  */
 const forEachEntry = (obj, fn) => {
-    forEach(objEntries(obj), (entry, index) => {
+    Object.entries(obj).forEach((entry, index) => {
         fn(entry[0], entry[1], index, obj);
     });
 };
@@ -195,14 +128,18 @@ const forEachEntry = (obj, fn) => {
  * @param {any} val
  * @returns {boolean}
  * @example
- * // returns true
  * isObject({})
+ * // => true
+ *
  * isObject([])
+ * // => true
+ *
  * isObject(() => 1))
+ * // => true
  *
  * @example
- * // returns false
  * isObject(1)
+ * // => false
  */
 const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
 
@@ -215,16 +152,15 @@ const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(va
  * @param {any[]} arr
  * @returns {any[]}
  * @example
- * // returns [1, 2, 3]
  * arrFlattenDeep([1, 2, [3]])
+ * // => [1, 2, 3]
  *
- * @example
- * // returns [1, 2, 3, 5, 6, 6]
  * arrFlattenDeep([1, 2, [3, [[[5]]], [6, [6]]])
+ * // => [1, 2, 3, 5, 6, 6]
  */
 const arrFlattenDeep = (arr) => {
     const result = [];
-    forEach(arr, val => {
+    arr.forEach(val => {
         if (isArray(val)) {
             result.push(...arrFlattenDeep(val));
         }
@@ -236,42 +172,6 @@ const arrFlattenDeep = (arr) => {
 };
 
 /**
- * Creates a new array with the values of the input iterable.
- *
- * `Array.from` shorthand.
- *
- * @function arrFrom
- * @memberof Array
- * @since 1.0.0
- * @param {any} arr
- * @returns {any[]}
- * @example
- * // returns a = [1, 2, 3], b = [1, 10, 3]
- * const a = [1, 2, 3];
- * const b = arrFrom(a);
- *
- * b[1] = 10;
- */
-const arrFrom = _Array.from;
-
-/**
- * Merges contents of two objects.
- *
- * `Object.assign` shorthand.
- *
- * @function objMerge
- * @memberof Object
- * @since 2.7.0
- * @param {Object} obj
- * @param {Object} objSecondary
- * @returns {Object}
- * @example
- * // returns {a: 1, b: 2}
- * objMerge({a: 1}, {b: 2})
- */
-const objMerge = _Object.assign;
-
-/**
  * Creates a new object with the entries of the input object.
  *
  * @function objFrom
@@ -280,13 +180,14 @@ const objMerge = _Object.assign;
  * @param {Object} obj
  * @returns {Object}
  * @example
- * // returns a = {a: 4, b: 2}, b = {a: 10, b: 2}
  * const a = {a: 4, b: 2};
  * const b = objFrom(a);
  *
  * b.a = 10;
+ * // a = {a: 4, b: 2}
+ * // b = {a: 10, b: 2}
  */
-const objFrom = (obj) => objMerge({}, obj);
+const objFrom = (obj) => Object.assign({}, obj);
 
 /**
  * Creates a map from an object.
@@ -297,10 +198,10 @@ const objFrom = (obj) => objMerge({}, obj);
  * @param {Object} obj
  * @returns {Map}
  * @example
- * // returns Map{a: 1, b: 4, c: 5}
  * mapFromObject({a: 1, b: 4, c: 5})
+ * // => Map<string,number>{a: 1, b: 4, c: 5}
  */
-const mapFromObject = (obj) => new _Map(objEntries(obj));
+const mapFromObject = (obj) => new Map(Object.entries(obj));
 
 /**
  * Map for comparison checks
@@ -381,7 +282,7 @@ const getPathFull = (target, path, getContaining = false) => {
     let index = 0;
     while (!isNil(targetCurrent) && index < pathArr.length) {
         key = pathArr[index];
-        if (hasKey(targetCurrent, key)) {
+        if (!isUndefined(targetCurrent[key])) {
             targetLast = targetCurrent;
             targetCurrent = targetCurrent[key];
             index++;
@@ -432,7 +333,6 @@ const REGEX_GET_FUNCTION_CALL_ARGS = /(.+)\s?\((.*)\)/;
  */
 const REGEX_IS_FUNCTION_CALL = /^.+\(.*\)$/;
 
-// @TODO: fix duplicate imports
 /**
  * Handles not-found properties
  *
@@ -503,9 +403,7 @@ const evalDirective = (name, node, allowUndefined = false) => {
             val: methodResult
         };
     }
-    else {
-        return evalProp(name, node, allowUndefined);
-    }
+    return evalProp(name, node, allowUndefined);
 };
 /**
  * Retrieves a prop from the data container
@@ -539,16 +437,14 @@ const evalProp = (expression, node, allowUndefined = false) => {
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
     const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
-    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
+    const args = !isUndefined(matched[2]) ? matched[2].split(",") : [];
     const data = getPathFull(node.$app.methods, matched[1], true);
     if (data !== null) {
         data.args = args.map((arg) => evalLiteralFromNode(arg, node));
         data.node = node.$app.$entry;
         return data;
     }
-    else {
-        return handleMissingProp(expression, allowUndefined);
-    }
+    return handleMissingProp(expression, allowUndefined);
 };
 
 /**
@@ -614,7 +510,7 @@ const isDirective = (attr) => attr.name.startsWith(DOM_ATTR_PREFIX);
  * @param {HTMLElement} element
  * @returns {Array<Directive>}
  */
-const getDirectives = (element) => arrFrom(element.attributes).filter(isDirective);
+const getDirectives = (element) => Array.from(element.attributes).filter(isDirective);
 /**
  * Checks if the element has any directives
  *
@@ -680,10 +576,10 @@ const getInputEventType = (element) => isCheckboxLike(element) ? "change" : "inp
  * @returns {string}
  */
 const getElementContentProp = (element) => {
-    if (hasKey(element, DOM_PROP_VALUE)) {
+    if (!isUndefined(element[DOM_PROP_VALUE])) {
         return isCheckboxLike(element) ? DOM_PROP_CHECKED : DOM_PROP_VALUE;
     }
-    else if (hasKey(element, DOM_PROP_TEXT)) {
+    else if (!isUndefined(element[DOM_PROP_TEXT])) {
         return DOM_PROP_TEXT;
     }
     return DOM_PROP_HTML;
@@ -752,7 +648,7 @@ const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
  * @param {AxonNode} node
  * @returns {Array<Object>}
  */
-const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
+const mapSubNodes = ($app, children, node) => arrFlattenDeep(Array.from(children)
     .map((child) => {
     if (hasDirectives(child)) {
         // -> Recurse
@@ -762,10 +658,8 @@ const mapSubNodes = ($app, children, node) => arrFlattenDeep(arrFrom(children)
         // -> Enter Children
         return mapSubNodes($app, child.children, node);
     }
-    else {
-        // -> Exit dead-end
-        return null;
-    }
+    // -> Exit dead-end
+    return null;
 })
     .filter((val) => val));
 /**
@@ -852,7 +746,7 @@ const directiveForRender = (directive, element, node) => {
     const iterable = evalProp(directiveSplit[2], node).val;
     node.$children = [];
     // Delete old nodes
-    forEach(arrFrom(element.parentElement.children), 
+    Array.from(element.parentElement.children).forEach(
     // @ts-ignore
     (child) => {
         if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {

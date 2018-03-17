@@ -1,4 +1,4 @@
-import { arrFlattenDeep, arrFrom } from "lightdash";
+import { arrFlattenDeep } from "lightdash";
 import { hasDirectives, parseDirectives } from "../dom/directive";
 import { EDirectiveFn } from "../enums";
 import {
@@ -23,7 +23,7 @@ const mapSubNodes = (
     node: IAxonNode
 ): IAxonNode[] =>
     arrFlattenDeep(
-        arrFrom(children)
+        Array.from(children)
             // @ts-ignore
             .map((child: HTMLElement) => {
                 if (hasDirectives(child)) {
@@ -32,10 +32,10 @@ const mapSubNodes = (
                 } else if (child.children.length > 0) {
                     // -> Enter Children
                     return mapSubNodes($app, child.children, node);
-                } else {
-                    // -> Exit dead-end
-                    return null;
                 }
+
+                // -> Exit dead-end
+                return null;
             })
             .filter((val: IAxonNode | null) => val)
     );

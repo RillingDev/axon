@@ -1,5 +1,4 @@
-// @TODO: fix duplicate imports
-import { isDefined } from "lightdash";
+import { isUndefined } from "lightdash";
 import {
     getPathFull,
     getStringLiteral,
@@ -86,9 +85,9 @@ const evalDirective = (
             node: method.node,
             val: methodResult
         };
-    } else {
-        return evalProp(name, node, allowUndefined);
     }
+
+    return evalProp(name, node, allowUndefined);
 };
 
 /**
@@ -139,7 +138,7 @@ const evalMethod = (
     const matched = expression.match(
         REGEX_GET_FUNCTION_CALL_ARGS
     ) as RegExpMatchArray;
-    const args = isDefined(matched[2]) ? matched[2].split(",") : [];
+    const args = !isUndefined(matched[2]) ? matched[2].split(",") : [];
     const data = getPathFull(node.$app.methods, matched[1], true);
 
     if (data !== null) {
@@ -147,9 +146,9 @@ const evalMethod = (
         data.node = node.$app.$entry;
 
         return data;
-    } else {
-        return handleMissingProp(expression, allowUndefined);
     }
+
+    return handleMissingProp(expression, allowUndefined);
 };
 
 export {

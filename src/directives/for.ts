@@ -1,4 +1,4 @@
-import { arrFrom, forEach, objFrom } from "lightdash";
+import { objFrom } from "lightdash";
 import { hasDirective, removeDirective, setDirective } from "../dom/directive";
 import { setElementActive } from "../dom/element";
 import { EDirectiveFn } from "../enums";
@@ -49,8 +49,7 @@ const directiveForRender = (
     node.$children = [];
 
     // Delete old nodes
-    forEach(
-        arrFrom((element.parentElement as HTMLElement).children),
+    Array.from((element.parentElement as HTMLElement).children).forEach(
         // @ts-ignore
         (child: HTMLElement) => {
             if (hasDirective(child, DOM_DIR_FOR_DYNAMIC)) {
