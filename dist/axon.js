@@ -650,6 +650,7 @@ var Axon = (function () {
      * @returns {Array<Object>}
      */
     const mapSubNodes = ($app, children, node) => arrFlattenDeep(Array.from(children)
+        // @ts-ignore
         .map((child) => {
         if (hasDirectives(child)) {
             // -> Recurse

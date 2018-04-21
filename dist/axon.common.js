@@ -649,6 +649,7 @@ const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
  * @returns {Array<Object>}
  */
 const mapSubNodes = ($app, children, node) => arrFlattenDeep(Array.from(children)
+    // @ts-ignore
     .map((child) => {
     if (hasDirectives(child)) {
         // -> Recurse
