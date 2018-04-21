@@ -11,10 +11,7 @@
             "module": "Axon",
             "file": "axon"
         },
-        "external": [
-            "lightdash",
-            "pseudo-eval"
-        ]
+        "external": ["lightdash", "pseudo-eval"]
     },
     "scripts": {
         "start": "npm-run-all lint build test docs",
@@ -30,18 +27,13 @@
         "fix:ts": "tslint ./src/* --fix",
         "fix:es": "eslint ./spec/* --fix",
         "fix:prettier": "prettier ./src/* ./spec/* --write",
-        "test": "jasmine",
         "docs": "jsdoc -c jsdoc.json"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/FelixRilling/axonjs.git"
     },
-    "keywords": [
-        "framework",
-        "directives",
-        "vue-like"
-    ],
+    "keywords": ["framework", "directives", "vue-like"],
     "author": "Felix Rilling",
     "license": "MIT",
     "bugs": {
