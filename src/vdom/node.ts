@@ -1,4 +1,4 @@
-import { arrFlattenDeep } from "lightdash";
+import { isArray } from "lightdash";
 import { hasDirectives, parseDirectives } from "../dom/directive";
 import { EDirectiveFn } from "../enums";
 import {
@@ -8,6 +8,32 @@ import {
     IAxonNode
 } from "../interfaces";
 import { bindDeepDataProxy } from "./proxy";
+
+/**
+ * Recursively flattens an array.
+ *
+ * @param {any[]} arr
+ * @returns {any[]}
+ * @example
+ * arrFlattenDeep([1, 2, [3]])
+ * // => [1, 2, 3]
+ *
+ * arrFlattenDeep([1, 2, [3, [[[5]]], [6, [6]]])
+ * // => [1, 2, 3, 5, 6, 6]
+ */
+const arrFlattenDeep = (arr: any[]): any[] => {
+    const result: any[] = [];
+
+    arr.forEach(val => {
+        if (isArray(val)) {
+            result.push(...arrFlattenDeep(val));
+        } else {
+            result.push(val);
+        }
+    });
+
+    return result;
+};
 
 /**
  * Maps and processes Array of element children

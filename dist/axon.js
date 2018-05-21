@@ -145,34 +145,6 @@ var Axon = (function () {
     const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
 
     /**
-     * Recursively flattens an array.
-     *
-     * @function arrFlattenDeep
-     * @memberof Array
-     * @since 1.0.0
-     * @param {any[]} arr
-     * @returns {any[]}
-     * @example
-     * arrFlattenDeep([1, 2, [3]])
-     * // => [1, 2, 3]
-     *
-     * arrFlattenDeep([1, 2, [3, [[[5]]], [6, [6]]])
-     * // => [1, 2, 3, 5, 6, 6]
-     */
-    const arrFlattenDeep = (arr) => {
-        const result = [];
-        arr.forEach(val => {
-            if (isArray(val)) {
-                result.push(...arrFlattenDeep(val));
-            }
-            else {
-                result.push(val);
-            }
-        });
-        return result;
-    };
-
-    /**
      * Creates a new object with the entries of the input object.
      *
      * @function objFrom
@@ -292,15 +264,14 @@ var Axon = (function () {
                 return null;
             }
         }
-        if (getContaining) {
-            return {
+        return getContaining
+            ? {
                 index,
                 key,
                 val: targetCurrent,
                 container: targetLast
-            };
-        }
-        return targetCurrent;
+            }
+            : targetCurrent;
     };
 
     /**
@@ -641,6 +612,30 @@ var Axon = (function () {
      */
     const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
 
+    /**
+     * Recursively flattens an array.
+     *
+     * @param {any[]} arr
+     * @returns {any[]}
+     * @example
+     * arrFlattenDeep([1, 2, [3]])
+     * // => [1, 2, 3]
+     *
+     * arrFlattenDeep([1, 2, [3, [[[5]]], [6, [6]]])
+     * // => [1, 2, 3, 5, 6, 6]
+     */
+    const arrFlattenDeep = (arr) => {
+        const result = [];
+        arr.forEach(val => {
+            if (isArray(val)) {
+                result.push(...arrFlattenDeep(val));
+            }
+            else {
+                result.push(val);
+            }
+        });
+        return result;
+    };
     /**
      * Maps and processes Array of element children
      *
