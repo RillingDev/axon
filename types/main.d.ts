@@ -9,7 +9,13 @@ declare const AxonApp: {
         $entry: IAxonNode;
         methods: object;
         directives: Map<string, IAxonDirectiveDeclaration>;
+        /**
+         * Initializes directives
+         */
         init(): boolean;
+        /**
+         * Renders directives
+         */
         render(): boolean;
     };
 };

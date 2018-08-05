@@ -1,308 +1,7 @@
 'use strict';
 
-/**
- * Checks if the value has a certain type-string.
- *
- * @function isTypeOf
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @param {string} type
- * @returns {boolean}
- * @example
- * isTypeOf({}, "object")
- * // => true
- *
- * isTypeOf([], "object")
- * // => true
- *
- * isTypeOf("foo", "string")
- * // => true
- *
- * @example
- * isTypeOf("foo", "number")
- * // => false
- */
-const isTypeOf = (val, type) => typeof val === type;
-
-/**
- * Checks if a value is an array.
- *
- * `Array.isArray` shorthand.
- *
- * @function isArray
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * isArray([]);
- * // => true
- *
- * isArray([1, 2, 3]);
- * // => true
- *
- * @example
- * isArray({});
- * // => false
- */
-const isArray = Array.isArray;
-
-/**
- * Checks if a value is undefined.
- *
- * @function isUndefined
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * const a = {};
- *
- * isUndefined(a.b)
- * // => true
- *
- * isUndefined(undefined)
- * // => true
- *
- * @example
- * const a = {};
- *
- * isUndefined(1)
- * // => false
- *
- * isUndefined(a)
- * // => false
- */
-const isUndefined = (val) => isTypeOf(val, "undefined");
-
-/**
- * Checks if a value is undefined or null.
- *
- * @function isNil
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * isNil(null)
- * // => true
- *
- * isNil(undefined)
- * // => true
- *
- * @example
- * isNil(0)
- * // => false
- *
- * isNil("")
- * // => false
- */
-const isNil = (val) => isUndefined(val) || val === null;
-
-/**
- * Iterates over each entry of an object
- *
- * @function forEachEntry
- * @memberof For
- * @param {object} obj
- * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
- * @example
- * const a = {a: 1, b: 2};
- *
- * forEachEntry(a, (key, val, index) => a[key] = val * index)
- * // a = {a: 0, b: 2}
- */
-const forEachEntry = (obj, fn) => {
-    Object.entries(obj).forEach((entry, index) => {
-        fn(entry[0], entry[1], index, obj);
-    });
-};
-
-/**
- * Checks if a value is an object.
- *
- * @function isObject
- * @memberof Is
- * @since 1.0.0
- * @param {any} val
- * @returns {boolean}
- * @example
- * isObject({})
- * // => true
- *
- * isObject([])
- * // => true
- *
- * isObject(() => 1))
- * // => true
- *
- * @example
- * isObject(1)
- * // => false
- */
-const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
-
-/**
- * Creates a new object with the entries of the input object.
- *
- * @function objFrom
- * @memberof Object
- * @since 1.0.0
- * @param {Object} obj
- * @returns {Object}
- * @example
- * const a = {a: 4, b: 2};
- * const b = objFrom(a);
- *
- * b.a = 10;
- * // a = {a: 4, b: 2}
- * // b = {a: 10, b: 2}
- */
-const objFrom = (obj) => Object.assign({}, obj);
-
-/**
- * Creates a map from an object.
- *
- * @function mapFromObject
- * @memberof Map
- * @since 1.0.0
- * @param {Object} obj
- * @returns {Map}
- * @example
- * mapFromObject({a: 1, b: 4, c: 5})
- * // => Map<string,number>{a: 1, b: 4, c: 5}
- */
-const mapFromObject = (obj) => new Map(Object.entries(obj));
-
-/**
- * Map for comparison checks
- *
- * @private
- * @memberof EvalMap
- */
-const mapComparison = mapFromObject({
-    "===": (a, b) => a === b,
-    "!==": (a, b) => a !== b,
-    "&&": (a, b) => a && b,
-    "||": (a, b) => a || b,
-    ">=": (a, b) => a >= b,
-    "<=": (a, b) => a <= b,
-    ">": (a, b) => a > b,
-    "<": (a, b) => a < b
-});
-
-/**
- * Returns a string literal as "normal" string
- *
- * @function getStringLiteral
- * @memberof Get
- * @param {string} str
- * @returns {string}
- */
-const getStringLiteral = (str) => str.substr(1, str.length - 2);
-
-/**
- * Map for literal checks.
- *
- * undefined and NaN are omitted because you usually wont need those
- *
- * @private
- * @memberof EvalMap
- */
-const mapLiteral = mapFromObject({
-    false: false,
-    true: true,
-    null: null
-});
-
-/**
- * Regex checking for string literals
- *
- * @private
- * @memberof EvalRegex
- */
-const REGEX_IS_STRING_LITERAL = /^["'`].*["'`]$/;
-
-/**
- * Regex for splitting paths
- *
- * @private
- * @memberof EvalRegex
- */
-const REGEX_PATH_SPLIT = /(?:\.|\[|\])+/g;
-
-/**
- * Accesses a target by a path of keys. If the path doesn't exist, null is returned
- *
- * @function getPathFull
- * @memberof Get
- * @param {any} target
- * @param {string} path
- * @param {boolean} [getContaining=false]
- * @returns {any|null}
- */
-const getPathFull = (target, path, getContaining = false) => {
-    const pathArr = path
-        .split(REGEX_PATH_SPLIT)
-        .map((item) => REGEX_IS_STRING_LITERAL.test(item)
-        ? getStringLiteral(item)
-        : item);
-    let targetCurrent = target;
-    let targetLast = null;
-    let key = null;
-    let index = 0;
-    while (!isNil(targetCurrent) && index < pathArr.length) {
-        key = pathArr[index];
-        if (!isUndefined(targetCurrent[key])) {
-            targetLast = targetCurrent;
-            targetCurrent = targetCurrent[key];
-            index++;
-        }
-        else {
-            return null;
-        }
-    }
-    return getContaining
-        ? {
-            index,
-            key,
-            val: targetCurrent,
-            container: targetLast
-        }
-        : targetCurrent;
-};
-
-/**
- * Map for math checks.
- *
- * @private
- * @memberof EvalMap
- */
-const mapMath = mapFromObject({
-    "+": (a, b) => a + b,
-    "-": (a, b) => a - b,
-    "*": (a, b) => a * b,
-    "/": (a, b) => a / b,
-    "%": (a, b) => a % b,
-    "**": (a, b) => a ** b
-});
-
-/**
- * Regex for function call args
- *
- * @private
- * @memberof EvalRegex
- */
-const REGEX_GET_FUNCTION_CALL_ARGS = /(.+)\s?\((.*)\)/;
-
-/**
- * Regex checking for function calls
- *
- * @private
- * @memberof EvalRegex
- */
-const REGEX_IS_FUNCTION_CALL = /^.+\(.*\)$/;
+var lightdash = require('lightdash');
+var pseudoEval = require('pseudo-eval');
 
 /**
  * Handles not-found properties
@@ -345,11 +44,11 @@ const evalLiteralFromNode = (expression, node) => {
     if (!isNaN(Number(expression))) {
         result = Number(expression);
     }
-    else if (REGEX_IS_STRING_LITERAL.test(expression)) {
-        result = getStringLiteral(expression);
+    else if (pseudoEval.REGEX_IS_STRING_LITERAL.test(expression)) {
+        result = pseudoEval.getStringLiteral(expression);
     }
-    else if (mapLiteral.has(expression)) {
-        result = mapLiteral.get(expression);
+    else if (pseudoEval.mapLiteral.has(expression)) {
+        result = pseudoEval.mapLiteral.get(expression);
     }
     else {
         result = evalProp(expression, node).val;
@@ -366,7 +65,7 @@ const evalLiteralFromNode = (expression, node) => {
  * @returns {any}
  */
 const evalDirective = (name, node, allowUndefined = false) => {
-    if (REGEX_IS_FUNCTION_CALL.test(name)) {
+    if (pseudoEval.REGEX_IS_FUNCTION_CALL.test(name)) {
         const method = evalMethod(name, node, allowUndefined);
         const methodResult = applyMethodContext(method);
         return {
@@ -388,7 +87,7 @@ const evalDirective = (name, node, allowUndefined = false) => {
 const evalProp = (expression, node, allowUndefined = false) => {
     let current = node;
     while (current) {
-        const data = getPathFull(current.data, expression, true);
+        const data = pseudoEval.getPathFull(current.data, expression, true);
         if (data !== null) {
             data.node = current;
             return data;
@@ -407,9 +106,9 @@ const evalProp = (expression, node, allowUndefined = false) => {
  * @returns {any|null}
  */
 const evalMethod = (expression, node, allowUndefined = false) => {
-    const matched = expression.match(REGEX_GET_FUNCTION_CALL_ARGS);
-    const args = !isUndefined(matched[2]) ? matched[2].split(",") : [];
-    const data = getPathFull(node.$app.methods, matched[1], true);
+    const matched = expression.match(pseudoEval.REGEX_GET_FUNCTION_CALL_ARGS);
+    const args = !lightdash.isUndefined(matched[2]) ? matched[2].split(",") : [];
+    const data = pseudoEval.getPathFull(node.$app.methods, matched[1], true);
     if (data !== null) {
         data.args = args.map((arg) => evalLiteralFromNode(arg, node));
         data.node = node.$app.$entry;
@@ -547,10 +246,11 @@ const getInputEventType = (element) => isCheckboxLike(element) ? "change" : "inp
  * @returns {string}
  */
 const getElementContentProp = (element) => {
-    if (!isUndefined(element[DOM_PROP_VALUE])) {
+    // @ts-ignore
+    if (!lightdash.isUndefined(element[DOM_PROP_VALUE])) {
         return isCheckboxLike(element) ? DOM_PROP_CHECKED : DOM_PROP_VALUE;
     }
-    else if (!isUndefined(element[DOM_PROP_TEXT])) {
+    else if (!lightdash.isUndefined(element[DOM_PROP_TEXT])) {
         return DOM_PROP_TEXT;
     }
     return DOM_PROP_HTML;
@@ -594,8 +294,8 @@ const dataProxyFactory = (node) => {
  */
 const mapProxy = (obj, proxyObj) => {
     const result = obj;
-    forEachEntry(result, (key, val) => {
-        if (isObject(val)) {
+    lightdash.forEachEntry(result, (key, val) => {
+        if (lightdash.isObject(val)) {
             result[key] = mapProxy(val, proxyObj);
         }
     });
@@ -626,7 +326,7 @@ const bindDeepDataProxy = (obj, node) => mapProxy(obj, dataProxyFactory(node));
 const arrFlattenDeep = (arr) => {
     const result = [];
     arr.forEach(val => {
-        if (isArray(val)) {
+        if (lightdash.isArray(val)) {
             result.push(...arrFlattenDeep(val));
         }
         else {
@@ -751,7 +451,7 @@ const directiveForRender = (directive, element, node) => {
     });
     for (const i of iterable) {
         const nodeElement = element.cloneNode(true);
-        const nodeData = objFrom(node.data);
+        const nodeData = lightdash.objFrom(node.data);
         setDirective(nodeElement, DOM_DIR_FOR_DYNAMIC, DOM_DIR_FOR_DYNAMIC);
         removeDirective(nodeElement, DOM_DIR_FOR_BASE);
         removeDirective(nodeElement, "for");
@@ -865,7 +565,7 @@ const directiveTextRender = (directive, element, node) => {
  *
  * @private
  */
-const directives = mapFromObject({
+const directives = lightdash.mapFromObject({
     if: {
         [1 /* render */]: directiveIfRender
     },

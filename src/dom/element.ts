@@ -52,6 +52,7 @@ const getInputEventType = (element: HTMLElement): string =>
  * @returns {string}
  */
 const getElementContentProp = (element: HTMLElement): string => {
+    // @ts-ignore
     if (!isUndefined(element[DOM_PROP_VALUE])) {
         return isCheckboxLike(element) ? DOM_PROP_CHECKED : DOM_PROP_VALUE;
     } else if (!isUndefined(element[DOM_PROP_TEXT])) {

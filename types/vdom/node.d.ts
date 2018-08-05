@@ -14,6 +14,13 @@ declare const AxonNode: {
         $children: IAxonNode[];
         directives: IAxonDirective[];
         data: object;
+        /**
+         * Runs directives on the node and all sub-nodes
+         *
+         * @private
+         * @param {0|1} directiveFnId
+         * @returns {Array|false}
+         */
         run(directiveFnId: EDirectiveFn): boolean;
     };
 };

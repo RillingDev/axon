@@ -99,10 +99,10 @@ var Axon = (function () {
      * isNil("")
      * // => false
      */
-    const isNil = (val) => isUndefined(val) || val === null;
+    const isNil = (val) => val == null;
 
     /**
-     * Iterates over each entry of an object
+     * Iterates over each entry of an object.
      *
      * @function forEachEntry
      * @memberof For
@@ -177,12 +177,103 @@ var Axon = (function () {
     const mapFromObject = (obj) => new Map(Object.entries(obj));
 
     /**
+     * Checks if the value has a certain type-string.
+     *
+     * @function isTypeOf
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @param {string} type
+     * @returns {boolean}
+     * @example
+     * isTypeOf({}, "object")
+     * // => true
+     *
+     * isTypeOf([], "object")
+     * // => true
+     *
+     * isTypeOf("foo", "string")
+     * // => true
+     *
+     * @example
+     * isTypeOf("foo", "number")
+     * // => false
+     */
+    const isTypeOf$1 = (val, type) => typeof val === type;
+
+    /**
+     * Checks if a value is undefined.
+     *
+     * @function isUndefined
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @returns {boolean}
+     * @example
+     * const a = {};
+     *
+     * isUndefined(a.b)
+     * // => true
+     *
+     * isUndefined(undefined)
+     * // => true
+     *
+     * @example
+     * const a = {};
+     *
+     * isUndefined(1)
+     * // => false
+     *
+     * isUndefined(a)
+     * // => false
+     */
+    const isUndefined$1 = (val) => isTypeOf$1(val, "undefined");
+
+    /**
+     * Checks if a value is undefined or null.
+     *
+     * @function isNil
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @returns {boolean}
+     * @example
+     * isNil(null)
+     * // => true
+     *
+     * isNil(undefined)
+     * // => true
+     *
+     * @example
+     * isNil(0)
+     * // => false
+     *
+     * isNil("")
+     * // => false
+     */
+    const isNil$1 = (val) => isUndefined$1(val) || val === null;
+
+    /**
+     * Creates a map from an object.
+     *
+     * @function mapFromObject
+     * @memberof Map
+     * @since 1.0.0
+     * @param {Object} obj
+     * @returns {Map}
+     * @example
+     * mapFromObject({a: 1, b: 4, c: 5})
+     * // => Map<string,number>{a: 1, b: 4, c: 5}
+     */
+    const mapFromObject$1 = (obj) => new Map(Object.entries(obj));
+
+    /**
      * Map for comparison checks
      *
      * @private
      * @memberof EvalMap
      */
-    const mapComparison = mapFromObject({
+    const mapComparison = mapFromObject$1({
         "===": (a, b) => a === b,
         "!==": (a, b) => a !== b,
         "&&": (a, b) => a && b,
@@ -211,7 +302,7 @@ var Axon = (function () {
      * @private
      * @memberof EvalMap
      */
-    const mapLiteral = mapFromObject({
+    const mapLiteral = mapFromObject$1({
         false: false,
         true: true,
         null: null
@@ -253,9 +344,9 @@ var Axon = (function () {
         let targetLast = null;
         let key = null;
         let index = 0;
-        while (!isNil(targetCurrent) && index < pathArr.length) {
+        while (!isNil$1(targetCurrent) && index < pathArr.length) {
             key = pathArr[index];
-            if (!isUndefined(targetCurrent[key])) {
+            if (!isUndefined$1(targetCurrent[key])) {
                 targetLast = targetCurrent;
                 targetCurrent = targetCurrent[key];
                 index++;
@@ -280,7 +371,7 @@ var Axon = (function () {
      * @private
      * @memberof EvalMap
      */
-    const mapMath = mapFromObject({
+    const mapMath = mapFromObject$1({
         "+": (a, b) => a + b,
         "-": (a, b) => a - b,
         "*": (a, b) => a * b,
@@ -548,6 +639,7 @@ var Axon = (function () {
      * @returns {string}
      */
     const getElementContentProp = (element) => {
+        // @ts-ignore
         if (!isUndefined(element[DOM_PROP_VALUE])) {
             return isCheckboxLike(element) ? DOM_PROP_CHECKED : DOM_PROP_VALUE;
         }
